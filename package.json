@@ -1,0 +1,31 @@
+{
+  "name": "domapic",
+  "version": "0.1.0-alpha.1",
+  "description": "Controller for Domapic api based domotic system",
+  "main": "server.js",
+  "keywords": [
+    "api",
+    "domotic",
+    "services",
+    "robotic",
+    "microservices"
+  ],
+  "bin": {
+    "domapic": "./bin/domapic.js"
+  },
+  "scripts": {
+    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha",
+    "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "coveralls": "3.0.0",
+    "istanbul": "0.4.5",
+    "mocha": "4.0.1",
+    "mocha-standard": "1.0.0",
+    "standard": "10.0.3"
+  },
+  "author": "Javier Brea",
+  "license": "MIT",
+  "repository": "https://registry.npmjs.org/"
+}
