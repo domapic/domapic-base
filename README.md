@@ -5,11 +5,9 @@
 [![js-standard-style][standard-image]][standard-url]
 [![Quality Gate][quality-gate-image]][quality-gate-url]
 
-
-[![License][license-image]][license-url]
 [![Node version][node-version-image]][node-version-url]
 [![NPM version][npm-image]][npm-url]
-
+[![License][license-image]][license-url]
 
 [![NPM downloads][npm-downloads-image]][npm-downloads-url]
 [![Website][website-image]][website-url]
