@@ -3,4 +3,5 @@ npm-debug.log
 .npmrc
 package-lock.json
 .coverage
+.scannerwork
 
