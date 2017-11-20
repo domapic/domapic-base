@@ -16,9 +16,11 @@ Controller server for Domapic services.
 [![NPM downloads][npm-downloads-image]][npm-downloads-url]
 [![Website][website-image]][website-url]
 
+//TODO, it is too long. Add an well descriptor image, bolds, etc...
+
 ## What are Domapic services?
 
-Domapic services are domotic (or whatever other) services installed in the same or in another machine, developed in nodejs or any other technology (for the moment, only nodejs base service package is provided), that automatically connect with this controller through API, pair with it, and can receive orders (ACTIONS) from him, and communicate events to it (EVENTS), to inform that one of its STATES has changed.
+Domapic services are domotic (or whatever other) services installed in the same or in another machine, developed in nodejs or any other technology (for the moment, only nodejs base service package is provided), that automatically connect with this controller through API, pair with it, and can receive orders (ACTIONS) from it, and communicate events to it (EVENTS), to inform that one of its STATES has changed.
 
 You can interact directly with the services APIs to get STATES, listen EVENTS, or send ACTIONS to them, but it is better to use this package as a CONTROLLER. Using it, you only have to communicate with the CONTROLLER api to control all services, and you can make interact all services automatically setting up AUTOMATISMs in the controller.
 
@@ -38,13 +40,13 @@ And, of course, you can develop your own robotic or domotic gadgets, using Raspb
 
 ## Installation
 
-> Note: To run the next commands, Node.js and npm must be installed.
+> Note: To run the next commands, [Node.js](https://nodejs.org) and [npm](https://www.npmjs.com) must be installed.
 
 ```shell
 npm install domapic -g
 ```
 
-> Domapic can be installed locally without the -g flag as well, but the global installation is recommended to make easier the use of the provided CLI.
+> Note: Domapic can be installed locally without the -g flag as well, but the global installation is recommended to make easier the use of the provided CLI.
 
 If you have to use "sudo" to install the package globally, use the --unsafe-perms flag in order to start the server pointing to the right user home path for writing configurations, storage, etc.
 
