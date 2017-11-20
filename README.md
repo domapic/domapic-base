@@ -38,6 +38,8 @@ And, of course, you can develop your own robotic or domotic gadgets, using Raspb
 
 ## Suggested uses
 
+//TODO, write suggested uses (examples), mention IFTT.. SIRI, etc..
+
 ## Installation
 
 > Note: To run the next commands, [Node.js](https://nodejs.org) and [npm](https://www.npmjs.com) must be installed.
@@ -75,6 +77,9 @@ npm start -- --options
 
 //TODO, write about where options are saved, and how can be edited directly (restarting the server, of course)
 
+## Install services
+
+//TODO, link to the domapic-service package. Explain that all services should extend from it, so the guide should be valid for all services installation and configuration process.
 
 [circleci-image]: https://circleci.com/bb/domapic/domapic.svg?style=shield&circle-token=3e836b50c79fdfe6bcaa2f4879037443e2916b44
 [circleci-url]: https://circleci.com/bb/domapic/domapic
