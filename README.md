@@ -16,7 +16,21 @@ Controller server for Domapic services.
 [![NPM downloads][npm-downloads-image]][npm-downloads-url]
 [![Website][website-image]][website-url]
 
-//TODO, add schema image
+## Table of Contents
+___
+
+* [What are Domapic services?](#what-are-domapic-services)
+* [Why?](#why)
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Start the server](#start-the-server)
+  * [Stop the server](#stop-the-server)
+* [Configuration](#configuration)
+* [Options](#options)
+* [Database](#database)
+* [Users](#users)
+* [Install services](#install-services)
+* [Install plugins](#install-plugins)
 
 ## What are Domapic services?
 ___
@@ -28,6 +42,8 @@ You can **interact directly with the controller to get STATES, listen EVENTS, or
 So, you can install Domapic services in your machine, in your server, in a Raspberry pi, inside or outside your local network... and set them all to use the same controller (installed locally or remote, as well). Then, you can program your own AUTOMATISMs using the controller API, or using a domapic UI plugin, or even using Homekit plugin, Slack plugin, IFTT plugin or whatever other domapic plugin. You will receive notifications when the services STATES change, or you cand send ACTIONS to any service, through the controller API, interfaces, or plugins.
 
 If it does not exists, develop your own plugin or service, and publish it with the suffix "domapic-service", or "domapic-plugin".
+
+//TODO, add schema image
 
 ## Why?
 ___
@@ -44,6 +60,7 @@ ___
 //TODO, write suggested uses (examples), mention IFTT.. SIRI, etc..
 
 ## Installation
+___
 
 > Note: To run the next commands, [Node.js](https://nodejs.org) and [npm](https://www.npmjs.com) must be installed.
 
@@ -122,6 +139,7 @@ By default, Domapic will use Nedb as database if not "mongodb" option is provide
 ## Users
 ___
 
+//TODO, add here how to add users, set passwords, etc...
 
 
 ## Install services
