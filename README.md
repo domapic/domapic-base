@@ -16,7 +16,7 @@ Controller server for Domapic services.
 [![NPM downloads][npm-downloads-image]][npm-downloads-url]
 [![Website][website-image]][website-url]
 
-//TODO, it is too long. Add an well descriptor image, bolds, etc...
+//TODO, add schema image
 
 ## What are Domapic services?
 ___
@@ -74,7 +74,7 @@ You can pass options to the start command:
 domapic start my-home --port=8090
 ```
 
-> Note: The CLI will start automatically a PM2 process with your server name ("my-home", in the example above)
+> Note: The CLI will start automatically a [PM2](http://pm2.keymetrics.io/) process with your server name ("my-home", in the example above). You can stop the server process, read the server process logs, etc., using the PM2 commands, for further info, please [read the docs](http://pm2.keymetrics.io/docs/usage/quick-start/).
 
 Or, without using CLI:
 
@@ -113,19 +113,22 @@ ssl | Boolean | Secured http server | true
 ## Database
 ___
 
-Domapic can use Nedb or MongoDB.
+Domapic can use [Nedb](https://github.com/louischatriot/nedb) or [MongoDB](https://www.mongodb.com/) as database.
 
 By default, Domapic will use Nedb as database if not "mongodb" option is provided. This was made for making simpler the installation process, and to make able to use it in environments in which you can´t use MongoDB. But, it is better if you install your own mongodb database and pass the mongodb connection string URI as "mongodb" option to the server.
 
 ## Users
 ___
 
-//TODO, test if embedded PM2 works as expected, then describe here how to see logs, status, etc... (For testing it, delete PM2 from local, then start the server locally)
+
 
 ## Install services
 ___
 
 //TODO, link to the domapic-service package. Explain that all services should extend from it, so the guide should be valid for all services installation and configuration process.
+
+## Install plugins
+//TODO, link to the domapic-plugin package. Explain that all plugins should extend from it...
 
 [circleci-image]: https://circleci.com/bb/domapic/domapic.svg?style=shield&circle-token=3e836b50c79fdfe6bcaa2f4879037443e2916b44
 [circleci-url]: https://circleci.com/bb/domapic/domapic
