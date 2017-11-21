@@ -82,13 +82,6 @@ Or, without using CLI:
 npm start -- --name=my-home --port=8090
 ```
 
-## Database
-___
-
-Domapic can use Nedb or MongoDB.
-
-By default, Domapic will use Nedb as database if not "mongodb" option is provided. This was made for making simpler the installation process, and to make able to use it in environments in which you can´t use MongoDB. But, it is better if you install your own mongodb database and pass the mongodb connection string URI as "mongodb" option to the server.
-
 ```shell
 domapic start my-home --port=8090 --mongodb=mongodb://localhost/domapic
 ```
@@ -116,6 +109,13 @@ option | type | description | default
 name | String | Server name | domapic
 port | Number | Http port | 53152
 ssl | Boolean | Secured http server | true
+
+## Database
+___
+
+Domapic can use Nedb or MongoDB.
+
+By default, Domapic will use Nedb as database if not "mongodb" option is provided. This was made for making simpler the installation process, and to make able to use it in environments in which you can´t use MongoDB. But, it is better if you install your own mongodb database and pass the mongodb connection string URI as "mongodb" option to the server.
 
 ## Users
 ___
