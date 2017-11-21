@@ -109,13 +109,15 @@ option | type | description | default
 name | String | Server name | domapic
 port | Number | Http port | 53152
 ssl | Boolean | Secured http server | true
+mongodb | String | MongoDB connection string URI | 
+autosearch | String | Range of IPs in which the server will look to restore paired services connections | 192.168.1.1-255
 
 ## Database
 ___
 
 Domapic can use [Nedb](https://github.com/louischatriot/nedb) or [MongoDB](https://www.mongodb.com/) as database.
 
-By default, Domapic will use Nedb as database if not "mongodb" option is provided. This was made for making simpler the installation process, and to make able to use it in environments in which you can´t use MongoDB. But, it is better if you install your own mongodb database and pass the mongodb connection string URI as "mongodb" option to the server.
+By default, Domapic will use Nedb as database if not "mongodb" option is provided. This was made for making simpler the installation process, and to make able to use it in environments in which you can´t use MongoDB. But, it is better if you install your own MongoDB database and pass the mongodb connection string URI as "mongodb" option to the server.
 
 ## Users
 ___
