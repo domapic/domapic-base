@@ -50,32 +50,62 @@ npm install domapic -g
 
 > Note: Domapic can be installed locally without the -g flag as well, but the global installation is recommended to make easier the use of the provided CLI.
 
-If you have to use "sudo" to install the package globally, use the --unsafe-perms flag in order to start the server pointing to the right user home path for writing configurations, storage, etc.
-
 ```shell
 sudo npm install domapic -g --unsafe-perms
 ```
+
+> Note: If you have to use "sudo" to install the package globally, use the --unsafe-perms flag in order to start the server pointing to the right user home path for writing configurations, storage, etc.
 
 //TODO, write here about MongoDB installation. (optional, if finally I use NEDB as default database, in order to simplify the installation)
 
 ## Usage
 
-### Usage trough CLI
-//TODO, configuration with CLI (the CLI should be able to restart the process)
-
-### Usage Without CLI
+### Start the server
 
 ```shell
-npm start -- --options
+domapic start my-home
 ```
 
-//TODO, test if embedded PM2 works as expected, then describe here how to see logs, status, etc... (For tests, delete PM2 from local, then start the server locally)
+You can pass options to the start command:
+
+```shell
+domapic start my-home --port=8090
+```
+
+> Note: The CLI will start automatically a PM2 process with your server name ("my-home", in the example above)
+
+Or, without using CLI:
+
+```shell
+npm start -- --name=my-home --port=8090
+```
+
+### Stop the server
+
+```shell
+domapic stop my-home
+```
+
+In the examples above, "my-home" refers to your controller instance name. If not provided, "domapic" will be the default value. Any number of instances of the server with different aliases can be started at the same time.
+
+## Configuration
+
+When the server is started, a file is created at *~/.domapic/[my-name]/config.json.* You can edit the options directly in that configuration file, and restart the server.
+
+> Note: The server name is related to the folder in which the configuration is saved, so it cannot be modified in the configuration file itself. If you want to change the name of your server, rename the configuration folder, and restart the server with the new name option.
 
 ## Options
 
-//TODO, table with all options
+option | type | description | default
+--- | --- | --- | ---: 
+name | String | Server name | domapic
+port | Number | Http port | 53152
+ssl | Boolean | Secured http server | true
 
-//TODO, write about where options are saved, and how can be edited directly (restarting the server, of course)
+## Users
+
+//TODO, test if embedded PM2 works as expected, then describe here how to see logs, status, etc... (For testing it, delete PM2 from local, then start the server locally)
+
 
 ## Install services
 
