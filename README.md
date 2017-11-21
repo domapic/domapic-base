@@ -1,6 +1,6 @@
 # Domapic
 
-DOMotic API services Controller
+**DOM**otic **API** services **C**ontroller
 
 Controller server for Domapic services.
 
@@ -19,24 +19,27 @@ Controller server for Domapic services.
 //TODO, it is too long. Add an well descriptor image, bolds, etc...
 
 ## What are Domapic services?
+___
 
-Domapic services are domotic (or whatever other) services installed in the same or in another machine, developed in nodejs or any other technology (for the moment, only nodejs base service package is provided), that automatically connect with this controller through API, pair with it, and can receive orders (ACTIONS) from it, and communicate events to it (EVENTS), to inform that one of its STATES has changed.
+Domapic services are domotic (or whatever other) services installed in the same or in another machine, developed in nodejs or any other technology (for the moment, only nodejs base service package is provided), that automatically connect with this controller through API, pair with it, and can receive orders (**ACTIONS**) from it, and communicate events to it (**EVENTS**), to inform that one of its **STATES** has changed.
 
-You can interact directly with the services APIs to get STATES, listen EVENTS, or send ACTIONS to them, but it is better to use this package as a CONTROLLER. Using it, you only have to communicate with the CONTROLLER api to control all services, and you can make interact all services automatically setting up AUTOMATISMs in the controller.
+You can **interact directly with the controller to get STATES, listen EVENTS, or send ACTIONS to all paired services**, but you can also interact directly with any of the services. You can **make interact all services automatically setting up AUTOMATISMs** in the controller.
 
 So, you can install Domapic services in your machine, in your server, in a Raspberry pi, inside or outside your local network... and set them all to use the same controller (installed locally or remote, as well). Then, you can program your own AUTOMATISMs using the controller API, or using a domapic UI plugin, or even using Homekit plugin, Slack plugin, IFTT plugin or whatever other domapic plugin. You will receive notifications when the services STATES change, or you cand send ACTIONS to any service, through the controller API, interfaces, or plugins.
 
 If it does not exists, develop your own plugin or service, and publish it with the suffix "domapic-service", or "domapic-plugin".
 
 ## Why?
+___
 
 Because there are lots of domotic hardwares and softwares in the market right now, and new Iot gadgets are being launched every minute. This is a very interesting scenario, but every provider has it owns mobile app, its own communication standard, or is betting for one or for another candidate for being a domotic standard platform. So, this gadget is not compatible with Homekit, but it is with Samsung Smart Things, the other is the inverse, the other is only with Somfy, the other is not compatible with any other, etc. If you want to control your full house, you´ll have to bet for only one platform, or you´ll have to install hundred of different applications. And making all interact with the others in a simple way, is almost impossibe.
 
-Then, I decided to develop a "base wrapper" for all home automation gadgets, which was easy to adapt to any requirement, and exposed its features in a standard way, with few lines of code. The Domapic Controller, which provides an unified entry point to all paired services, and can be programmed to make them interact automatically, should be extensible with more complex custom features, and this is for what plugins are intended.
+Then, I decided to develop a **"base wrapper" for all home automation gadgets, which was easy to adapt to any requirement, and exposed its features in a standard way, with few lines of code**. The Domapic Controller, which provides an unified entry point to all paired services, and can be programmed to make them interact automatically, should be extensible with more complex custom features, and this is for what plugins are intended.
 
-And, of course, you can develop your own robotic or domotic gadgets, using Raspberry, Arduino, etc. and make them interact with Domapic in the same simple way.
+And, of course, you can develop your own robotic or domotic gadgets, deploy it to a Raspberry, Arduino, or whatever, and make them interact with Domapic in the same simple way.
 
 ## Suggested uses
+___
 
 //TODO, write suggested uses (examples), mention IFTT.. SIRI, etc..
 
@@ -56,9 +59,8 @@ sudo npm install domapic -g --unsafe-perms
 
 > Note: If you have to use "sudo" to install the package globally, use the --unsafe-perms flag in order to start the server pointing to the right user home path for writing configurations, storage, etc.
 
-//TODO, write here about MongoDB installation. (optional, if finally I use NEDB as default database, in order to simplify the installation)
-
 ## Usage
+___
 
 ### Start the server
 
@@ -80,6 +82,17 @@ Or, without using CLI:
 npm start -- --name=my-home --port=8090
 ```
 
+## Database
+___
+
+Domapic can use Nedb or MongoDB.
+
+By default, Domapic will use Nedb as database if not "mongodb" option is provided. This was made for making simpler the installation process, and to make able to use it in environments in which you can´t use MongoDB. But, it is better if you install your own mongodb database and pass the mongodb connection string URI as "mongodb" option to the server.
+
+```shell
+domapic start my-home --port=8090 --mongodb=mongodb://localhost/domapic
+```
+
 ### Stop the server
 
 ```shell
@@ -89,12 +102,14 @@ domapic stop my-home
 In the examples above, "my-home" refers to your controller instance name. If not provided, "domapic" will be the default value. Any number of instances of the server with different aliases can be started at the same time.
 
 ## Configuration
+___
 
 When the server is started, a file is created at *~/.domapic/[my-name]/config.json.* You can edit the options directly in that configuration file, and restart the server.
 
-> Note: The server name is related to the folder in which the configuration is saved, so it cannot be modified in the configuration file itself. If you want to change the name of your server, rename the configuration folder, and restart the server with the new name option.
+> Note: The server name is related to the folder in which the configuration is saved, so it can not be modified in the configuration file itself. If you want to change the name of your server, rename the configuration folder, and restart the server with the new name option.
 
 ## Options
+___
 
 option | type | description | default
 --- | --- | --- | ---: 
@@ -103,11 +118,12 @@ port | Number | Http port | 53152
 ssl | Boolean | Secured http server | true
 
 ## Users
+___
 
 //TODO, test if embedded PM2 works as expected, then describe here how to see logs, status, etc... (For testing it, delete PM2 from local, then start the server locally)
 
-
 ## Install services
+___
 
 //TODO, link to the domapic-service package. Explain that all services should extend from it, so the guide should be valid for all services installation and configuration process.
 
