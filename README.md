@@ -20,7 +20,6 @@ Controller server for Domapic services.
 ___
 
 * [What are Domapic services?](#what-are-domapic-services)
-* [Why?](#why)
 * [Installation](#installation)
 * [Usage](#usage)
 	* [Start the server](#start-the-server)
@@ -31,6 +30,7 @@ ___
 * [Users](#users)
 * [Install services](#install-services)
 * [Install plugins](#install-plugins)
+* [Why?](#why)
 
 ## What are Domapic services?
 ___
@@ -45,15 +45,6 @@ If it does not exists, develop your own plugin or service, and publish it with t
 
 //TODO, add schema image
 
-## Why?
-___
-
-Because there are lots of domotic hardwares and softwares in the market right now, and new Iot gadgets are being launched every minute. This is a very interesting scenario, but every provider has it owns mobile app, its own communication standard, or is betting for one or for another candidate for being a domotic standard platform. So, this gadget is not compatible with Homekit, but it is with Samsung Smart Things, the other is the inverse, the other is only with Somfy, the other is not compatible with any other, etc. If you want to control your full house, you´ll have to bet for only one platform, or you´ll have to install hundred of different applications. And making all interact with the others in a simple way, is almost impossibe.
-
-Then, I decided to develop a **"base wrapper" for all home automation gadgets, which was easy to adapt to any requirement, and exposed its features in a standard way, with few lines of code**. The Domapic Controller, which provides an unified entry point to all paired services, and can be programmed to make them interact automatically, should be extensible with more complex custom features, and this is for what plugins are intended.
-
-And, of course, you can develop your own robotic or domotic gadgets, deploy it to a Raspberry, Arduino, or whatever, and make them interact with Domapic in the same simple way.
-
 ## Suggested uses
 ___
 
@@ -62,13 +53,13 @@ ___
 ## Installation
 ___
 
-> Note: To run the next commands, [Node.js](https://nodejs.org) and [npm](https://www.npmjs.com) must be installed.
+To run the next commands, [Node.js](https://nodejs.org) and [npm](https://www.npmjs.com) must be installed.
 
 ```shell
 npm install domapic -g
 ```
 
-> Note: Domapic can be installed locally without the -g flag as well, but the global installation is recommended to make easier the use of the provided CLI.
+Domapic can be installed locally without the -g flag as well, but the global installation is recommended to make easier the use of the provided CLI.
 
 ```shell
 sudo npm install domapic -g --unsafe-perms
@@ -91,7 +82,7 @@ You can pass options to the start command:
 domapic start SERVERNAME --port=8090
 ```
 
-To show all CLI available commands run:
+To get help about all CLI available commands and options run:
 
 ```shell
 domapic --help
@@ -99,9 +90,9 @@ domapic --help
 domapic COMMAND --help
 ```
 
-> Note: The CLI will start automatically a [PM2](http://pm2.keymetrics.io/) process with your server name. You can stop the server process, read the server process logs, etc., using the PM2 commands, for further info, please [read the docs](http://pm2.keymetrics.io/docs/usage/quick-start/).
+> Note: The CLI will start automatically a [PM2](http://pm2.keymetrics.io/) process with your server name. Using PM2 commands you can stop the server process, read the server process logs, etc. For further info, please [read the PM2 docs](http://pm2.keymetrics.io/docs/usage/quick-start/).
 
-Or, without using CLI:
+To start the server without using CLI:
 
 ```shell
 npm start -- --name=SERVERNAME --port=8090
@@ -117,12 +108,12 @@ domapic start SERVERNAME --port=8090 --mongodb=mongodb://localhost/domapic
 domapic stop SERVERNAME
 ```
 
-In the examples above, "my-home" refers to your controller instance name. If not provided, "domapic" will be the default value. Any number of instances of the server with different aliases can be started at the same time.
+In the examples above, SERVERNAME should be replaced with your desired controller instance name. If not provided, "domapic" will be the default value. Any number of instances of the server with different aliases can be started at the same time.
 
 ## Configuration
 ___
 
-When the server is started, a file is created at *~/.domapic/[my-name]/config.json.* You can edit the options directly in that configuration file, and restart the server.
+When the server is started, a file is created at *~/.domapic/SERVERNAME/config.json.* You can edit the options directly in that configuration file, and restart the server.
 
 > Note: The server name is related to the folder in which the configuration is saved, so it can not be modified in the configuration file itself. If you want to change the name of your server, rename the configuration folder, and restart the server with the new name option.
 
@@ -147,7 +138,7 @@ By default, Domapic will use Nedb as database if no "mongodb" option is provided
 ## Users
 ___
 
-All the APIs of the Domapic system requires JSON Web Token authentication.
+All the APIs of the Domapic system requires authentication using JSON Web Token.
 
 The Domapic Controller implements a role-based access control. Controller roles are:
 
@@ -158,7 +149,7 @@ plugin | Domapic plugins | Interact with all services, interact with controller 
 user | Standard users | Interact with all services
 admin | System administrators | Full access
 
-To make easier the configuration and connection between services and the controller, all services share the same password. Despite this, each one will added as a different user when the pairing is executed. Another password is shared between all plugins.
+To make easier the configuration and connection between services and the controller, all services share the same password. Despite this, each one will be added as a different user when the pairing is executed. Another password is shared between all plugins.
 
 The admin and users has it own password each one, and has to be defined when the user is added.
 
@@ -189,7 +180,7 @@ domapic userdel USERNAME
 
 > NOTE: All the user-related commands above will only apply to *user* or *admin* roles. The users for *service* and *plugin* roles are added automatically when pairing with them is executed.
 
-As mentioned above, all users with *service* role, and all users with *plugin* role share the password. You can change them with the commands:
+You can change the passwords for *service* and *plugin* roles with the commands:
 
 ```shell
 domapic rolemod ROLENAME -p=PASSWORD
@@ -198,7 +189,7 @@ domapic rolemod ROLENAME -p=PASSWORD
 npm run rolemod -- --name=ROLENAME -p=PASSWORD
 ```
 
-> NOTE: This command will only apply to *service* or *plugin* roles, that are the unique which share passwords for all users.
+> NOTE: This command will only apply to *service* or *plugin* roles, which share passwords for all related users.
 
 ## Install services
 ___
@@ -207,6 +198,15 @@ ___
 
 ## Install plugins
 //TODO, link to the domapic-plugin package. Explain that all plugins should extend from it...
+
+## Why?
+___
+
+Because there are lots of domotic hardwares and softwares in the market right now, and new Iot gadgets are being launched every minute. This is a very interesting scenario, but every provider has it owns mobile app, its own communication standard, or is betting for one or for another candidate for being a domotic standard platform. So, this gadget is not compatible with Homekit, but it is with Samsung Smart Things, the other is the inverse, the other is only with Somfy, the other is not compatible with any other, etc. If you want to control your full house, you´ll have to bet for only one platform, or you´ll have to install hundred of different applications. And making all interact with the others in a simple way, is almost impossibe.
+
+Then, I decided to develop a **"base wrapper" for all home automation gadgets, which was easy to adapt to any requirement, and exposed its features in a standard way, with few lines of code**. The Domapic Controller, which provides an unified entry point to all paired services, and can be programmed to make them interact automatically, should be extensible with more complex custom features, and this is for what plugins are intended.
+
+And, of course, you can develop your own robotic or domotic gadgets, deploy it to a Raspberry, Arduino, or whatever, and make them interact with Domapic in the same simple way.
 
 [circleci-image]: https://circleci.com/bb/domapic/domapic.svg?style=shield&circle-token=3e836b50c79fdfe6bcaa2f4879037443e2916b44
 [circleci-url]: https://circleci.com/bb/domapic/domapic
