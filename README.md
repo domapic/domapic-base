@@ -82,31 +82,39 @@ ___
 ### Start the server
 
 ```shell
-domapic start my-home
+domapic start SERVERNAME
 ```
 
 You can pass options to the start command:
 
 ```shell
-domapic start my-home --port=8090
+domapic start SERVERNAME --port=8090
 ```
 
-> Note: The CLI will start automatically a [PM2](http://pm2.keymetrics.io/) process with your server name ("my-home", in the example above). You can stop the server process, read the server process logs, etc., using the PM2 commands, for further info, please [read the docs](http://pm2.keymetrics.io/docs/usage/quick-start/).
+To show all CLI available commands run:
+
+```shell
+domapic --help
+#or
+domapic COMMAND --help
+```
+
+> Note: The CLI will start automatically a [PM2](http://pm2.keymetrics.io/) process with your server name. You can stop the server process, read the server process logs, etc., using the PM2 commands, for further info, please [read the docs](http://pm2.keymetrics.io/docs/usage/quick-start/).
 
 Or, without using CLI:
 
 ```shell
-npm start -- --name=my-home --port=8090
+npm start -- --name=SERVERNAME --port=8090
 ```
 
 ```shell
-domapic start my-home --port=8090 --mongodb=mongodb://localhost/domapic
+domapic start SERVERNAME --port=8090 --mongodb=mongodb://localhost/domapic
 ```
 
 ### Stop the server
 
 ```shell
-domapic stop my-home
+domapic stop SERVERNAME
 ```
 
 In the examples above, "my-home" refers to your controller instance name. If not provided, "domapic" will be the default value. Any number of instances of the server with different aliases can be started at the same time.
@@ -134,13 +142,63 @@ ___
 
 Domapic can use [Nedb](https://github.com/louischatriot/nedb) or [MongoDB](https://www.mongodb.com/) as database.
 
-By default, Domapic will use Nedb as database if not "mongodb" option is provided. This was made for making simpler the installation process, and to make able to use it in environments in which you can´t use MongoDB. But, it is better if you install your own MongoDB database and pass the mongodb connection string URI as "mongodb" option to the server.
+By default, Domapic will use Nedb as database if no "mongodb" option is provided. This was made for making simpler the installation process, and to make able to use it in environments in which you can´t use MongoDB. But, it is better if you install your own MongoDB database and pass the mongodb connection string URI as "mongodb" option to the server.
 
 ## Users
 ___
 
-//TODO, add here how to add users, set passwords, etc...
+All the APIs of the Domapic system requires JSON Web Token authentication.
 
+The Domapic Controller implements a role-based access control. Controller roles are:
+
+role | used by | permissions
+--- | --- | --- 
+service | Domapic services | Dispatch own events, update own configuration
+plugin | Domapic plugins | Interact with all services, interact with controller API points implemented for plugins.
+user | Standard users | Interact with all services
+admin | System administrators | Full access
+
+To make easier the configuration and connection between services and the controller, all services share the same password. Despite this, each one will added as a different user when the pairing is executed. Another password is shared between all plugins.
+
+The admin and users has it own password each one, and has to be defined when the user is added.
+
+By default, there is an user with name "admin", and password "12345". The passwords for the *service* and *plugin* roles are 12345 too.
+You can add your own users, or modify passwords using the CLI:
+
+```shell
+domapic useradd USERNAME -p=PASSWORD -r=admin
+
+#or...
+npm run useradd -- --name=USERNAME -p=PASSWORD -r=admin
+```
+
+If you want to change the role or password of an existing user using the CLI:
+
+```shell
+domapic usermod USERNAME -p=PASSWORD
+
+#or...
+npm run usermod -- --name=USERNAME -r=user
+```
+
+For deleting an existing user:
+
+```shell
+domapic userdel USERNAME
+```
+
+> NOTE: All the user-related commands above will only apply to *user* or *admin* roles. The users for *service* and *plugin* roles are added automatically when pairing with them is executed.
+
+As mentioned above, all users with *service* role, and all users with *plugin* role share the password. You can change them with the commands:
+
+```shell
+domapic rolemod ROLENAME -p=PASSWORD
+
+#or...
+npm run rolemod -- --name=ROLENAME -p=PASSWORD
+```
+
+> NOTE: This command will only apply to *service* or *plugin* roles, that are the unique which share passwords for all users.
 
 ## Install services
 ___
