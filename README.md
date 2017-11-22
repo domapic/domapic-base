@@ -90,9 +90,9 @@ domapic --help
 domapic COMMAND --help
 ```
 
-> Note: The CLI will start automatically a [PM2](http://pm2.keymetrics.io/) process with your server name. Using PM2 commands you can stop the server process, read the server process logs, etc. For further info, please [read the PM2 docs](http://pm2.keymetrics.io/docs/usage/quick-start/).
+> Note: The CLI will start automatically a [PM2](http://pm2.keymetrics.io/) process with your server instance name. Using PM2 commands you can stop the server process, read the server process logs, etc. For further info, please [read the PM2 docs](http://pm2.keymetrics.io/docs/usage/quick-start/).
 
-To start the server without using CLI:
+To start the controller without using CLI:
 
 ```shell
 npm start -- --name=SERVERNAME --port=8090
@@ -113,7 +113,7 @@ In the examples above, SERVERNAME should be replaced with your desired controlle
 ## Configuration
 ___
 
-When the server is started, a file is created at *~/.domapic/SERVERNAME/config.json.* You can edit the options directly in that configuration file, and restart the server.
+When the controller server is started, a file is created at *~/.domapic/SERVERNAME/config.json.* You can edit the options directly in that configuration file, and restart the server.
 
 > Note: The server name is related to the folder in which the configuration is saved, so it can not be modified in the configuration file itself. If you want to change the name of your server, rename the configuration folder, and restart the server with the new name option.
 
@@ -122,11 +122,11 @@ ___
 
 option | type | description | default
 --- | --- | --- | ---: 
-name | String | Server name | domapic
+name | String | Controller server name | domapic
 port | Number | Http port | 53152
 ssl | Boolean | Secured http server | true
 mongodb | String | MongoDB connection string URI | 
-autosearch | String | Range of IPs in which the server will look to restore paired services connections | 192.168.1.1-255
+autosearch | String | Range of IPs in which the controller will look to restore paired services connections | 192.168.1.1-255
 
 ## Database
 ___
@@ -191,18 +191,43 @@ npm run rolemod -- --name=ROLENAME -p=PASSWORD
 
 > NOTE: This command will only apply to *service* or *plugin* roles, which share passwords for all related users.
 
-## Install services
+## Install services or plugins
 ___
 
-//TODO, link to the domapic-service package. Explain that all services should extend from it, so the guide should be valid for all services installation and configuration process.
+Domapic services or plugins can be developed in any technology if the API is compatible, so, there should not be an unique guide of how to install or to start them. But, for nodejs, two packages called **domapic-service** and **domapic-plugin** are published in NPM to be used as "base" for that domapic pieces. So, for packages extending these "standard" bases, you can follow these basic instructions:
 
-## Install plugins
-//TODO, link to the domapic-plugin package. Explain that all plugins should extend from it...
+```shell
+#Install your desired service
+
+npm i example-domapic-service
+#or
+sudo npm i example-domapic-service --unsafe-perm
+
+#Start it
+npm start -- --name=example --controllerhost=192.168.1.50 --password=12345
+```
+
+If no *controllerhost* is provided, the service will search automatically for the controller in a range of IPs (specifiable with the *autosearch* option).
+
+A key will be printed when the service has found the controller. You´ll need to insert that key to allow the pairing in the controller. Use the controller CLI to allow the pairing if you have not already installed an user interface plugin:
+
+```shell
+#In the domapic controller:
+domapic pair example --key=PROVIDED-SERVICE-KEY
+```
+
+Now you have already available the service in the controller, and you can start to interact with it, or program automatisms to make it interact automatically with other services.
+
+To configure it, a file is created at *~/.domapic/SERVICENAME/config.json.* You can edit the options directly in that configuration file, and restart the service.
+
+> NOTE: Read the documentation of each package before install it. This is only a general guide valid for packages developed using the *domapic-service* or *domapic-plugin* base.
+
+For further info, please read the [*domapic-service*] or the [*domapic-plugin*] packages docs.
 
 ## Why?
 ___
 
-Because there are lots of domotic hardwares and softwares in the market right now, and new Iot gadgets are being launched every minute. This is a very interesting scenario, but every provider has it owns mobile app, its own communication standard, or is betting for one or for another candidate for being a domotic standard platform. So, this gadget is not compatible with Homekit, but it is with Samsung Smart Things, the other is the inverse, the other is only with Somfy, the other is not compatible with any other, etc. If you want to control your full house, you´ll have to bet for only one platform, or you´ll have to install hundred of different applications. And making all interact with the others in a simple way, is almost impossibe.
+Because there are lots of domotic hardwares and softwares in the market right now, and new Iot gadgets are being launched every minute. This is a very interesting scenario, but every provider has it owns mobile app, its own communication standard, or is betting for one or for another candidate for being a domotic standard platform. So, this gadget is not compatible with Homekit, but it is with Samsung Smart Things, the other is the inverse, the other is only with Somfy, the other is not compatible with any other, etc. If you want to control your full house, you´ll have to bet for only one platform, and buy only gadgets compatible with that platform, or you´ll have to install hundred of different applications. And making all interact with the others in a simple way, is almost impossibe.
 
 Then, I decided to develop a **"base wrapper" for all home automation gadgets, which was easy to adapt to any requirement, and exposed its features in a standard way, with few lines of code**. The Domapic Controller, which provides an unified entry point to all paired services, and can be programmed to make them interact automatically, should be extensible with more complex custom features, and this is for what plugins are intended.
 
