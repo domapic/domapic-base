@@ -218,11 +218,11 @@ domapic pair example --key=PROVIDED-SERVICE-KEY
 
 Now you have already available the service in the controller, and you can start to interact with it, or program automatisms to make it interact automatically with other services.
 
-To configure it, a file is created at *~/.domapic/SERVICENAME/config.json.* You can edit the options directly in that configuration file, and restart the service.
-
-> NOTE: Read the documentation of each package before install it. This is only a general guide valid for packages developed using the *domapic-service* or *domapic-plugin* base.
+To configure the service, a file is created at *~/.domapic/SERVICENAME/config.json.* You can edit the options directly in that configuration file, and restart the service.
 
 For further info, please read the [*domapic-service*] or the [*domapic-plugin*] packages docs.
+
+> NOTE: Read the documentation of each package before install it. This is only a general guide valid for packages developed using the *domapic-service* or *domapic-plugin* base.
 
 ## Why?
 ___
