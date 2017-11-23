@@ -4,6 +4,10 @@
 
 Controller server for Domapic services.
 
+>	**_One Server to rule them all, One Server to find them,_**
+>
+>	**_One Server to bring them all, and in the automatisms bind them_**
+
 [![Build status][circleci-image]][circleci-url]
 [![Coverage Status][coverall-image]][coverall-url]
 [![js-standard-style][standard-image]][standard-url]
@@ -59,10 +63,6 @@ ___
 * Turn red a Hue bulb when a code repository build has failed.
 
 **Summarizing... Control and make interact together Homekit, gadgets from any home automation provider, cloud services, social network services, chat services, IFTT, local softwares, your own developed gadgets or bots... imagination is the limit.**
-
->	**_One Service to rule them all, One Service to find them,_**
->
->	**_One Service to bring them all, and in the automatisms bind them_**
 
 ## Installation
 ___
