@@ -98,10 +98,6 @@ To start the controller without using CLI:
 npm start -- --name=SERVERNAME --port=8090
 ```
 
-```shell
-domapic start SERVERNAME --port=8090 --mongodb=mongodb://localhost/domapic
-```
-
 ### Stop the server
 
 ```shell
@@ -134,6 +130,10 @@ ___
 Domapic can use [Nedb](https://github.com/louischatriot/nedb) or [MongoDB](https://www.mongodb.com/) as database.
 
 By default, Domapic will use Nedb as database if no "mongodb" option is provided. This was made for making simpler the installation process, and to make able to use it in environments in which you can´t use MongoDB. But, it is better if you install your own MongoDB database and pass the mongodb connection string URI as "mongodb" option to the server.
+
+```shell
+domapic start SERVERNAME --port=8090 --mongodb=mongodb://localhost/domapic
+```
 
 ## Users
 ___
