@@ -34,7 +34,7 @@ ___
 ## What is Domapic?
 ___
 
-Domapic is the name of a system that controls and automatizes services based in an standarized API. This package contains the Controller Server for Domapic services and plugins:
+Domapic is the name of a system that controls and automatizes services based in an standarized API. This package contains the Controller Server for Domapic systems:
 
 >	**_One Server to rule them all, One Server to find them,_**
 >
