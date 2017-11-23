@@ -2,12 +2,6 @@
 
 **DOM**otic **API** services **C**ontroller
 
-Controller server for Domapic services.
-
->	**_One Server to rule them all, One Server to find them,_**
->
->	**_One Server to bring them all, and in the automatisms bind them_**
-
 [![Build status][circleci-image]][circleci-url]
 [![Coverage Status][coverall-image]][coverall-url]
 [![js-standard-style][standard-image]][standard-url]
@@ -23,6 +17,7 @@ Controller server for Domapic services.
 ## Table of Contents
 ___
 
+* [What is Domapic?](#what-is-domapic)
 * [What are Domapic services?](#what-are-domapic-services)
 * [Installation](#installation)
 * [Usage](#usage)
@@ -35,6 +30,15 @@ ___
 * [Install services](#install-services)
 * [Install plugins](#install-plugins)
 * [Why?](#why)
+
+## What is Domapic?
+___
+
+Domapic is the name of a system that controls and automatizes services based in an standarized API. This package contains the Controller Server for Domapic services and plugins:
+
+>	**_One Server to rule them all, One Server to find them,_**
+>
+>	**_One Server to bring them all, and in the automatisms bind them_**
 
 ## What are Domapic services?
 ___
