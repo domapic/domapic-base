@@ -48,7 +48,21 @@ If it does not exists, develop your own plugin or service, and publish it with t
 ## Suggested uses
 ___
 
-//TODO, write suggested uses (examples), mention IFTT.. SIRI, etc..
+* When there is an event called "holidays" in google calendar, shut down the heating and all the lights. Simulate my presence with lights and blinds movements. Start the heating automatically 3 hours before the event finish. 
+* At the sunset, light on your garden lights only when you are out, sutdown automatically if you go inside.
+* Say "Siri, open the car door" -> Will open the fence, the garage door, and switch on the lights if it is night.
+* Send a message to a Slack channel, and an sms to my phone when someone enter to the house and I´m not inside. Start recording the webcams.
+* Switch on the automatic watering if it doesn´t rain for more than 3 days.
+* Send me an sms if the electric supply goes out for more than 1 hour.
+* Restart the router if internet connection has shut down. Send me an sms if it doesn't come back.
+* Switch off all lights sending a message through Slack.
+* Turn red a Hue bulb when a code repository build has failed.
+
+**Summarizing... Control and make interact together Homekit, gadgets from any home automation provider, cloud services, social network services, chat services, IFTT, local softwares, your own developed gadgets or bots... imagination is the limit.**
+
+>	**_One Service to rule them all, One Service to find them,_**
+>
+>	**_One Service to bring them all, and in the automatisms bind them_**
 
 ## Installation
 ___
@@ -204,7 +218,7 @@ npm i example-domapic-service
 sudo npm i example-domapic-service --unsafe-perm
 
 #Start it
-npm start -- --name=example --controllerhost=192.168.1.50 --password=12345
+npm start -- --name=SERVICENAME --controllerhost=192.168.1.50 --password=12345
 ```
 
 If no *controllerhost* is provided, the service will search automatically for the controller in a range of IPs (specifiable with the *autosearch* option).
@@ -213,7 +227,7 @@ A key will be printed when the service has found the controller. You´ll need to
 
 ```shell
 #In the domapic controller:
-domapic pair example --key=PROVIDED-SERVICE-KEY
+domapic pair SERVICENAME --key=PROVIDED-SERVICE-KEY
 ```
 
 Now you have already available the service in the controller, and you can start to interact with it, or program automatisms to make it interact automatically with other services.
