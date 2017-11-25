@@ -1,8 +1,6 @@
 'use strict'
 
-const Core = function () {
-  return function () {
-  }
-}
+const start = require('./cli/commands/start')
+const args = require('./lib/utils/arguments')
 
-module.exports = new Core()
+start.command(args.getOptions(start.options))

@@ -17,16 +17,25 @@
     "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha",
     "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
-  "dependencies": {},
+  "dependencies": {
+    "yargs": "10.0.3",
+    "bluebird": "3.5.1",
+    "lodash": "4.17.4"
+  },
   "devDependencies": {
+    "chai": "4.1.2",
+    "chai-as-promised": "7.1.1",
     "coveralls": "3.0.0",
+    "dirty-chai": "2.0.1",
     "istanbul": "0.4.5",
     "mocha": "4.0.1",
     "mocha-standard": "1.0.0",
+    "sinon": "4.1.2",
+    "sinon-chai": "2.14.0",
     "standard": "10.0.3"
-  }, 
-  "engines" : {
-    "node" : "8.9.1",
+  },
+  "engines": {
+    "node": "8.9.1",
     "npm": "5.5.1"
   },
   "author": "Javier Brea",

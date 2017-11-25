@@ -8,4 +8,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Basic structure
 - Tests infrastructure
+- CI tools configurations
 
