@@ -114,6 +114,8 @@ To start the controller without using CLI:
 
 ```shell
 npm start -- --name=SERVERNAME --port=8090
+#or
+node server.js --name=SERVERNAME --port=3234
 ```
 
 ### Stop the server
