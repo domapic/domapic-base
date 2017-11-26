@@ -1,19 +1,19 @@
 const test = require('../test')
 const mocks = require('../mocks')
 
-const core = require('../../core')
-
 test.describe('Domapic CLI index', () => {
+  let argumentsStub
+
   test.before(() => {
-    test.sinon.stub(core.arguments, 'registerCommands')
-    require('../../cli/domapic.js')
+    argumentsStub = new mocks.arguments.Stub()
+    require('../../cli/index')
   })
 
   test.after(() => {
-    core.arguments.registerCommands.restore()
+    argumentsStub.restore()
   })
 
   test.it('should register commands in core arguments handler', () => {
-    test.expect(core.arguments.registerCommands).to.have.been.calledWith(mocks.cli.commands)
+    test.expect(argumentsStub.registerCommands).to.have.been.calledWith(mocks.cli.commands)
   })
 })

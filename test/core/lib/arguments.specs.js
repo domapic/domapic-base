@@ -31,9 +31,11 @@ test.describe('Core Arguments', () => {
       })
     }
   }
-  let mock
+  let args, mock
 
   test.beforeEach(() => {
+    args = new core.Arguments(yargs)
+
     test.sinon.stub(yargs, 'strict').returns(yargs)
     test.sinon.stub(yargs, 'demandCommand')
     mock = test.sinon.mock(yargs)
@@ -47,7 +49,7 @@ test.describe('Core Arguments', () => {
 
   test.describe('getOptions', () => {
     const callMethod = function () {
-      return core.arguments.getOptions(start.options, yargs)
+      return args.getOptions(start.options, yargs)
     }
     test.it('should call yargs to get the defined value for each option', () => {
       mock.expects('option').exactly(optionsLength)
@@ -65,7 +67,7 @@ test.describe('Core Arguments', () => {
 
   test.describe('registerCommands', () => {
     const callMethod = function () {
-      return core.arguments.registerCommands(mocks.cli.commands, yargs)
+      return args.registerCommands(mocks.cli.commands, yargs)
     }
 
     test.it('should demand the user the command to execute', () => {
