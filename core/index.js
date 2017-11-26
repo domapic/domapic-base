@@ -1,7 +1,9 @@
 'use strict'
 
-const Config = require('./lib/config')
+const args = require('./lib/arguments')
+const Log = require('./lib/log')
 
-module.exports = function (options) {
-  return new Config(options)
+module.exports = {
+  Log: Log,
+  arguments: args
 }

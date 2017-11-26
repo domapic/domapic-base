@@ -1,32 +1,33 @@
 const test = require('./test')
 
+const core = require('../core')
+const server = require('../lib/server')
 const start = require('../cli/commands/start')
-const args = require('../lib/utils/arguments')
 
-test.describe('Start server through package index', () => {
+test.describe('Package index', () => {
   const fooOptions = {
     name: 'fooName',
     port: 34000
   }
 
   test.before(() => {
-    test.sinon.stub(start, 'command')
-    test.sinon.stub(args, 'getOptions').returns(fooOptions)
+    test.sinon.stub(server, 'start')
+    test.sinon.stub(core.arguments, 'getOptions').returns(fooOptions)
     require('../server.js')
   })
 
   test.after(() => {
-    start.command.restore()
-    args.getOptions.restore()
+    server.start.restore()
+    core.arguments.getOptions.restore()
   })
 
-  test.it('should call to get the start command options from arguments', () => {
-    test.expect(args.getOptions).to.have.been.calledWith(start.options)
-    test.expect(args.getOptions).to.have.been.calledOnce()
+  test.it('should call to get options from arguments', () => {
+    test.expect(core.arguments.getOptions).to.have.been.calledWith(start.options)
+    test.expect(core.arguments.getOptions).to.have.been.calledOnce()
   })
 
-  test.it('should start the server with arguments options', () => {
-    test.expect(start.command).to.have.been.calledWith(fooOptions)
-    test.expect(args.getOptions).to.have.been.calledOnce()
+  test.it('should call to start the server with arguments options', () => {
+    test.expect(server.start).to.have.been.calledWith(fooOptions)
+    test.expect(core.arguments.getOptions).to.have.been.calledOnce()
   })
 })

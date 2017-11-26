@@ -1,15 +1,16 @@
 'use strict'
 
-// const Core = require('../../core/index')
+const core = require('../../core')
+const enums = require('../../lib/enums/log')
 
 const start = function (options) {
-  // const core = new Core(options)
-  console.log('starting')
-  console.log(options)
+  const log = new core.Log()
+  log.info(enums['starting-server-pm2'])
+  log.data(options)
 }
 
 module.exports = {
-  describe: '',
+  describe: 'Start the domapic controller server',
   cli: 'start [name]',
   options: {
     port: {

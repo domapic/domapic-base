@@ -108,13 +108,15 @@ domapic --help
 domapic COMMAND --help
 ```
 
+All CLI available commands can be executed as well as NPM commands from local folder:
+
+* domapic start SERVERNAME [--options] = npm run start -- --name=SERVERNAME [--options]
+
 > Note: The CLI will start automatically a [PM2](http://pm2.keymetrics.io/) process with your server instance name. Using PM2 commands you can stop the server process, read the server process logs, etc. For further info, please [read the PM2 docs](http://pm2.keymetrics.io/docs/usage/quick-start/).
 
-To start the controller without using CLI:
+To start the controller without using PM2:
 
 ```shell
-npm start -- --name=SERVERNAME --port=8090
-#or
 node server.js --name=SERVERNAME --port=3234
 ```
 
@@ -122,6 +124,8 @@ node server.js --name=SERVERNAME --port=3234
 
 ```shell
 domapic stop SERVERNAME
+#or
+npm run stop -- --name=SERVERNAME
 ```
 
 In the examples above, SERVERNAME should be replaced with your desired controller instance name. If not provided, "domapic" will be the default value. Any number of instances of the server with different aliases can be started at the same time.
