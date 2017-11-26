@@ -1,11 +1,9 @@
 'use strict'
 
-const yargs = require('yargs')
-
 const core = require('./core')
 const server = require('./lib/server')
 const start = require('./cli/commands/start')
 
-const args = new core.Arguments(yargs)
-
-server.start(args.getOptions(start.options))
+server.start(
+  new core.Arguments().getOptions(start.options)
+)

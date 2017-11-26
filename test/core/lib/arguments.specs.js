@@ -10,7 +10,7 @@ const start = require('../../../cli/commands/start')
 test.describe('Core Arguments', () => {
   const optionsLength = _.keys(start.options).length
   const SharedTests = function (callMethod) {
-    return function (yargs) {
+    return function () {
       test.it('should avoid defining unknown options', () => {
         callMethod()
         test.expect(yargs.strict).to.have.been.called()
@@ -34,7 +34,7 @@ test.describe('Core Arguments', () => {
   let args, mock
 
   test.beforeEach(() => {
-    args = new core.Arguments(yargs)
+    args = new core.Arguments()
 
     test.sinon.stub(yargs, 'strict').returns(yargs)
     test.sinon.stub(yargs, 'demandCommand')
@@ -49,7 +49,7 @@ test.describe('Core Arguments', () => {
 
   test.describe('getOptions', () => {
     const callMethod = function () {
-      return args.getOptions(start.options, yargs)
+      return args.getOptions(start.options)
     }
     test.it('should call yargs to get the defined value for each option', () => {
       mock.expects('option').exactly(optionsLength)
@@ -62,12 +62,12 @@ test.describe('Core Arguments', () => {
       test.expect(result).to.have.all.keys(_.keys(start.options))
     })
 
-    new SharedTests(callMethod)(yargs)
+    new SharedTests(callMethod)()
   })
 
   test.describe('registerCommands', () => {
     const callMethod = function () {
-      return args.registerCommands(mocks.cli.commands, yargs)
+      return args.registerCommands(mocks.cli.commands)
     }
 
     test.it('should demand the user the command to execute', () => {
@@ -99,6 +99,6 @@ test.describe('Core Arguments', () => {
       start.command.restore()
     })
 
-    new SharedTests(callMethod)(yargs)
+    new SharedTests(callMethod)()
   })
 })

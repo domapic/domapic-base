@@ -1,8 +1,9 @@
 'use strict'
 
 const _ = require('lodash')
+const yargs = require('yargs')
 
-const Arguments = function (yargs) {
+const Arguments = function () {
   const clean = function (argv, options) {
     _.forEach(argv, (value, key) => {
       if (_.isUndefined(options[key])) {
