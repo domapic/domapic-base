@@ -1,42 +1,34 @@
 const test = require('../../test')
+const mocks = require('../../mocks')
 
-const core = require('../../../core')
 const enums = require('../../../lib/enums/log')
 const start = require('../../../cli/commands/start')
 
 test.describe('CLI start command', () => {
-  const fooOptions = {
-    name: 'fooName',
-    port: 321
-  }
   test.describe('start', () => {
-    let spyLog,
-      spyInfo,
-      spyData
+    let logStub
 
     test.beforeEach(() => {
-      spyLog = test.sinon.stub(core, 'Log')
-      spyInfo = spyLog.prototype.info = test.sinon.spy()
-      spyData = spyLog.prototype.data = test.sinon.spy()
+      logStub = new mocks.log.Stub()
     })
 
     test.afterEach(() => {
-      core.Log.restore()
+      logStub.restore()
     })
 
     test.it('should create a new Log instance from core', () => {
-      start.command(fooOptions)
-      test.expect(spyLog).to.have.been.calledWithNew()
+      start.command(mocks.arguments.options)
+      test.expect(logStub._constructor).to.have.been.calledWithNew()
     })
 
     test.it('should log the start message', () => {
-      start.command(fooOptions)
-      test.expect(spyInfo).to.have.been.calledWith(enums['starting-server-pm2'])
+      start.command(mocks.arguments.options)
+      test.expect(logStub.info).to.have.been.calledWith(enums['starting-server-pm2'])
     })
 
     test.it('should log the options received', () => {
-      start.command(fooOptions)
-      test.expect(spyData).to.have.been.calledWith(fooOptions)
+      start.command(mocks.arguments.options)
+      test.expect(logStub.data).to.have.been.calledWith(mocks.arguments.options)
     })
   })
 })

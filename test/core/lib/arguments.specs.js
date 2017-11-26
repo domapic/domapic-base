@@ -2,12 +2,13 @@ const yargs = require('yargs')
 const _ = require('lodash')
 
 const test = require('../../test')
+const mocks = require('../../mocks')
 
 const core = require('../../../core')
-const startCommand = require('../../../cli/commands/start')
+const start = require('../../../cli/commands/start')
 
 test.describe('Core Arguments', () => {
-  const optionsLength = _.keys(startCommand.options).length
+  const optionsLength = _.keys(start.options).length
   const SharedTests = function (callMethod) {
     return function (yargs) {
       test.it('should avoid defining unknown options', () => {
@@ -46,7 +47,7 @@ test.describe('Core Arguments', () => {
 
   test.describe('getOptions', () => {
     const callMethod = function () {
-      return core.arguments.getOptions(startCommand.options, yargs)
+      return core.arguments.getOptions(start.options, yargs)
     }
     test.it('should call yargs to get the defined value for each option', () => {
       mock.expects('option').exactly(optionsLength)
@@ -56,18 +57,15 @@ test.describe('Core Arguments', () => {
 
     test.it('should return an object with options values', () => {
       let result = callMethod()
-      test.expect(result).to.have.all.keys(_.keys(startCommand.options))
+      test.expect(result).to.have.all.keys(_.keys(start.options))
     })
 
     new SharedTests(callMethod)(yargs)
   })
 
   test.describe('registerCommands', () => {
-    const fooCommands = {
-      start: startCommand
-    }
     const callMethod = function () {
-      return core.arguments.registerCommands(fooCommands, yargs)
+      return core.arguments.registerCommands(mocks.cli.commands, yargs)
     }
 
     test.it('should demand the user the command to execute', () => {
@@ -78,33 +76,25 @@ test.describe('Core Arguments', () => {
     test.it('should call yargs to register all defined commands', () => {
       test.sinon.stub(yargs, 'command')
       callMethod()
-      test.expect(yargs.command).to.have.been.callCount(_.keys(fooCommands).length)
+      test.expect(yargs.command).to.have.been.callCount(_.keys(mocks.cli.commands).length)
       yargs.command.restore()
     })
 
     test.it('When a command is dispatched, its "command" property should be called with user options', () => {
-      const fooParams = {
-        name: 'testing',
-        port: 12345
-      }
       let originalCommand = yargs.command
 
       yargs.command = function (cli, describe, getOptions, callBack) {
-        // Extends fooParams with extra options, to ensure they are cleaned
-        callBack(_.extend({}, fooParams, {
-          n: 'testing2',
-          p: 543543
-        }))
+        callBack(_.extend({}, mocks.arguments.options, mocks.arguments.wrongOptions))
       }
 
-      test.sinon.stub(fooCommands.start, 'command')
+      test.sinon.stub(start, 'command')
       callMethod()
 
-      test.expect(fooCommands.start.command).to.have.been.called()
-      test.expect(fooCommands.start.command).to.have.been.calledWith(fooParams)
+      test.expect(start.command).to.have.been.called()
+      test.expect(start.command).to.have.been.calledWith(mocks.arguments.options)
 
       yargs.command = originalCommand
-      fooCommands.start.command.restore()
+      start.command.restore()
     })
 
     new SharedTests(callMethod)(yargs)
