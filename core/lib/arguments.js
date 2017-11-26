@@ -1,19 +1,12 @@
 'use strict'
 
-const yargs = require('yargs')
 const _ = require('lodash')
 
-const KEYS_TO_REMOVE = [
-  '_',
-  'version',
-  'help',
-  'h',
-  '$0'
-]
-
-const clean = function (argv) {
-  _.forEach(KEYS_TO_REMOVE, (key) => {
-    delete argv[key]
+const clean = function (argv, options) {
+  _.forEach(argv, (value, key) => {
+    if (_.isUndefined(options[key])) {
+      delete argv[key]
+    }
   })
   return argv
 }
@@ -28,29 +21,29 @@ const Options = function (options) {
   }
 }
 
-const init = function () {
-  return yargs.wrap(yargs.terminalWidth())
-    .help()
-    .alias('h', 'help')
-    .strict()
-    .argv
+const init = function (yargs, config) {
+  yargs.strict()
+  yargs.wrap(yargs.terminalWidth())
+  yargs.help().alias('h', 'help')
+
+  return yargs.argv
 }
 
-const registerCommands = function (commands) {
+const registerCommands = function (commands, yargs) {
   _.forEach(commands, (properties) => {
     yargs.command(properties.cli, properties.describe, new Options(properties.options).get, (argv) => {
-      properties.command(clean(argv))
+      properties.command(clean(argv, properties.options))
     })
   })
 
   yargs.demandCommand()
 
-  init()
+  init(yargs)
 }
 
-const getOptions = function (options) {
+const getOptions = function (options, yargs) {
   new Options(options).get(yargs)
-  return clean(init())
+  return clean(init(yargs), options)
 }
 
 module.exports = {

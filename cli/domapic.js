@@ -1,10 +1,12 @@
 'use strict'
 
+const yargs = require('yargs')
+
 const start = require('./commands/start')
-const args = require('../lib/utils/arguments')
+const core = require('../core')
 
 const commands = {
   start: start
 }
 
-args.registerCommands(commands)
+core.arguments.registerCommands(commands, yargs)
