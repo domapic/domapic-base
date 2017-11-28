@@ -1,6 +1,7 @@
 'use strict'
 
 const _ = require('lodash')
+const Promise = require('bluebird')
 const yargs = require('yargs')
 
 const Arguments = function () {
@@ -32,20 +33,25 @@ const Arguments = function () {
   }
 
   const registerCommands = function (commands) {
-    _.forEach(commands, (properties) => {
-      yargs.command(properties.cli, properties.describe, new Options(properties.options).get, (argv) => {
-        properties.command(clean(argv, properties.options))
+    return new Promise((resolve) => {
+      _.forEach(commands, (properties) => {
+        yargs.command(properties.cli, properties.describe, new Options(properties.options).get, (argv) => {
+          properties.command(clean(argv, properties.options))
+        })
       })
+
+      yargs.demandCommand()
+
+      init()
+      resolve()
     })
-
-    yargs.demandCommand()
-
-    init()
   }
 
   const getOptions = function (options) {
-    new Options(options).get()
-    return clean(init(), options)
+    return new Promise((resolve) => {
+      new Options(options).get()
+      resolve(clean(init(), options))
+    })
   }
 
   return {

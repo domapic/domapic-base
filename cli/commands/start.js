@@ -5,8 +5,10 @@ const enums = require('../../lib/enums/log')
 
 const start = function (options) {
   const log = new core.Log()
-  log.info(enums['starting-server-pm2'])
-  log.data(options)
+  return log.info(enums['starting-server-pm2'])
+    .then(() => {
+      return log.data(options)
+    })
 }
 
 module.exports = {

@@ -11,23 +11,32 @@ test.describe('Core Arguments', () => {
   const optionsLength = _.keys(start.options).length
   const SharedTests = function (callMethod) {
     return function () {
-      test.it('should avoid defining unknown options', () => {
+      test.it('should avoid defining unknown options', (done) => {
         callMethod()
-        test.expect(yargs.strict).to.have.been.called()
+          .then(() => {
+            test.expect(yargs.strict).to.have.been.called()
+            done()
+          })
       })
 
-      test.it('should set the CLI width to terminal width', () => {
+      test.it('should set the CLI width to terminal width', (done) => {
         test.sinon.stub(yargs, 'wrap')
         callMethod()
-        test.expect(yargs.wrap).to.have.been.calledWith(yargs.terminalWidth())
-        yargs.wrap.restore()
+          .then(() => {
+            test.expect(yargs.wrap).to.have.been.calledWith(yargs.terminalWidth())
+            yargs.wrap.restore()
+            done()
+          })
       })
 
-      test.it('should initialize the CLI help', () => {
+      test.it('should initialize the CLI help', (done) => {
         test.sinon.stub(yargs, 'help').returns(yargs)
         callMethod()
-        test.expect(yargs.help).to.have.been.called()
-        yargs.help.restore()
+          .then(() => {
+            test.expect(yargs.help).to.have.been.called()
+            yargs.help.restore()
+            done()
+          })
       })
     }
   }
@@ -51,15 +60,21 @@ test.describe('Core Arguments', () => {
     const callMethod = function () {
       return args.getOptions(start.options)
     }
-    test.it('should call yargs to get the defined value for each option', () => {
+    test.it('should call yargs to get the defined value for each option', (done) => {
       mock.expects('option').exactly(optionsLength)
       callMethod()
-      mock.verify()
+        .then(() => {
+          mock.verify()
+          done()
+        })
     })
 
-    test.it('should return an object with options values', () => {
-      let result = callMethod()
-      test.expect(result).to.have.all.keys(_.keys(start.options))
+    test.it('should return an object with options values', (done) => {
+      callMethod()
+        .then(result => {
+          test.expect(result).to.have.all.keys(_.keys(start.options))
+          done()
+        })
     })
 
     new SharedTests(callMethod)()
@@ -70,19 +85,25 @@ test.describe('Core Arguments', () => {
       return args.registerCommands(mocks.cli.commands)
     }
 
-    test.it('should demand the user the command to execute', () => {
+    test.it('should demand the user the command to execute', (done) => {
       callMethod()
-      test.expect(yargs.demandCommand).to.have.been.called()
+        .then(() => {
+          test.expect(yargs.demandCommand).to.have.been.called()
+          done()
+        })
     })
 
-    test.it('should call yargs to register all defined commands', () => {
+    test.it('should call yargs to register all defined commands', (done) => {
       test.sinon.stub(yargs, 'command')
       callMethod()
-      test.expect(yargs.command).to.have.been.callCount(_.keys(mocks.cli.commands).length)
-      yargs.command.restore()
+        .then(() => {
+          test.expect(yargs.command).to.have.been.callCount(_.keys(mocks.cli.commands).length)
+          yargs.command.restore()
+          done()
+        })
     })
 
-    test.it('When a command is dispatched, its "command" property should be called with user options', () => {
+    test.it('When a command is dispatched, its "command" property should be called with user options', (done) => {
       let originalCommand = yargs.command
 
       yargs.command = function (cli, describe, getOptions, callBack) {
@@ -91,12 +112,14 @@ test.describe('Core Arguments', () => {
 
       test.sinon.stub(start, 'command')
       callMethod()
+        .then(() => {
+          test.expect(start.command).to.have.been.called()
+          test.expect(start.command).to.have.been.calledWith(mocks.arguments.options)
 
-      test.expect(start.command).to.have.been.called()
-      test.expect(start.command).to.have.been.calledWith(mocks.arguments.options)
-
-      yargs.command = originalCommand
-      start.command.restore()
+          yargs.command = originalCommand
+          start.command.restore()
+          done()
+        })
     })
 
     new SharedTests(callMethod)()
