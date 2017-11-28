@@ -16,19 +16,28 @@ test.describe('Server', () => {
       logStub.restore()
     })
 
-    test.it('should create a new Log instance from core', () => {
+    test.it('should create a new Log instance from core', (done) => {
       server.start(mocks.arguments.options)
-      test.expect(logStub._constructor).to.have.been.calledWithNew()
+        .then(() => {
+          test.expect(logStub._constructor).to.have.been.calledWithNew()
+          done()
+        })
     })
 
-    test.it('should log the start message', () => {
+    test.it('should log the start message', (done) => {
       server.start(mocks.arguments.options)
-      test.expect(logStub.info).to.have.been.calledWith(enums['starting-server'])
+        .then(() => {
+          test.expect(logStub.info).to.have.been.calledWith(enums['starting-server'])
+          done()
+        })
     })
 
-    test.it('should log the options received', () => {
+    test.it('should log the options received', (done) => {
       server.start(mocks.arguments.options)
-      test.expect(logStub.data).to.have.been.calledWith(mocks.arguments.options)
+        .then(() => {
+          test.expect(logStub.data).to.have.been.calledWith(mocks.arguments.options)
+          done()
+        })
     })
   })
 })

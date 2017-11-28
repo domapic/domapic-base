@@ -15,10 +15,13 @@ test.describe('Core Log', () => {
   })
 
   test.describe('Data', () => {
-    test.it('should console the received text', () => {
+    test.it('should console the received text', (done) => {
       let text = 'Testing log.data'
       log.data(text)
-      test.expect(console.log).to.have.been.calledWith(text)
+        .then(() => {
+          test.expect(console.log).to.have.been.calledWith(text)
+          done()
+        })
     })
   })
 
@@ -26,7 +29,9 @@ test.describe('Core Log', () => {
     test.it('should console the received text', () => {
       let text = 'Testing log.info'
       log.info(text)
-      test.expect(console.log).to.have.been.calledWith(text)
+        .then(() => {
+          test.expect(console.log).to.have.been.calledWith(text)
+        })
     })
   })
 })

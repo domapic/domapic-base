@@ -1,3 +1,5 @@
+const Promise = require('bluebird')
+
 const test = require('../../test')
 
 const core = require('../../../core')
@@ -10,9 +12,11 @@ const options = {
 const Stub = function () {
   let _constructor = test.sinon.stub(core, 'Arguments')
   let getOptions = _constructor.prototype.getOptions = test.sinon.spy(() => {
-    return options
+    return Promise.resolve(options)
   })
-  let registerCommands = _constructor.prototype.registerCommands = test.sinon.spy()
+  let registerCommands = _constructor.prototype.registerCommands = test.sinon.spy(() => {
+    return Promise.resolve()
+  })
 
   const restore = function () {
     core.Arguments.restore()
