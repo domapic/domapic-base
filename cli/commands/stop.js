@@ -5,7 +5,7 @@ const path = require('path')
 const core = require('../../core')
 const enums = require('../../lib/enums/log')
 
-const startProcess = function (options) {
+const stopProcess = function (options) {
   const pm2Process = new core.Process({
     name: options.name,
     script: path.resolve(__dirname, '..', '..', 'server.js'),
@@ -13,38 +13,30 @@ const startProcess = function (options) {
     args: options
   })
 
-  return pm2Process.start()
+  return pm2Process.stop()
 }
 
-const start = function (options) {
+const stop = function (options) {
   const log = new core.Log()
 
-  return log.info(enums['starting-server-pm2'])
+  return log.info(enums['stopping-server-pm2'])
     .then(() => {
-      return startProcess(options)
+      return stopProcess(options)
     })
     .then(() => {
-      return log.info(enums['stop-process-instructions'])
-    })
-    .then(() => {
-      return log.data(options)
+      return log.info(enums['start-process-instructions'])
     })
 }
 
 module.exports = {
   describe: 'Start the domapic controller server',
-  cli: 'start [name]',
+  cli: 'stop [name]',
   options: {
-    port: {
-      type: 'number',
-      alias: ['p'],
-      describe: 'Listening port number for the controller server'
-    },
     name: {
       type: 'string',
       alias: ['n'],
       describe: 'Server instance unique name'
     }
   },
-  command: start
+  command: stop
 }

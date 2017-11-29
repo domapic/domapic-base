@@ -16,6 +16,7 @@
   "scripts": {
     "start": "./bin/domapic start",
     "stop": "./bin/domapic stop",
+    "logs": "./bin/domapic logs",
     "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive",
     "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
