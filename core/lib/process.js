@@ -13,6 +13,7 @@ const Process = function (options) {
     restartDelay: 1000,
     maxRestarts: 10,
     // TODO, add output and error to the same path, (process path from config)
+    // TODO, colors
     logDateFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
   }
   let pm2Options = _.extend(defaultOptions, options)

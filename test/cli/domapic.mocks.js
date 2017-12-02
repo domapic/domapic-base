@@ -1,7 +1,8 @@
-const startCommand = require('../../cli/commands/start')
 
 module.exports = {
   commands: {
-    start: startCommand
+    logs: require('../../cli/commands/logs'),
+    start: require('../../cli/commands/start'),
+    stop: require('../../cli/commands/stop')
   }
 }
