@@ -29,7 +29,7 @@ const stop = function (options) {
 }
 
 module.exports = {
-  describe: 'Start the domapic controller server',
+  describe: 'Stop the domapic controller server',
   cli: 'stop [name]',
   options: {
     name: {

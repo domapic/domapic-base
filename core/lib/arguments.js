@@ -38,7 +38,7 @@ const Arguments = function () {
         yargs.command(properties.cli, properties.describe, new Options(properties.options).get, (argv) => {
           properties.command(clean(argv, properties.options))
             .catch((error) => {
-              console.log(error.message)
+              console.error('ERROR: ' + error.message)
               process.exit(1)
             })
         })

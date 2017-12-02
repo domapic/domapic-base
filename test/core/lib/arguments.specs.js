@@ -109,29 +109,67 @@ test.describe('Core Arguments', () => {
     })
 
     _.forEach(commands, (command, commandName) => {
-      test.it('When ' + commandName + ' command is dispatched, its "command" function should be called with user options', (done) => {
-        const originalCommand = yargs.command
-        let fooCommandsObject = {}
-
-        fooCommandsObject[commandName] = command
-
-        yargs.command = function (cli, describe, getOptions, callBack) {
-          callBack(_.extend({}, mocks.commands[commandName].options, mocks.arguments.wrongOptions))
-        }
-
-        test.sinon.stub(command, 'command').returns({
-          catch: () => {}
+      test.describe('When ' + commandName + ' command is dispatched', () => {
+        test.beforeEach(() => {
+          test.sinon.stub(process, 'exit')
+          test.sinon.stub(console, 'error')
         })
 
-        callMethod(fooCommandsObject)
-          .then(() => {
-            test.expect(command.command).to.have.been.called()
-            test.expect(command.command).to.have.been.calledWith(mocks.commands[commandName].options)
+        test.afterEach(() => {
+          process.exit.restore()
+          console.error.restore()
+        })
 
-            yargs.command = originalCommand
-            command.command.restore()
-            done()
+        test.it('should call its "command" function with user options', (done) => {
+          const originalYargsCommand = yargs.command
+          let fooCommandsObject = {}
+
+          fooCommandsObject[commandName] = command
+
+          yargs.command = function (cli, describe, getOptions, callBack) {
+            callBack(_.extend({}, mocks.commands[commandName].options, mocks.arguments.wrongOptions))
+          }
+
+          test.sinon.stub(command, 'command').returns({
+            catch: () => {}
           })
+
+          callMethod(fooCommandsObject)
+            .then(() => {
+              test.expect(command.command).to.have.been.called()
+              test.expect(command.command).to.have.been.calledWith(mocks.commands[commandName].options)
+
+              yargs.command = originalYargsCommand
+              command.command.restore()
+              done()
+            })
+        })
+
+        test.it('should log the error message and exit process if throws an error', (done) => {
+          const originalYargsCommand = yargs.command
+          const originalCommand = command.command
+          const errorMessage = 'error from ' + commandName + ' command'
+          let fooCommandsObject = {}
+
+          fooCommandsObject[commandName] = command
+
+          command.command = function () {
+            return new Promise(() => {
+              throw new Error(errorMessage)
+            })
+          }
+          yargs.command = function (cli, describe, getOptions, callBack) {
+            callBack(mocks.commands[commandName].options)
+          }
+
+          callMethod(fooCommandsObject)
+            .then(() => {
+              test.expect(process.exit).to.have.been.called()
+              yargs.command = originalYargsCommand
+              command.command = originalCommand
+              done()
+            })
+        })
       })
     })
 

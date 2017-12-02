@@ -8,6 +8,6 @@ new core.Arguments().getOptions(start.options)
   .then(server.start)
   .then(() => {
     setTimeout(() => {
-      console.log('finished', 120000)
+      console.log('finished')
     })
   })
