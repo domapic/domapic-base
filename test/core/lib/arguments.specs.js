@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const Promise = require('bluebird')
 const yargs = require('yargs')
 
 const test = require('../../test')
@@ -64,6 +65,11 @@ test.describe('Core Arguments', () => {
     const callMethod = function () {
       return args.getOptions(commands.start.options)
     }
+
+    test.it('should return a Promise', () => {
+      test.expect(callMethod()).to.be.an.instanceof(Promise)
+    })
+
     test.it('should call yargs to get the defined value for each option', (done) => {
       mock.expects('option').exactly(optionsLength)
       callMethod()
@@ -89,6 +95,10 @@ test.describe('Core Arguments', () => {
       command = command || commands
       return args.registerCommands(command)
     }
+
+    test.it('should return a Promise', () => {
+      test.expect(callMethod()).to.be.an.instanceof(Promise)
+    })
 
     test.it('should demand the user the command to execute', (done) => {
       callMethod()

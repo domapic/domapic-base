@@ -4,6 +4,10 @@ const test = require('../../test')
 
 const core = require('../../../core')
 
+const options = {
+  name: 'tests-server'
+}
+
 const Stub = function () {
   let _constructor = test.sinon.stub(core, 'Process')
 
@@ -33,5 +37,6 @@ const Stub = function () {
 }
 
 module.exports = {
-  Stub: Stub
+  Stub: Stub,
+  options: options
 }

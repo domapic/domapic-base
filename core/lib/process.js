@@ -9,6 +9,8 @@ const Promise = require('bluebird')
 
 const Process = function (options) {
   const defaultOptions = {
+    script: path.resolve(__dirname, '..', '..', 'server.js'),
+    cwd: process.cwd(),
     minUptime: 2000,
     restartDelay: 1000,
     maxRestarts: 10,

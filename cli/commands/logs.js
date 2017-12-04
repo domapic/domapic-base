@@ -1,15 +1,11 @@
 'use strict'
 
-const path = require('path')
-
 const core = require('../../core')
 const enums = require('../../lib/enums/log')
 
 const processLogs = function (options) {
   const pm2Process = new core.Process({
     name: options.name,
-    script: path.resolve(__dirname, '..', '..', 'server.js'),
-    cwd: process.cwd(),
     args: options
   })
 
