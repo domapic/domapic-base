@@ -1,4 +1,5 @@
 const test = require('../../test')
+const Promise = require('bluebird')
 
 const Log = require('../../../core/lib/log')
 
@@ -15,6 +16,10 @@ test.describe('Core Log', () => {
   })
 
   test.describe('Data', () => {
+    test.it('should return a Promise', () => {
+      test.expect(log.data('')).to.be.an.instanceof(Promise)
+    })
+
     test.it('should console the received text', (done) => {
       let text = 'Testing log.data'
       log.data(text)
@@ -26,6 +31,9 @@ test.describe('Core Log', () => {
   })
 
   test.describe('Info', () => {
+    test.it('should return a Promise', () => {
+      test.expect(log.info('')).to.be.an.instanceof(Promise)
+    })
     test.it('should console the received text', () => {
       let text = 'Testing log.info'
       log.info(text)

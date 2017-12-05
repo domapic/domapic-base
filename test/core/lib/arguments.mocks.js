@@ -5,7 +5,7 @@ const test = require('../../test')
 const core = require('../../../core')
 
 const options = {
-  name: 'fooName',
+  name: 'tests-server',
   port: 34000
 }
 
