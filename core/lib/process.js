@@ -100,8 +100,11 @@ const Process = function (options) {
       .then(() => {
         return startPm2()
       })
-      .then(() => {
+      .then((pm2Process) => {
         return disconnect()
+          .then(() => {
+            return Promise.resolve(pm2Process)
+          })
       })
   }
 
