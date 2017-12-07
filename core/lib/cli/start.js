@@ -1,9 +1,11 @@
 'use strict'
 
-const templates = require('./templates/logs')
+const logsTemplates = require('./templates/logs')
 const serviceArguments = require('../arguments/service')
 
 const start = function (options, cli) {
+  const templates = cli.utils.templates.compile(logsTemplates)
+
   return cli.tracer.info(templates.startingServerPm2({
     name: options.name
   }))

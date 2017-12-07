@@ -1,16 +1,10 @@
 'use strict'
 
-const templates = require('./templates/logs')
+const logsTemplates = require('./templates/logs')
 
 const logs = function (options, cli) {
-  /*
-  // TODO
-  templates = cli.utils.templates.compile(templates)
+  const templates = cli.utils.templates.compile(logsTemplates)
 
-  return cli.tracer.info(templates.displayingLogs({
-    name: options.name
-  }))
-  */
   return cli.tracer.info(templates.displayingLogs({
     name: options.name
   }))

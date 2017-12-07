@@ -33,6 +33,7 @@ const Process = function (options) {
     return new Promise((resolve, reject) => {
       pm2.connect((error) => {
         if (error) {
+          // TODO, throw controlled error
           reject(error)
         } else {
           resolve()
@@ -55,10 +56,11 @@ const Process = function (options) {
     })
   }
 
-  const startPm2 = function (args) {
+  const startPm2 = function (pm2Args) {
     return new Promise((resolve, reject) => {
-      pm2.start(addArgumentsToOptions(args), (error, pm2Process) => {
+      pm2.start(addArgumentsToOptions(pm2Args), (error, pm2Process) => {
         if (error) {
+          // TODO, throw controlled error
           reject(error)
         } else {
           resolve(pm2Process)
@@ -71,6 +73,7 @@ const Process = function (options) {
     return new Promise((resolve, reject) => {
       pm2.stop(pm2Options.name, (error, pm2Process) => {
         if (error) {
+          // TODO, throw controlled error
           reject(error)
         } else {
           resolve(pm2Process)
@@ -89,10 +92,12 @@ const Process = function (options) {
         }
       })
       log.stderr.on('data', (data) => {
+        // TODO, throw controlled error
         reject(new Error(data))
       })
       log.on('close', (code) => {
         if (code !== 0) {
+          // TODO, throw controlled error
           reject(new Error('Process exited with code ' + code))
         } else {
           resolve()
@@ -135,9 +140,11 @@ const Process = function (options) {
   }
 
   if (!pm2Options.name) {
+    // TODO, throw controlled error
     throw new Error('No name was provided for process')
   }
   if (!pm2Options.script) {
+    // TODO, throw controlled error
     throw new Error('No script path was provided for process')
   }
 

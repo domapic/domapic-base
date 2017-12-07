@@ -1,8 +1,6 @@
 'use strict'
 
-const utils = require('../../utils')
-
-const templates = {
+module.exports = {
   startingServer: 'Starting {name} server',
   startingServerPm2: 'Starting {name} server using PM2',
   startServerHelp: 'Run "domapic start {name}" to start the server',
@@ -13,5 +11,3 @@ const templates = {
   displayingLogs: 'Displaying logs for {name} server',
   displayLogsHelp: 'Run "domapic logs {name}" to display real-time logs'
 }
-
-module.exports = utils.templates.compile(templates)

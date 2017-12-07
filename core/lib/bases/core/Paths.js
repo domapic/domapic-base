@@ -7,7 +7,12 @@ const _ = require('lodash')
 const Promise = require('bluebird')
 
 const Paths = function (options, errors) {
-  const homePath = path.resolve(os.homedir(), '.domapic', options.name || '')
+  // TODO throw controlled error
+  if (!options.name) {
+    throw new Error('No name provided, unable to resolve home path')
+  }
+
+  const homePath = path.resolve(os.homedir(), '.domapic', options.name)
 
   const getSubPath = function (subPath) {
     subPath = !_.isArray(subPath) ? [subPath] : subPath

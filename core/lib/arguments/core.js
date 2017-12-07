@@ -4,7 +4,7 @@ module.exports = {
   name: {
     type: 'string',
     alias: ['n'],
-    describe: 'Server instance unique name',
+    describe: 'Service instance unique name',
     demandOption: true
   }
 }

@@ -4,9 +4,13 @@ const _ = require('lodash')
 const Promise = require('bluebird')
 const yargs = require('yargs')
 
-const Arguments = function (defaultOptions) {
+const coreArguments = require('../arguments/core')
+
+const Arguments = function (baseArguments) {
+  const defaultArguments = _.extend({}, coreArguments, baseArguments)
+
   const extendOptions = function (options) {
-    return _.extend({}, defaultOptions, options || {})
+    return _.extend({}, defaultArguments, options || {})
   }
 
   const clean = function (argv, options) {
@@ -18,31 +22,19 @@ const Arguments = function (defaultOptions) {
     return argv
   }
 
-  const Options = function (options, avoidDemand) {
+  const Options = function (options) {
     return {
       get: function () {
         _.forEach(options, (properties, name) => {
-          const props = _.clone(properties)
-          if (avoidDemand && props.demandOption) {
-            props.demandOption = false
-          }
-          yargs.option(name, props)
+          yargs.option(name, properties)
         })
       }
     }
   }
 
-  const init = function (config) {
-    config = config || {}
-    if (config.strict) {
-      yargs.strict()
-    }
-    if (config.help) {
-      yargs.help(true).alias('h', 'help')
-    } else {
-      yargs.help(false)
-    }
-
+  const init = function () {
+    yargs.strict()
+    yargs.help().alias('h', 'help')
     yargs.wrap(yargs.terminalWidth())
 
     return yargs.argv
@@ -54,7 +46,8 @@ const Arguments = function (defaultOptions) {
         const extendedOptions = extendOptions(properties.options)
 
         yargs.command(properties.cli, properties.describe, new Options(extendedOptions).get, (argv) => {
-          properties.command(clean(argv, extendedOptions), publicMethods)
+          const userOptions = clean(argv, extendedOptions)
+          properties.command(userOptions, publicMethods(userOptions))
             .catch((error) => {
               publicMethods.tracer.error('ERROR: ' + error.message)
               process.exit(1)
@@ -64,18 +57,14 @@ const Arguments = function (defaultOptions) {
 
       yargs.demandCommand()
 
-      init({
-        strict: true,
-        help: true
-      })
+      init()
       resolve()
     })
   }
 
-  const getOptions = function (options, config) {
-    const extendedOptions = extendOptions(options)
-    new Options(extendedOptions, config.avoidDemand).get()
-    return clean(init(config), extendedOptions)
+  const getOptions = function () {
+    new Options(defaultArguments).get()
+    return clean(init(), defaultArguments)
   }
 
   return {
