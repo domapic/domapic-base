@@ -4,6 +4,10 @@ const path = require('path')
 
 const core = require('../core')
 
-new core.Cli({
+const cli = new core.Cli({
   script: path.resolve(__dirname, '..', 'server.js')
-}).runCommand()
+})
+
+cli.runCommand().catch(() => {
+  process.exit(1)
+})

@@ -16,7 +16,8 @@ const Core = function (options) {
     errors: errors,
     config: config,
     tracer: tracer,
-    utils: utils
+    utils: utils,
+    paths: paths
   }
 }
 

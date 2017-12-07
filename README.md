@@ -20,15 +20,18 @@ ___
 * [What is Domapic?](#what-is-domapic)
 * [What are Domapic services?](#what-are-domapic-services)
 * [Installation](#installation)
-* [Usage](#usage)
+* [Quick start](#quick-start)
 	* [Start the server](#start-the-server)
 	* [Stop the server](#stop-the-server)
+  * [CLI cheatsheet](#cli-cheatsheet)
 * [Configuration](#configuration)
 * [Options](#options)
 * [Database](#database)
 * [Users](#users)
 * [Install services](#install-services)
 * [Install plugins](#install-plugins)
+* [Logs](#logs)
+* [Suggested uses](#suggested-uses)
 * [Why?](#why)
 
 ## What is Domapic?
@@ -47,26 +50,7 @@ Domapic services are domotic (or whatever other) services installed in the same 
 
 You can **interact directly with the controller to get STATES, listen EVENTS, or send ACTIONS to all paired services**, but you can also interact directly with any of the services. You can **make interact all services automatically setting up AUTOMATISMs** in the controller.
 
-So, you can install Domapic services in your machine, in your server, in a Raspberry pi, inside or outside your local network... and set them all to use the same controller (installed locally or remote, as well). Then, you can program your own AUTOMATISMs using the controller API, or using a domapic UI plugin, or even using Homekit plugin, Slack plugin, IFTT plugin or whatever other domapic plugin. You will receive notifications when the services STATES change, or you cand send ACTIONS to any service, through the controller API, interfaces, or plugins.
-
-If it does not exists, develop your own plugin or service, and publish it with the suffix "domapic-service", or "domapic-plugin".
-
 //TODO, add schema image
-
-## Suggested uses
-___
-
-* When there is an event called "holidays" in google calendar, shut down the heating and all the lights. Simulate my presence with lights and blinds movements. Start the heating automatically 3 hours before the event finish. 
-* At the sunset, light on your garden lights only when you are out, sutdown automatically if you go inside.
-* Say "Siri, open the car door" -> Will open the fence, the garage door, and switch on the lights if it is night.
-* Send a message to a Slack channel, and an sms to my phone when someone enter to the house and I´m not inside. Start recording the webcams.
-* Switch on the automatic watering if it doesn´t rain for more than 3 days.
-* Send me an sms if the electric supply goes out for more than 1 hour.
-* Restart the router if internet connection has shut down. Send me an sms if it doesn't come back.
-* Switch off all lights sending a message through Slack.
-* Turn red a Hue bulb when a code repository build has failed.
-
-**Summarizing... Control and make interact together Homekit, gadgets from any home automation provider, cloud services, social network services, chat services, IFTT, local softwares, your own developed gadgets or bots... imagination is the limit.**
 
 ## Installation
 ___
@@ -79,28 +63,27 @@ npm install domapic -g
 
 Domapic can be installed locally without the -g flag as well, but the global installation is recommended to make easier the use of the provided CLI.
 
+> Note: If you have EPERM problems to install the package globally, use "sudo" and the --unsafe-perms flag in order to start the server pointing to the right user home path for writing configurations, storage, etc.
+
 ```shell
 sudo npm install domapic -g --unsafe-perms
 ```
 
-> Note: If you have to use "sudo" to install the package globally, use the --unsafe-perms flag in order to start the server pointing to the right user home path for writing configurations, storage, etc.
-
-## Usage
+## Quick Start
 ___
 
 ### Start the server
 
 ```shell
-domapic start SERVERNAME
-```
-
-You can pass options to the start command:
-
-```shell
 domapic start SERVERNAME --port=8090
 ```
 
-To get help about all CLI available commands and options run:
+All CLI available commands can be executed as well as NPM commands from package installation folder:
+```shell
+* npm run domapic -- COMMAND SERVERNAME
+```
+
+To get help about all CLI available commands and options, read the [CLI Cheatsheet](#cli-cheatsheet), or run:
 
 ```shell
 domapic --help
@@ -108,27 +91,28 @@ domapic --help
 domapic COMMAND --help
 ```
 
-All CLI available commands can be executed as well as NPM commands from local folder:
-
-* domapic start SERVERNAME [--options] = npm run start -- --name=SERVERNAME [--options]
-
 > Note: The CLI will start automatically a [PM2](http://pm2.keymetrics.io/) process with your server instance name. Using PM2 commands you can stop the server process, read the server process logs, etc. For further info, please [read the PM2 docs](http://pm2.keymetrics.io/docs/usage/quick-start/).
 
 To start the controller without using PM2:
 
 ```shell
-node server.js --name=SERVERNAME --port=3234
+node server.js --name=SERVERNAME --port=8090
+# or
+npm start -- --name=SERVERNAME --port=8090
 ```
 
 ### Stop the server
 
 ```shell
 domapic stop SERVERNAME
-#or
-npm run stop -- --name=SERVERNAME
 ```
 
-In the examples above, SERVERNAME should be replaced with your desired controller instance name. If not provided, "domapic" will be the default value. Any number of instances of the server with different aliases can be started at the same time.
+In the examples above, SERVERNAME should be replaced with your desired controller instance name. Any number of instances of the server with different aliases can be started at the same time.
+
+### CLI cheatsheet
+___
+
+// TODO, make a table with all commands and available options
 
 ## Configuration
 ___
@@ -181,25 +165,19 @@ By default, there is an user with name "admin", and password "12345". The passwo
 You can add your own users, or modify passwords using the CLI:
 
 ```shell
-domapic useradd USERNAME -p=PASSWORD -r=admin
-
-#or...
-npm run useradd -- --name=USERNAME -p=PASSWORD -r=admin
+domapic useradd SERVERNAME --user=USERNAME -p=PASSWORD -r=admin
 ```
 
 If you want to change the role or password of an existing user using the CLI:
 
 ```shell
-domapic usermod USERNAME -p=PASSWORD
-
-#or...
-npm run usermod -- --name=USERNAME -r=user
+domapic usermod SERVERNAME --user=USERNAME -p=PASSWORD
 ```
 
 For deleting an existing user:
 
 ```shell
-domapic userdel USERNAME
+domapic userdel SERVERNAME --user=USERNAME
 ```
 
 > NOTE: All the user-related commands above will only apply to *user* or *admin* roles. The users for *service* and *plugin* roles are added automatically when pairing with them is executed.
@@ -207,10 +185,7 @@ domapic userdel USERNAME
 You can change the passwords for *service* and *plugin* roles with the commands:
 
 ```shell
-domapic rolemod ROLENAME -p=PASSWORD
-
-#or...
-npm run rolemod -- --name=ROLENAME -p=PASSWORD
+domapic rolemod SERVERNAME --role=ROLENAME -p=PASSWORD
 ```
 
 > NOTE: This command will only apply to *service* or *plugin* roles, which share passwords for all related users.
@@ -222,10 +197,7 @@ Domapic services or plugins can be developed in any technology if the API is com
 
 ```shell
 #Install your desired service
-
 npm i example-domapic-service
-#or
-sudo npm i example-domapic-service --unsafe-perm
 
 #Start it
 npm start -- --name=SERVICENAME --controllerhost=192.168.1.50 --password=12345
@@ -247,6 +219,42 @@ To configure the service, a file is created at *~/.domapic/SERVICENAME/config.js
 For further info, please read the [*domapic-service*] or the [*domapic-plugin*] packages docs.
 
 > NOTE: Read the documentation of each package before install it. This is only a general guide valid for packages developed using the *domapic-service* or *domapic-plugin* base.
+
+## Logs
+___
+
+You can display logs using the [CLI logs command](#cli-cheatsheet).
+
+Logs are also available in files:
+
+* ~/.domapic/SERVERNAME.pm2.logs
+  * Stored with ANSI colors, for CLI and HMTL purposes.
+  * Only available if the process has been started using the CLI start command.
+  * To avoid this file increasing without limits, install [pm2-logrotate](https://github.com/pm2-hive/pm2-logrotate)
+
+* ~/.domapic/SERVERNAME.DATE.logs
+  * Stored in plain format, without ANSI colors.
+  * This file rotates every day.
+  * Only log files for last 10 days are kept.
+
+## Suggested uses
+___
+
+You can install Domapic services in your machine, in your server, in a Raspberry pi, inside or outside your local network... and set them all to use the same controller (installed locally or remote, as well). Then, you can program your own AUTOMATISMs using the controller API, or using a domapic UI plugin, or even using Homekit plugin, Slack plugin, IFTT plugin or whatever other domapic plugin. You will receive notifications when the services STATES change, or you cand send ACTIONS to any service, through the controller API, interfaces, or plugins.
+
+* When there is an event called "holidays" in google calendar, shut down the heating and all the lights. Simulate my presence with lights and blinds movements. Start the heating automatically 3 hours before the event finish. 
+* At the sunset, light on your garden lights only when you are out, sutdown automatically if you go inside.
+* Say "Siri, open the car door" -> Will open the fence, the garage door, and switch on the lights if it is night.
+* Send a message to a Slack channel, and an sms to my phone when someone enter to the house and I´m not inside. Start recording the webcams.
+* Switch on the automatic watering if it doesn´t rain for more than 3 days.
+* Send me an sms if the electric supply goes out for more than 1 hour.
+* Restart the router if internet connection has shut down. Send me an sms if it doesn't come back.
+* Switch off all lights sending a message through Slack.
+* Turn red a Hue bulb when a code repository build has failed.
+
+If it does not exists, develop your own plugin or service, and publish it with the suffix "domapic-service", or "domapic-plugin".
+
+**Summarizing... Control and make interact together Homekit, gadgets from any home automation provider, cloud services, social network services, chat services, IFTT, local softwares, your own developed gadgets or bots... whatever you can imagine.**
 
 ## Why?
 ___

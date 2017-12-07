@@ -1,18 +1,18 @@
 'use strict'
 
-const logsTemplates = require('./templates/logs')
+const cliTemplates = require('../templates/cli')
 
 const stop = function (options, cli) {
-  const templates = cli.utils.templates.compile(logsTemplates)
+  const templates = cli.utils.templates.compile(cliTemplates)
 
-  return cli.tracer.info(templates.stoppingServerPm2({
+  return cli.tracer.info(templates.stoppingService({
     name: options.name
   }))
     .then(() => {
       return cli.process.stop()
     })
     .then(() => {
-      return cli.tracer.info(templates.startServerHelp({
+      return cli.tracer.info(templates.startServiceHelp({
         name: options.name
       }))
     })

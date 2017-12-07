@@ -41,7 +41,7 @@ const Arguments = function (baseArguments) {
   }
 
   const runCommand = function (commands, publicMethods) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       _.forEach(commands, (properties) => {
         const extendedOptions = extendOptions(properties.options)
 
@@ -49,8 +49,11 @@ const Arguments = function (baseArguments) {
           const userOptions = clean(argv, extendedOptions)
           properties.command(userOptions, publicMethods(userOptions))
             .catch((error) => {
-              publicMethods.tracer.error('ERROR: ' + error.message)
-              process.exit(1)
+              publicMethods.tracer.error(error.message)
+              reject(error)
+            })
+            .then(() => {
+              resolve()
             })
         })
       })
@@ -58,7 +61,6 @@ const Arguments = function (baseArguments) {
       yargs.demandCommand()
 
       init()
-      resolve()
     })
   }
 

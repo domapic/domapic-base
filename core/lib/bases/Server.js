@@ -2,10 +2,10 @@
 
 const Server = function (core) {
   const start = function () {
-    core.config.get()
+    return core.config.get()
       .then((config) => {
-        core.tracer.log(config)
-        core.tracer.log('started')
+        core.tracer.debug(config)
+        core.tracer.info('started')
       })
   }
 

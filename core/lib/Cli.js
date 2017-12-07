@@ -24,7 +24,7 @@ const Cli = function (options) {
       process: new Process({
         script: options.script,
         name: argsOptions.name
-      }),
+      }, core.paths),
       tracer: core.tracer,
       errors: core.errors,
       paths: core.paths,

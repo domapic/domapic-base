@@ -4,7 +4,6 @@ const os = require('os')
 const path = require('path')
 
 const _ = require('lodash')
-const Promise = require('bluebird')
 
 const Paths = function (options, errors) {
   // TODO throw controlled error
@@ -21,7 +20,7 @@ const Paths = function (options, errors) {
   }
 
   const resolve = function (subPath) {
-    return Promise.resolve(getSubPath(subPath))
+    return getSubPath(subPath)
   }
 
   return {

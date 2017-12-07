@@ -7,14 +7,20 @@ const _ = require('lodash')
 const pm2 = require('pm2')
 const Promise = require('bluebird')
 
-const Process = function (options) {
+const Process = function (options, paths) {
+  const logsFile = paths.resolve(options.name + '.pm2.log')
+
   const defaultOptions = {
     cwd: process.cwd(),
     minUptime: 2000,
     restartDelay: 1000,
     maxRestarts: 10,
-    // TODO, add output and error to the same path, (process path from config)
-    // TODO, colors
+    output: logsFile,
+    error: logsFile,
+    mergeLogs: true,
+    env: {
+      DEBUG_COLORS: true
+    },
     logDateFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
   }
   let pm2Options = _.extend(defaultOptions, options)
@@ -82,9 +88,14 @@ const Process = function (options) {
     })
   }
 
-  const printPm2Logs = function () {
+  const printPm2Logs = function (customOptions) {
     return new Promise((resolve, reject) => {
-      const log = childProcess.spawn(path.resolve(__dirname, '..', '..', '..', 'node_modules', '.bin', 'pm2'), ['logs', options.name, '--raw'])
+      const pm2Options = ['logs', options.name, '--raw']
+      if (customOptions.lines) {
+        pm2Options.push('--lines=' + customOptions.lines)
+      }
+
+      const log = childProcess.spawn(path.resolve(__dirname, '..', '..', '..', 'node_modules', '.bin', 'pm2'), pm2Options)
       log.stdout.on('data', (data) => {
         const cleaned = _.trim(data.toString())
         if (cleaned.length) {
@@ -129,10 +140,10 @@ const Process = function (options) {
       })
   }
 
-  const logs = function () {
+  const logs = function (customOptions) {
     return connect()
       .then(() => {
-        return printPm2Logs()
+        return printPm2Logs(customOptions)
       })
       .then(() => {
         return disconnect()

@@ -16,6 +16,7 @@ const Service = function () {
   const client = new Client(core)
 
   return {
+    tracer: core.tracer,
     server: server,
     client: client
   }

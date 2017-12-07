@@ -14,16 +14,18 @@
     "domapic": "./bin/domapic"
   },
   "scripts": {
-    "domapic": "./bin/domapic",
+    "domapic": "node ./cli/index.js",
     "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive",
     "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "dependencies": {
-    "yargs": "10.0.3",
     "bluebird": "3.5.1",
+    "chalk": "2.3.0",
     "lodash": "4.17.4",
     "pm2": "2.8.0",
-    "string-template": "1.0.0"
+    "string-template": "1.0.0",
+    "tracer": "0.8.11",
+    "yargs": "10.0.3"
   },
   "devDependencies": {
     "chai": "4.1.2",
