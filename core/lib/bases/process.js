@@ -9,7 +9,6 @@ const Promise = require('bluebird')
 
 const Process = function (options) {
   const defaultOptions = {
-    script: path.resolve(__dirname, '..', '..', 'server.js'),
     cwd: process.cwd(),
     minUptime: 2000,
     restartDelay: 1000,
@@ -49,9 +48,16 @@ const Process = function (options) {
     })
   }
 
-  const startPm2 = function () {
+  const addArgumentsToOptions = function (args) {
+    args = _.isObject(args) ? objectToArgs(args) : args
+    return _.extend({}, pm2Options, {
+      args: args
+    })
+  }
+
+  const startPm2 = function (args) {
     return new Promise((resolve, reject) => {
-      pm2.start(pm2Options, (error, pm2Process) => {
+      pm2.start(addArgumentsToOptions(args), (error, pm2Process) => {
         if (error) {
           reject(error)
         } else {
@@ -75,7 +81,7 @@ const Process = function (options) {
 
   const printPm2Logs = function () {
     return new Promise((resolve, reject) => {
-      const log = childProcess.spawn(path.resolve(__dirname, '..', '..', 'node_modules', '.bin', 'pm2'), ['logs', options.name, '--raw'])
+      const log = childProcess.spawn(path.resolve(__dirname, '..', '..', '..', 'node_modules', '.bin', 'pm2'), ['logs', options.name, '--raw'])
       log.stdout.on('data', (data) => {
         const cleaned = _.trim(data.toString())
         if (cleaned.length) {
@@ -95,10 +101,10 @@ const Process = function (options) {
     })
   }
 
-  const start = function () {
+  const start = function (args) {
     return connect()
       .then(() => {
-        return startPm2()
+        return startPm2(args)
       })
       .then((pm2Process) => {
         return disconnect()
@@ -133,9 +139,6 @@ const Process = function (options) {
   }
   if (!pm2Options.script) {
     throw new Error('No script path was provided for process')
-  }
-  if (_.isObject(pm2Options.args)) {
-    pm2Options.args = objectToArgs(pm2Options.args)
   }
 
   return {

@@ -1,12 +1,11 @@
 'use strict'
 
-const core = require('../core')
-const start = require('./commands/start')
-const stop = require('./commands/stop')
-const logs = require('./commands/logs')
+const path = require('path')
 
-new core.Arguments().registerCommands({
-  start: start,
-  stop: stop,
-  logs: logs
+const core = require('../core')
+
+const cli = new core.Cli({
+  script: path.resolve(__dirname, '..', 'server.js')
 })
+
+cli.runCommand()
