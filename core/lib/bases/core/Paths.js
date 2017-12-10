@@ -6,9 +6,8 @@ const path = require('path')
 const _ = require('lodash')
 
 const Paths = function (options, errors) {
-  // TODO throw controlled error
   if (!options.name) {
-    throw new Error('No name provided, unable to resolve home path')
+    throw new errors.BadData('No name provided, unable to resolve home path')
   }
 
   const homePath = path.resolve(os.homedir(), '.domapic', options.name)
@@ -23,10 +22,10 @@ const Paths = function (options, errors) {
     return getSubPath(subPath)
   }
 
+  // TODO, ensure dir, writeJSON, readJSON, etc...
+  // TODO, move logs to log folder
+
   return {
-    // TODO
-    // readJson: readJson,
-    // writeJson: writeJson,
     resolve: resolve
   }
 }
