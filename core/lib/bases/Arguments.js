@@ -40,17 +40,22 @@ const Arguments = function (baseArguments) {
     return yargs.argv
   }
 
-  const runCommand = function (commands, publicMethods) {
+  const runCommand = function (commands, getCliCommandsMethods) {
     return new Promise((resolve, reject) => {
       _.forEach(commands, (properties) => {
         const extendedOptions = extendOptions(properties.options)
 
         yargs.command(properties.cli, properties.describe, new Options(extendedOptions).get, (argv) => {
           const userOptions = clean(argv, extendedOptions)
-          properties.command(userOptions, publicMethods(userOptions))
-            .catch((error) => {
-              publicMethods.tracer.error(error.message)
-              reject(error)
+          return getCliCommandsMethods(userOptions)
+            .then((cliCommandMethods) => {
+              return properties.command(userOptions, cliCommandMethods)
+                .catch((error) => {
+                  return cliCommandMethods.tracer.error(error)
+                    .then(() => {
+                      reject(error)
+                    })
+                })
             })
             .then(() => {
               resolve()
@@ -66,7 +71,7 @@ const Arguments = function (baseArguments) {
 
   const getOptions = function () {
     new Options(defaultArguments).get()
-    return clean(init(), defaultArguments)
+    return Promise.resolve(clean(init(), defaultArguments))
   }
 
   return {

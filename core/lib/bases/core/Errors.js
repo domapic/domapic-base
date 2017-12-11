@@ -67,12 +67,14 @@ const Errors = function () {
   }
 
   const ErrorFactory = function (name) {
-    const ErrorConstructor = function (message) {
+    const ErrorConstructor = function (message, stack) {
       this.message = message
       this.name = name
+      this.stack = stack || (new Error()).stack
     }
 
     ErrorConstructor.prototype = Object.create(Error.prototype)
+    ErrorConstructor.prototype.constructor = ErrorConstructor
 
     return ErrorConstructor
   }

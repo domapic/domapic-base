@@ -35,11 +35,6 @@ const start = function (options, cli) {
       }))
     })
     .then(() => {
-      return cli.tracer.error(templates.stopServiceHelp({
-        name: options.name
-      }))
-    })
-    .then(() => {
       return cli.process.start(options)
     })
     .then(() => {

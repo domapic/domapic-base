@@ -7,23 +7,45 @@ const _ = require('lodash')
 const pm2 = require('pm2')
 const Promise = require('bluebird')
 
-const Process = function (options, paths) {
-  const logsFile = paths.resolve(options.name + '.pm2.log')
+const Process = function (options, paths, errors) {
+  let pm2OptionsPromise
 
   const defaultOptions = {
     cwd: process.cwd(),
     minUptime: 2000,
     restartDelay: 1000,
     maxRestarts: 10,
-    output: logsFile,
-    error: logsFile,
     mergeLogs: true,
     env: {
       DEBUG_COLORS: true
     },
     logDateFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
   }
-  let pm2Options = _.extend(defaultOptions, options)
+
+  const getPm2Options = function () {
+    if (!pm2OptionsPromise) {
+      pm2OptionsPromise = paths.resolve(options.name + '.pm2.log')
+        .then((homePath) => {
+          const extendedOptions = _.extend(
+            {},
+            defaultOptions,
+            {
+              output: homePath,
+              error: homePath
+            },
+            options
+          )
+          if (!extendedOptions.name) {
+            throw new errors.BadData('No name was provided for process')
+          }
+          if (!extendedOptions.script) {
+            throw new errors.BadData('No script path was provided for process')
+          }
+          return Promise.resolve(extendedOptions)
+        })
+    }
+    return pm2OptionsPromise
+  }
 
   const objectToArgs = function (argsObject) {
     let argsArray = []
@@ -39,8 +61,7 @@ const Process = function (options, paths) {
     return new Promise((resolve, reject) => {
       pm2.connect((error) => {
         if (error) {
-          // TODO, throw controlled error
-          reject(error)
+          reject(new errors.ChildProcess('PM2 connect: ' + error.message, error.stack))
         } else {
           resolve()
         }
@@ -56,36 +77,43 @@ const Process = function (options, paths) {
   }
 
   const addArgumentsToOptions = function (args) {
-    args = _.isObject(args) ? objectToArgs(args) : args
-    return _.extend({}, pm2Options, {
-      args: args
-    })
+    return getPm2Options()
+      .then((pm2Options) => {
+        args = _.isObject(args) ? objectToArgs(args) : args
+        return Promise.resolve(_.extend({}, pm2Options, {
+          args: args
+        }))
+      })
   }
 
   const startPm2 = function (pm2Args) {
-    return new Promise((resolve, reject) => {
-      pm2.start(addArgumentsToOptions(pm2Args), (error, pm2Process) => {
-        if (error) {
-          // TODO, throw controlled error
-          reject(error)
-        } else {
-          resolve(pm2Process)
-        }
+    return addArgumentsToOptions(pm2Args)
+      .then((pm2Options) => {
+        return new Promise((resolve, reject) => {
+          pm2.start(pm2Options, (error, pm2Process) => {
+            if (error) {
+              reject(new errors.ChildProcess('PM2 start: ' + error.message, error.stack))
+            } else {
+              resolve(pm2Process)
+            }
+          })
+        })
       })
-    })
   }
 
   const stopPm2 = function () {
-    return new Promise((resolve, reject) => {
-      pm2.stop(pm2Options.name, (error, pm2Process) => {
-        if (error) {
-          // TODO, throw controlled error
-          reject(error)
-        } else {
-          resolve(pm2Process)
-        }
+    return getPm2Options()
+      .then((pm2Options) => {
+        return new Promise((resolve, reject) => {
+          pm2.stop(pm2Options.name, (error, pm2Process) => {
+            if (error) {
+              reject(new errors.ChildProcess('PM2 stop: ' + error.message, error.stack))
+            } else {
+              resolve(pm2Process)
+            }
+          })
+        })
       })
-    })
   }
 
   const printPm2Logs = function (customOptions) {
@@ -103,13 +131,11 @@ const Process = function (options, paths) {
         }
       })
       log.stderr.on('data', (data) => {
-        // TODO, throw controlled error
-        reject(new Error(data))
+        reject(new errors.ChildProcess(data))
       })
       log.on('close', (code) => {
         if (code !== 0) {
-          // TODO, throw controlled error
-          reject(new Error('Process exited with code ' + code))
+          reject(new errors.ChildProcess('Process exited with code ' + code))
         } else {
           resolve()
         }
@@ -148,15 +174,6 @@ const Process = function (options, paths) {
       .then(() => {
         return disconnect()
       })
-  }
-
-  if (!pm2Options.name) {
-    // TODO, throw controlled error
-    throw new Error('No name was provided for process')
-  }
-  if (!pm2Options.script) {
-    // TODO, throw controlled error
-    throw new Error('No script path was provided for process')
   }
 
   return {

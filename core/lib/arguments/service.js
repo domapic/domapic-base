@@ -4,6 +4,6 @@ module.exports = {
   port: {
     type: 'number',
     alias: ['p'],
-    describe: 'Port number for the service server'
+    describe: 'Port number for the server'
   }
 }

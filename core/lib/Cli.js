@@ -10,36 +10,41 @@ const stop = require('./cli/stop')
 const logs = require('./cli/logs')
 
 const Cli = function (options) {
-  options = options || {}
+  // TODO, remove promise from constructor. Now is useful only for error handling, implement it later, in upper layer
+  return new Promise((resolve) => {
+    options = options || {}
 
-  const commands = _.extend({
-    start: start,
-    stop: stop,
-    logs: logs
-  }, options.commands || {})
+    const commands = _.extend({
+      start: start,
+      stop: stop,
+      logs: logs
+    }, options.commands || {})
 
-  const getPublicMethods = function (argsOptions) {
-    const core = new Core(argsOptions)
-    return {
-      process: new Process({
-        script: options.script,
-        name: argsOptions.name
-      }, core.paths),
-      tracer: core.tracer,
-      errors: core.errors,
-      paths: core.paths,
-      config: core.config,
-      utils: core.utils
+    const getCliCommandsMethods = function (argsOptions) {
+      return new Promise((resolve) => {
+        const core = new Core(argsOptions)
+        resolve({
+          process: new Process({
+            script: options.script,
+            name: argsOptions.name
+          }, core.paths, core.errors),
+          tracer: core.tracer,
+          errors: core.errors,
+          paths: core.paths,
+          config: core.config,
+          utils: core.utils
+        })
+      })
     }
-  }
 
-  const runCommand = function () {
-    return new Arguments().runCommand(commands, getPublicMethods)
-  }
+    const runCommand = function () {
+      return new Arguments().runCommand(commands, getCliCommandsMethods)
+    }
 
-  return {
-    runCommand: runCommand
-  }
+    resolve({
+      runCommand: runCommand
+    })
+  })
 }
 
 module.exports = Cli

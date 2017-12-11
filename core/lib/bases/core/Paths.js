@@ -4,6 +4,7 @@ const os = require('os')
 const path = require('path')
 
 const _ = require('lodash')
+const Promise = require('bluebird')
 
 const Paths = function (options, errors) {
   if (!options.name) {
@@ -19,7 +20,7 @@ const Paths = function (options, errors) {
   }
 
   const resolve = function (subPath) {
-    return getSubPath(subPath)
+    return Promise.resolve(getSubPath(subPath))
   }
 
   // TODO, ensure dir, writeJSON, readJSON, etc...
