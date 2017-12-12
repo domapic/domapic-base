@@ -24,7 +24,7 @@ const Process = function (options, paths, errors) {
 
   const getPm2Options = function () {
     if (!pm2OptionsPromise) {
-      pm2OptionsPromise = paths.resolve(options.name + '.pm2.log')
+      pm2OptionsPromise = paths.ensureFile('logs/' + options.name + '.pm2.log')
         .then((homePath) => {
           const extendedOptions = _.extend(
             {},

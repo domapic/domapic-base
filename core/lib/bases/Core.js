@@ -9,8 +9,8 @@ const utils = require('../utils')
 const Core = function (options) {
   const errors = new Errors()
   const paths = new Paths(options, errors)
-  const tracer = new Tracer(options, paths, errors)
-  const config = new Config(options, paths, errors, tracer)
+  const config = new Config(options, paths, errors)
+  const tracer = new Tracer(config, paths, errors)
 
   return {
     errors: errors,

@@ -96,7 +96,7 @@ domapic COMMAND --help
 To start the controller without using PM2:
 
 ```shell
-node server.js --name=SERVERNAME --port=8090
+node server.js --name=SERVERNAME --port=8090 // TODO, this is the real entry point. Explain other methods in CLI, which is only an administration tool
 # or
 npm start -- --name=SERVERNAME --port=8090
 ```
@@ -233,8 +233,8 @@ Logs are also available in files:
   * To avoid this file increasing without limits, install [pm2-logrotate](https://github.com/pm2-hive/pm2-logrotate)
 
 * ~/.domapic/SERVERNAME.DATE.logs
-  * Stored in plain format, without ANSI colors.
-  * This file rotates every day.
+  * Stored always in plain format, without ANSI colors.
+  * This file rotates automatically every day.
   * Only log files for last 10 days are kept.
 
 ## Suggested uses
