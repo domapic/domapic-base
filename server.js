@@ -14,5 +14,6 @@ new core.Service()
   })
   .catch((error) => {
     console.error('ERROR: ' + error.message)
+    console.error(error.stack)
     process.exit(1)
   })

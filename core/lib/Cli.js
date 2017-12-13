@@ -26,7 +26,7 @@ const Cli = function (options) {
         resolve({
           process: new Process({
             script: options.script,
-            name: argsOptions.name
+            name: argsOptions.options.name
           }, core.paths, core.errors),
           tracer: core.tracer,
           errors: core.errors,

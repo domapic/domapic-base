@@ -2,19 +2,36 @@
 
 const Promise = require('bluebird')
 
-const Config = function (options, paths, errors, tracer) {
-  // TODO, if no name is rec
+const Config = function (storage, args, errors) {
+  let buildConfigPromise
+
+  const checkDefaults = function (storedConfig) {
+
+  }
+
+  const extendWithOptions = function (storedConfig) {
+
+  }
+
+  const buildConfig = function () {
+    if (!buildConfigPromise) {
+      return storage.get()
+        .then(checkDefaults)
+        .then(extendWithOptions)
+    }
+    return buildConfigPromise
+  }
 
   const get = function (key) {
-    return Promise.resolve(options)
+    return buildConfig()
+      .then((config) => {
+        console.log(args)
+        return Promise.resolve(args.options)
+      })
   }
 
   return {
     get: get
-    /*
-    set: set //set and save
-    */
-
   }
 }
 

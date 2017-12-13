@@ -10,5 +10,6 @@ new core.Cli({
   return cli.runCommand()
 }).catch((error) => {
   console.error('ERROR: ' + error.message)
+  console.error(error.stack)
   process.exit(1)
 })

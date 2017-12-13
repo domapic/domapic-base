@@ -2,6 +2,7 @@
 
 const os = require('os')
 const path = require('path')
+const fs = require('fs')
 const fsExtra = require('fs-extra')
 
 const _ = require('lodash')
@@ -48,7 +49,7 @@ const Paths = function (options, errors) {
   const writeJSON = function (file, json) {
     return ensureFile(file)
       .then((filePath) => {
-        return fsExtra.writeJSON(filePath, json)
+        return fsExtra.writseJSON(filePath, json)
       })
   }
 
@@ -57,11 +58,31 @@ const Paths = function (options, errors) {
       .then(fsExtra.readJSON)
   }
 
+  const ensureJSON = function (file) {
+    return resolve(file)
+      .then((filePath) => {
+        return new Promise((resolve, reject) => {
+          if (fs.existsSync(filePath)) {
+            resolve(filePath)
+          } else {
+            writeJSON(filePath, {})
+              .then(() => {
+                resolve(filePath)
+              })
+              .catch((error) => {
+                reject(error)
+              })
+          }
+        })
+      })
+  }
+
   return {
     ensureDir: ensureDir,
     ensureFile: ensureFile,
     readJSON: readJSON,
-    writeJSON: writeJSON
+    writeJSON: writeJSON,
+    ensureJSON: ensureJSON
   }
 }
 

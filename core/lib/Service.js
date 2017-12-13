@@ -11,9 +11,10 @@ const serviceArguments = require('./arguments/service')
 
 const Service = function () {
   // TODO, remove promise from constructor. Now is useful only for error handling, implement it later, in upper layer
-  return new Arguments(serviceArguments).getOptions()
-    .then((options) => {
-      const core = new Core(options)
+
+  return new Arguments(serviceArguments).get()
+    .then((args) => {
+      const core = new Core(args)
       const server = new Server(core)
       const client = new Client(core)
 
