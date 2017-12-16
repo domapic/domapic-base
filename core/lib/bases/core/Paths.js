@@ -11,7 +11,7 @@ const Promise = require('bluebird')
 const Paths = function (options, errors) {
   let homePath
 
-  if (!options.name) {
+  if (!options || !options.name) {
     throw new errors.BadData('No name provided, unable to resolve server home path')
   }
 
@@ -72,6 +72,9 @@ const Paths = function (options, errors) {
         return fsExtra.writeJSON(filePath, json, {
           spaces: 2
         })
+        .then(() => {
+          return Promise.resolve(filePath)
+        })
       })
   }
 
@@ -79,7 +82,7 @@ const Paths = function (options, errors) {
     return resolve(file)
       .then(fsExtra.readJSON)
       .catch(() => {
-        return Promise.reject(new errors.BadData('Malformed JSON at ' + file))
+        return Promise.reject(new errors.BadData('Error reading JSON at ' + file))
       })
   }
 

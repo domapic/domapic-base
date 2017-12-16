@@ -9,3 +9,7 @@
     logs: require('./cli/commands/logs.mocks')
   }
 } */
+
+module.exports = {
+  arguments: require('./lib/bases/Arguments.mocks')
+}

@@ -38,3 +38,12 @@ module.exports = {
     x: 2143
   }
 } */
+
+const options = {
+  name: 'fooService',
+  path: '/fooPath'
+}
+
+module.exports = {
+  options: options
+}
