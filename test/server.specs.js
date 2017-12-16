@@ -1,11 +1,8 @@
-const test = require('./test')
-const mocks = require('./mocks')
-
-const start = require('../cli/commands/start')
-const server = require('../lib/server')
+const test = require('../core/test')
+// const mocks = require('../core/test/mocks')
 
 test.describe('Package index', () => {
-  let argumentsStub
+  /* let argumentsStub
 
   test.before(() => {
     test.sinon.stub(server, 'start')
@@ -26,5 +23,5 @@ test.describe('Package index', () => {
 
   test.it('should call to start the server with arguments options', () => {
     test.expect(server.start).to.have.been.calledWith(mocks.arguments.options)
-  })
+  }) */
 })

@@ -1,4 +1,4 @@
-const _ = require('lodash')
+/* const _ = require('lodash')
 const Promise = require('bluebird')
 const yargs = require('yargs')
 
@@ -185,4 +185,4 @@ test.describe('Core Arguments', () => {
 
     new SharedTests(callMethod)()
   })
-})
+}) */

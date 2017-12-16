@@ -19,5 +19,9 @@ module.exports = {
     describe: 'Log level',
     choices: ['log', 'trace', 'debug', 'info', 'warn', 'error'],
     default: 'info'
+  },
+  path: {
+    type: 'string',
+    describe: 'Path to be used as Domapic home path (.domapic folder will be created inside)'
   }
 }

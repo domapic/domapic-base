@@ -32,8 +32,65 @@ const Arguments = function (baseArguments) {
     return defaults
   }
 
-  const getExplicit = function (options, values) {
-    return {}
+  const getCliCommandOptionsNames = function (cliCommand) {
+    const regex = /([[|<]\S*?[\]|>])/gm
+    let matches
+    let results = []
+
+    while ((matches = regex.exec(cliCommand)) !== null) {
+      if (matches.index === regex.lastIndex) {
+        regex.lastIndex++
+      }
+      matches.forEach((match, groupIndex) => {
+        if (groupIndex > 0) {
+          results.push(match)
+        }
+      })
+    }
+    return results
+  }
+
+  const getExplicitCommandOptions = function (processOptions, cliMethod) {
+    let explicit = {}
+    const cliOptionsNames = getCliCommandOptionsNames(cliMethod)
+    const cliOptions = _.filter(processOptions, (option) => {
+      return option.indexOf('-') !== 0
+    })
+
+    _.each(cliOptionsNames, (optionName, index) => {
+      if (!_.isUndefined(cliOptions[index + 1])) {
+        explicit[optionName.replace(/[[|\]|<|>]/g, '')] = cliOptions[index + 1]
+      }
+    })
+
+    return explicit
+  }
+
+  const getExplicit = function (options, values, cliMethod) {
+    let explicit = {}
+    let processOptions = _.clone(process.argv)
+
+    processOptions.splice(0, 2)
+    if (cliMethod) {
+      _.extend(explicit, getExplicitCommandOptions(processOptions, cliMethod))
+    }
+
+    let usualOptions = _.filter(processOptions, (option) => {
+      return option.indexOf('-') === 0
+    })
+
+    _.each(usualOptions, (option) => {
+      const splittedOption = option.split('=')
+      const name = splittedOption[0].replace(/^-*/, '')
+      const value = splittedOption.length > 1 ? splittedOption[1] : true
+      _.each(options, (properties, optionName) => {
+        if (name === optionName || (properties.alias && properties.alias.indexOf(name) > -1)) {
+          explicit[optionName] = value
+        }
+      })
+    })
+
+    return explicit
   }
 
   const Options = function (options) {
@@ -61,17 +118,21 @@ const Arguments = function (baseArguments) {
 
         yargs.command(properties.cli, properties.describe, new Options(extendedArguments).get, (argv) => {
           const userOptions = clean(argv, extendedArguments)
-          return getCliCommandsMethods({
+          const args = {
             options: userOptions,
             defaults: getDefaults(extendedArguments),
-            explicit: getExplicit(extendedArguments, userOptions)
-          })
+            explicit: getExplicit(extendedArguments, userOptions, properties.cli)
+          }
+          return getCliCommandsMethods(args, properties.processName)
             .then((cliCommandMethods) => {
-              return properties.command(userOptions, cliCommandMethods)
-                .catch((error) => {
-                  return cliCommandMethods.tracer.error(error)
-                    .then(() => {
-                      reject(error)
+              return cliCommandMethods.config.get()
+                .then(configuration => {
+                  return properties.command(configuration, cliCommandMethods, args)
+                    .catch((error) => {
+                      return cliCommandMethods.tracer.error(error)
+                        .then(() => {
+                          reject(error)
+                        })
                     })
                 })
             })

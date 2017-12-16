@@ -1,5 +1,5 @@
-const test = require('../test')
-const mocks = require('../mocks')
+/* const test = require('../../core/test')
+const mocks = require('../../core/test/mocks')
 
 const commands = {
   start: require('../../cli/commands/start'),
@@ -23,3 +23,4 @@ test.describe('Domapic CLI index', () => {
     test.expect(argumentsStub.registerCommands).to.have.been.calledWith(commands)
   })
 })
+*/

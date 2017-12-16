@@ -1,4 +1,4 @@
-const test = require('../../test')
+/* const test = require('../../test')
 const Promise = require('bluebird')
 
 const Log = require('../../../core/lib/log')
@@ -42,4 +42,4 @@ test.describe('Core Log', () => {
         })
     })
   })
-})
+}) */

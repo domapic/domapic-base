@@ -117,7 +117,7 @@ ___
 ## Configuration
 ___
 
-When the controller server is started, a file is created at *~/.domapic/SERVERNAME/config.json.* You can edit the options directly in that configuration file, and restart the server.
+When the controller server is started, a file is created at *~/.domapic/SERVERNAME/config/server.json.* You can edit the options directly in that configuration file, and restart the server.
 
 > Note: The server name is related to the folder in which the configuration is saved, so it can not be modified in the configuration file itself. If you want to change the name of your server, rename the configuration folder, and restart the server with the new name option.
 
@@ -131,6 +131,7 @@ port | Number | Http port | 53152
 ssl | Boolean | Secured http server | true
 mongodb | String | MongoDB connection string URI | 
 autosearch | String | Range of IPs in which the controller will look to restore paired services connections | 192.168.1.1-255
+path | String | Path to be used for domapic as home (.domapic path will be created inside) | ~
 
 ## Database
 ___

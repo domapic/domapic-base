@@ -7,6 +7,13 @@ const Storage = function (fileName, paths, errors, tracer) {
   let getDataPromise
   let data
 
+  const fullClone = function (data) {
+    if (_.isObject(data)) {
+      return JSON.parse(JSON.stringify(data))
+    }
+    return data
+  }
+
   const loadFile = function () {
     return paths.ensureJSON(fileName)
         .then(paths.readJSON)
@@ -31,18 +38,29 @@ const Storage = function (fileName, paths, errors, tracer) {
     return getData()
       .then(() => {
         if (key) {
-          return !_.isUndefined(data[key]) ? Promise.resolve(_.clone(data[key])) : Promise.reject(new errors.BadData('Invalid storage key: ' + key))
+          return !_.isUndefined(data[key]) ? Promise.resolve(fullClone(data[key])) : Promise.reject(new errors.BadData('Invalid storage key: ' + key))
         }
-        return Promise.resolve(_.clone(data))
+        return Promise.resolve(fullClone(data))
       })
   }
 
   const set = function (key, value) {
+    if (_.isUndefined(value)) {
+      value = key
+      key = null
+    }
+    if (!value) {
+      return Promise.reject(new errors.BadData('No data provided to be set'))
+    }
     return getData()
       .then(() => {
-        data[key] = value
+        if (key) {
+          data[key] = value
+        } else {
+          data = value
+        }
         saveData()
-        return Promise.resolve(_.clone(data[key]))
+        return Promise.resolve(fullClone(key ? data[key] : data))
       })
   }
 
@@ -51,7 +69,7 @@ const Storage = function (fileName, paths, errors, tracer) {
       .then(() => {
         delete data[key]
         saveData()
-        return Promise.resolve()
+        return Promise.resolve(fullClone(data))
       })
   }
 

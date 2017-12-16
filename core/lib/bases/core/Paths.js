@@ -9,16 +9,36 @@ const _ = require('lodash')
 const Promise = require('bluebird')
 
 const Paths = function (options, errors) {
+  let homePath
+
   if (!options.name) {
     throw new errors.BadData('No name provided, unable to resolve server home path')
   }
 
-  // TODO, home path completely customizable
-  const homePath = path.resolve(os.homedir(), '.domapic', options.name)
+  const getAbsolute = function (relative) {
+    if (path.isAbsolute(relative)) {
+      return relative
+    }
+    return path.resolve(process.cwd(), relative)
+  }
+
+  const getPath = function () {
+    if (options.path) {
+      return getAbsolute(options.path)
+    }
+    return os.homedir()
+  }
+
+  const getHomePath = function () {
+    if (!homePath) {
+      homePath = path.resolve(getPath(), '.domapic', options.name)
+    }
+    return homePath
+  }
 
   const getSubPath = function (subPath) {
     subPath = !_.isArray(subPath) ? [subPath] : subPath
-    subPath.unshift(homePath)
+    subPath.unshift(getHomePath())
     return path.resolve.apply(this, subPath)
   }
 
@@ -49,13 +69,18 @@ const Paths = function (options, errors) {
   const writeJSON = function (file, json) {
     return ensureFile(file)
       .then((filePath) => {
-        return fsExtra.writseJSON(filePath, json)
+        return fsExtra.writeJSON(filePath, json, {
+          spaces: 2
+        })
       })
   }
 
   const readJSON = function (file) {
     return resolve(file)
       .then(fsExtra.readJSON)
+      .catch(() => {
+        return Promise.reject(new errors.BadData('Malformed JSON at ' + file))
+      })
   }
 
   const ensureJSON = function (file) {

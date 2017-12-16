@@ -1,4 +1,4 @@
-const Promise = require('bluebird')
+/* const Promise = require('bluebird')
 
 const test = require('../../test')
 
@@ -39,4 +39,4 @@ const Stub = function () {
 module.exports = {
   Stub: Stub,
   options: options
-}
+} */

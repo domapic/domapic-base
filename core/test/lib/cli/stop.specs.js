@@ -1,4 +1,4 @@
-const test = require('../../test')
+/* const test = require('../../test')
 const mocks = require('../../mocks')
 
 const enums = require('../../../lib/enums/log')
@@ -52,3 +52,5 @@ test.describe('CLI stop command', () => {
       })
   })
 })
+
+*/

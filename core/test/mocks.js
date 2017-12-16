@@ -1,5 +1,5 @@
 
-module.exports = {
+/* module.exports = {
   arguments: require('./core/lib/arguments.mocks'),
   log: require('./core/lib/log.mocks'),
   process: require('./core/lib/process.mocks'),
@@ -8,4 +8,4 @@ module.exports = {
     stop: require('./cli/commands/stop.mocks'),
     logs: require('./cli/commands/logs.mocks')
   }
-}
+} */

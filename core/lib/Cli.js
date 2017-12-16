@@ -10,7 +10,8 @@ const stop = require('./cli/stop')
 const logs = require('./cli/logs')
 
 const Cli = function (options) {
-  // TODO, remove promise from constructor. Now is useful only for error handling, implement it later, in upper layer
+  // TODO, remove promise from constructor. Now it is useful only for error handling, implement it later, in upper layer
+
   return new Promise((resolve) => {
     options = options || {}
 
@@ -20,20 +21,28 @@ const Cli = function (options) {
       logs: logs
     }, options.commands || {})
 
-    const getCliCommandsMethods = function (argsOptions) {
-      return new Promise((resolve) => {
-        const core = new Core(argsOptions)
-        resolve({
-          process: new Process({
-            script: options.script,
-            name: argsOptions.options.name
-          }, core.paths, core.errors),
-          tracer: core.tracer,
-          errors: core.errors,
-          paths: core.paths,
-          config: core.config,
-          utils: core.utils
-        })
+    const getCliCommandsMethods = function (argsOptions, processName) {
+      return new Promise((resolve, reject) => {
+        const core = new Core(argsOptions, processName)
+        core.config.get()
+          .then((configuration) => {
+            const pm2Process = new Process({
+              script: options.script,
+              name: configuration.name
+            }, core.paths, core.errors)
+
+            resolve({
+              process: pm2Process,
+              tracer: core.tracer,
+              errors: core.errors,
+              paths: core.paths,
+              config: core.config,
+              utils: core.utils
+            })
+          })
+          .catch((err) => {
+            reject(err)
+          })
       })
     }
 
