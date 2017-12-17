@@ -1,6 +1,7 @@
 'use strict'
 
 const _ = require('lodash')
+const Promise = require('bluebird')
 
 const Errors = function () {
   const errors = {
@@ -89,15 +90,18 @@ const Errors = function () {
 
   const fromCode = function (code) {
     // TODO, convert to constructor from code, returns constructor
+    return Promise.resolve()
   }
 
   const toCode = function (/* error */) {
     // TODO, returns the code correspondant to the used constructor
+    return Promise.resolve()
   }
 
   const toHTML = function () {
     // TODO, returns an HTML error ready for response (maybe boom)
     // maybe set the status directly... depends on server technology
+    return Promise.resolve()
   }
 
   const byType = createConstructors()

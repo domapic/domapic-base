@@ -3,9 +3,13 @@
 const _ = require('lodash')
 const Promise = require('bluebird')
 
-const Storage = function (fileName, paths, errors, tracer) {
+const Storage = function (fileName, paths, errors) {
   let getDataPromise
   let data
+
+  if (!fileName) {
+    throw new errors.BadData('No file name provided')
+  }
 
   const fullClone = function (data) {
     if (_.isObject(data)) {
@@ -45,9 +49,14 @@ const Storage = function (fileName, paths, errors, tracer) {
   }
 
   const set = function (key, value) {
+    value = fullClone(value)
+    key = fullClone(key)
     if (_.isUndefined(value)) {
       value = key
       key = null
+    }
+    if (key !== null && !_.isUndefined(key) && !_.isString(key)) {
+      return Promise.reject(new errors.BadData('Key to be set must be an string'))
     }
     if (!value) {
       return Promise.reject(new errors.BadData('No data provided to be set'))
@@ -65,6 +74,9 @@ const Storage = function (fileName, paths, errors, tracer) {
   }
 
   const remove = function (key) {
+    if (!key) {
+      return Promise.reject(new errors.BadData('No key provided to be removed'))
+    }
     return getData()
       .then(() => {
         delete data[key]
