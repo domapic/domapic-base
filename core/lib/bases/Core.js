@@ -11,8 +11,8 @@ const STORAGE_FOLDER = 'storage/'
 const CONFIG_FOLDER = 'config/'
 
 const Core = function (args, processName) {
-  let storageFile = STORAGE_FOLDER + processName + '.json'
-  let configFile = CONFIG_FOLDER + processName + '.json'
+  const storageFile = STORAGE_FOLDER + processName + '.json'
+  const configFile = CONFIG_FOLDER + processName + '.json'
 
   const errors = new Errors()
   const paths = new Paths(args.options, errors)

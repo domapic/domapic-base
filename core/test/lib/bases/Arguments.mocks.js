@@ -1,49 +1,27 @@
-/* const Promise = require('bluebird')
-
-const test = require('../../test')
-
-const core = require('../../../core')
-
-const options = {
-  name: 'tests-server',
-  port: 34000
-}
-
-const Stub = function () {
-  let _constructor = test.sinon.stub(core, 'Arguments')
-  let getOptions = _constructor.prototype.getOptions = test.sinon.spy(() => {
-    return Promise.resolve(options)
-  })
-  let registerCommands = _constructor.prototype.registerCommands = test.sinon.spy(() => {
-    return Promise.resolve()
-  })
-
-  const restore = function () {
-    core.Arguments.restore()
-  }
-
-  return {
-    _constructor: _constructor,
-    getOptions: getOptions,
-    registerCommands: registerCommands,
-    restore: restore
-  }
-}
-
-module.exports = {
-  Stub: Stub,
-  options: options,
-  wrongOptions: {
-    y: 'testing',
-    x: 2143
-  }
-} */
 
 const options = {
   name: 'fooService',
   path: '/fooPath'
 }
 
+const getResult = {
+  options: {
+    color: false,
+    name: 'testing',
+    logLevel: 'info',
+    path: undefined,
+    port: undefined
+  },
+  defaults: {
+    color: true,
+    logLevel: 'info'
+  },
+  explicit: {
+    name: 'testing'
+  }
+}
+
 module.exports = {
-  options: options
+  options: options,
+  getResult: getResult
 }
