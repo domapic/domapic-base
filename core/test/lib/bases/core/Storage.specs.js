@@ -43,6 +43,18 @@ test.describe('Bases -> Core -> Storage', () => {
   })
 
   test.describe('get', () => {
+    const testClonedByType = function (description, key) {
+      test.it(description, (done) => {
+        let dataKey = key
+        storage.get(dataKey)
+          .then((value) => {
+            test.expect(JSON.stringify).to.have.been.calledWith(mocks.storage.data[dataKey])
+            test.expect(value).to.deep.equal(mocks.storage.data[dataKey])
+            done()
+          })
+      })
+    }
+
     test.it('should return a Promise', (done) => {
       let response = storage.get()
         .then(() => {
@@ -90,25 +102,8 @@ test.describe('Bases -> Core -> Storage', () => {
         })
     })
 
-    test.it('should return a clone of the value for the received key, if it is an object', (done) => {
-      let dataKey = 'fooObject'
-      storage.get(dataKey)
-        .then((value) => {
-          test.expect(JSON.stringify).to.have.been.calledWith(mocks.storage.data[dataKey])
-          test.expect(value).to.deep.equal(mocks.storage.data[dataKey])
-          done()
-        })
-    })
-
-    test.it('should return a clone of the value for the received key, if it is an array', (done) => {
-      let dataKey = 'fooObjectsArray'
-      storage.get(dataKey)
-        .then((value) => {
-          test.expect(JSON.stringify).to.have.been.calledWith(mocks.storage.data[dataKey])
-          test.expect(value).to.deep.equal(mocks.storage.data[dataKey])
-          done()
-        })
-    })
+    testClonedByType('should return a clone of the value for the received key, if it is an object', 'fooObject')
+    testClonedByType('should return a clone of the value for the received key, if it is an array', 'fooObjectsArray')
 
     test.it('should return a clone of all data if no key is received', (done) => {
       storage.get()
