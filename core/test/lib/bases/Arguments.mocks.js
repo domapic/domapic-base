@@ -1,8 +1,8 @@
 
-const options = {
-  name: 'fooService',
-  path: '/fooPath'
-}
+const _ = require('lodash')
+const Promise = require('bluebird')
+
+const test = require('../../index')
 
 const getResult = {
   options: {
@@ -21,7 +21,40 @@ const getResult = {
   }
 }
 
+const cliCommandsMethods = function () {
+  const config = {
+    get: test.sinon.stub().usingPromise(Promise).resolves(_.extend(
+      {},
+      getResult.defaults,
+      getResult.explicit
+    ))
+  }
+  const tracer = {
+    error: test.sinon.stub().usingPromise(Promise).resolves()
+  }
+  return {
+    config: config,
+    tracer: tracer,
+    get: () => {
+      return Promise.resolve({
+        config: config,
+        tracer: tracer
+      })
+    }
+  }
+}
+
+const options = {
+  name: 'fooService',
+  path: '/fooPath',
+  logLevel: 'debug'
+}
+
+const terminalWidth = 500
+
 module.exports = {
   options: options,
-  getResult: getResult
+  getResult: getResult,
+  terminalWidth: terminalWidth,
+  cliCommandsMethods: cliCommandsMethods
 }

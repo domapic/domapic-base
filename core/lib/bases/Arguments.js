@@ -38,9 +38,6 @@ const Arguments = function (baseArguments) {
     let results = []
 
     while ((matches = regex.exec(cliCommand)) !== null) {
-      if (matches.index === regex.lastIndex) {
-        regex.lastIndex++
-      }
       matches.forEach((match, groupIndex) => {
         if (groupIndex > 0) {
           results.push(match)
@@ -56,7 +53,6 @@ const Arguments = function (baseArguments) {
     const cliOptions = _.filter(processOptions, (option) => {
       return option.indexOf('-') !== 0
     })
-
     _.each(cliOptionsNames, (optionName, index) => {
       if (!_.isUndefined(cliOptions[index + 1])) {
         explicit[optionName.replace(/[[|\]|<|>]/g, '')] = cliOptions[index + 1]
@@ -96,7 +92,7 @@ const Arguments = function (baseArguments) {
   const Options = function (options) {
     return {
       get: function () {
-        _.forEach(options, (properties, name) => {
+        _.each(options, (properties, name) => {
           yargs.option(name, properties)
         })
       }
@@ -108,7 +104,7 @@ const Arguments = function (baseArguments) {
     yargs.help().alias('h', 'help')
     yargs.wrap(yargs.terminalWidth())
 
-    return yargs.argv
+    return yargs.parse()
   }
 
   const runCommand = function (commands, getCliCommandsMethods) {
