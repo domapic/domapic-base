@@ -1,3 +1,232 @@
+
+const childProcess = require('child_process')
+
+const Promise = require('bluebird')
+const pm2 = require('pm2')
+
+const test = require('../../index')
+const mocks = require('../../mocks')
+
+const Errors = require('../../../lib/bases/core/Errors')
+const Paths = require('../../../lib/bases/core/Paths')
+const Process = require('../../../lib/bases/Process')
+
+test.describe('Bases -> Process', () => {
+  const fooFilePath = '/logs/fooName.pm2.log'
+  const fooScriptPath = '/fooScript.js'
+  const errors = new Errors()
+  const paths = new Paths(mocks.arguments.options, errors)
+  let pm2Connect
+  let pm2ConnectResolver
+  let pm2ConnectRejecter
+  let pm2Resolver
+  let pm2Rejecter
+  let pm2Process
+
+  test.beforeEach(() => {
+    pm2Process = new Process({
+      script: fooScriptPath,
+      name: mocks.arguments.options.name
+    }, paths, errors)
+
+    pm2ConnectResolver = test.sinon.spy(function (cb) {
+      cb(null)
+    })
+    pm2ConnectRejecter = test.sinon.spy(function (cb) {
+      cb(new Error(mocks.process.pm2ConnectError))
+    })
+    pm2Resolver = test.sinon.spy(function (pm2Options, cb) {
+      cb(null, mocks.process.pm2Process)
+    })
+    pm2Rejecter = test.sinon.spy(function (pm2Options, cb) {
+      cb(new Error(mocks.process.pm2Error))
+    })
+    pm2Connect = test.sinon.stub(pm2, 'connect').callsFake(pm2ConnectResolver)
+    test.sinon.stub(pm2, 'disconnect')
+    test.sinon.stub(paths, 'ensureFile').usingPromise(Promise).resolves(fooFilePath)
+  })
+
+  test.afterEach(() => {
+    pm2.connect.restore()
+    pm2.disconnect.restore()
+    paths.ensureFile.restore()
+  })
+
+  const commonTests = function (method) {
+    test.it('should return a Promise', (done) => {
+      let response = pm2Process[method]()
+        .then(() => {
+          test.expect(response).to.be.an.instanceof(Promise)
+          done()
+        })
+    })
+
+    test.it('should connect to PM2', (done) => {
+      pm2Process[method]()
+        .then(() => {
+          test.expect(pm2.connect).to.have.been.called()
+          done()
+        })
+    })
+
+    test.it('should reject the promise if connect to PM2 fails', (done) => {
+      pm2Connect.callsFake(pm2ConnectRejecter)
+      pm2Process[method]()
+        .catch((err) => {
+          test.expect(err).to.be.an.instanceof(errors.ChildProcess)
+          done()
+        })
+    })
+
+    test.it('should disconnect from PM2', (done) => {
+      pm2Process[method]()
+        .then(() => {
+          test.expect(pm2.disconnect).to.have.been.called()
+          done()
+        })
+    })
+
+    test.it('should ensure that logs paths exists', (done) => {
+      pm2Process[method]()
+        .then(() => {
+          test.expect(paths.ensureFile.getCall(0).args[0].indexOf(mocks.arguments.options.name)).to.be.above(-1)
+          done()
+        })
+    })
+
+    test.it('should not ensure that logs paths exists more than once', (done) => {
+      pm2Process[method]()
+        .then(() => {
+          pm2Process[method]()
+            .then(() => {
+              test.expect(paths.ensureFile).to.have.been.calledOnce()
+              done()
+            })
+        })
+    })
+
+    test.it('should reject the promise if no name was provided for process', (done) => {
+      pm2Process = new Process({}, paths, errors)
+      pm2Process[method]()
+        .catch((err) => {
+          test.expect(err).to.be.an.instanceof(errors.BadData)
+          done()
+        })
+    })
+
+    test.it('should reject the promise if no script path was provided for process', (done) => {
+      pm2Process = new Process({
+        name: mocks.arguments.options.name
+      }, paths, errors)
+      pm2Process[method]()
+        .catch((err) => {
+          test.expect(err).to.be.an.instanceof(errors.BadData)
+          done()
+        })
+    })
+  }
+
+  test.describe('start', () => {
+    let pm2Start
+
+    test.beforeEach(() => {
+      pm2Start = test.sinon.stub(pm2, 'start').callsFake(pm2Resolver)
+    })
+
+    test.afterEach(() => {
+      pm2.start.restore()
+    })
+
+    commonTests('start')
+
+    test.it('should add received arguments to default pm2 options', (done) => {
+      const fooArguments = ['--testing', '--testing2']
+      pm2Process.start(fooArguments)
+        .then(() => {
+          test.expect(pm2Start.getCall(0).args[0].args).to.deep.equal(fooArguments)
+          done()
+        })
+    })
+
+    test.it('should convert string arguments to array', (done) => {
+      const fooArguments = '--testing'
+      pm2Process.start(fooArguments)
+        .then(() => {
+          test.expect(pm2Start.getCall(0).args[0].args).to.deep.equal([fooArguments])
+          done()
+        })
+    })
+
+    test.it('should convert object arguments to array', (done) => {
+      const fooArguments = {
+        testing: true,
+        testing2: 'fooValue',
+        testing3: undefined
+      }
+      pm2Process.start(fooArguments)
+        .then(() => {
+          test.expect(pm2Start.getCall(0).args[0].args).to.deep.equal(['--testing=true', '--testing2=fooValue'])
+          done()
+        })
+    })
+
+    test.it('should start the PM2 process with logs pointing to log file path', (done) => {
+      pm2Process.start()
+        .then(() => {
+          test.expect(pm2Start.getCall(0).args[0].output).to.equal(fooFilePath)
+          test.expect(pm2Start.getCall(0).args[0].error).to.equal(fooFilePath)
+          done()
+        })
+    })
+
+    test.it('should resolve the promise with the PM2 process', (done) => {
+      pm2Process.start()
+        .then((pm2Proc) => {
+          test.expect(pm2Proc).to.deep.equal(mocks.process.pm2Process)
+          done()
+        })
+    })
+
+    test.it('should reject the promise if starting PM2 process fails', (done) => {
+      pm2Start.callsFake(pm2Rejecter)
+      pm2Process.start()
+        .catch((err) => {
+          test.expect(err).to.be.an.instanceof(errors.ChildProcess)
+          done()
+        })
+    })
+  })
+
+  test.describe('stop', () => {
+    let pm2Stop
+
+    test.beforeEach(() => {
+      pm2Stop = test.sinon.stub(pm2, 'stop').callsFake(pm2Resolver)
+    })
+
+    test.afterEach(() => {
+      pm2.stop.restore()
+    })
+
+    commonTests('stop')    
+  })
+
+  test.describe('logs', () => {
+    const spawnStub = mocks.process.processSpawn()
+
+    test.beforeEach(() => {
+      spawnStub.callsFake('on', 0)
+      test.sinon.stub(childProcess, 'spawn').returns(spawnStub)
+    })
+
+    test.afterEach(() => {
+      childProcess.spawn.restore()
+    })
+
+    commonTests('logs')
+  })
+})
+
 /* const childProcess = require('child_process')
 const path = require('path')
 

@@ -1,42 +1,57 @@
-/* const Promise = require('bluebird')
 
-const test = require('../../test')
+const test = require('../../index')
 
-const core = require('../../../core')
-
-const options = {
-  name: 'tests-server'
+const pm2Process = {
+  name: 'fooProcessName'
 }
 
-const Stub = function () {
-  let _constructor = test.sinon.stub(core, 'Process')
+const pm2Error = 'foo PM2 Error'
+const pm2ConnectError = 'foo PM2 Connect Error'
 
-  let start = _constructor.prototype.start = test.sinon.spy((options) => {
-    return Promise.resolve()
-  })
+const processSpawn = function () {
+  let functionToExecute
+  let returns
 
-  let stop = _constructor.prototype.stop = test.sinon.spy((options) => {
-    return Promise.resolve()
-  })
-
-  let logs = _constructor.prototype.logs = test.sinon.spy((options) => {
-    return Promise.resolve()
-  })
-
-  const restore = function () {
-    core.Process.restore()
+  const callsFake = function (actionToExecute, data) {
+    functionToExecute = actionToExecute
+    returns = data
   }
 
+  const stdout = test.sinon.spy((eventName, func) => {
+    if (functionToExecute === 'stdout') {
+      test.sinon.stub(console, 'log')
+      func(returns)
+      console.log.restore()
+    }
+  })
+
+  const stderr = test.sinon.spy((eventName, func) => {
+    if (functionToExecute === 'stderr') {
+      func(returns)
+    }
+  })
+
+  const on = test.sinon.spy((eventName, func) => {
+    if (functionToExecute === 'on') {
+      func(returns)
+    }
+  })
+
   return {
-    _constructor: _constructor,
-    start: start,
-    stop: stop,
-    logs: logs,
-    restore: restore
+    stdout: {
+      on: stdout
+    },
+    stderr: {
+      on: stderr
+    },
+    on: on,
+    callsFake: callsFake
   }
 }
 
 module.exports = {
-  Stub: Stub,
-  options: options
-} */
+  pm2Process: pm2Process,
+  pm2ConnectError: pm2ConnectError,
+  pm2Error: pm2Error,
+  processSpawn: processSpawn
+}

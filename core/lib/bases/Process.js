@@ -79,7 +79,7 @@ const Process = function (options, paths, errors) {
   const addArgumentsToOptions = function (args) {
     return getPm2Options()
       .then((pm2Options) => {
-        args = _.isObject(args) ? objectToArgs(args) : args
+        args = _.isString(args) ? [args] : (_.isArray(args) ? args : objectToArgs(args))
         return Promise.resolve(_.extend({}, pm2Options, {
           args: args
         }))
@@ -117,6 +117,7 @@ const Process = function (options, paths, errors) {
   }
 
   const printPm2Logs = function (customOptions) {
+    customOptions = customOptions || {}
     return new Promise((resolve, reject) => {
       const pm2Options = ['logs', options.name, '--raw']
       if (customOptions.lines) {
@@ -168,6 +169,7 @@ const Process = function (options, paths, errors) {
 
   const logs = function (customOptions) {
     return connect()
+      .then(getPm2Options)
       .then(() => {
         return printPm2Logs(customOptions)
       })
