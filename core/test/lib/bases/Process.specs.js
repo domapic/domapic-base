@@ -198,17 +198,18 @@ test.describe('Bases -> Process', () => {
   })
 
   test.describe('stop', () => {
-    let pm2Stop
+    // let pm2Stop
 
     test.beforeEach(() => {
-      pm2Stop = test.sinon.stub(pm2, 'stop').callsFake(pm2Resolver)
+      test.sinon.stub(pm2, 'stop').callsFake(pm2Resolver)
+      // pm2Stop = test.sinon.stub(pm2, 'stop').callsFake(pm2Resolver)
     })
 
     test.afterEach(() => {
       pm2.stop.restore()
     })
 
-    commonTests('stop')    
+    commonTests('stop')
   })
 
   test.describe('logs', () => {
