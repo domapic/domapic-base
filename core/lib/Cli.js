@@ -2,9 +2,7 @@
 
 const _ = require('lodash')
 
-const Arguments = require('./bases/Arguments')
-const Core = require('./bases/Core')
-const Process = require('./bases/Process')
+const bases = require('./bases')
 const start = require('./cli/start')
 const stop = require('./cli/stop')
 const logs = require('./cli/logs')
@@ -23,10 +21,10 @@ const Cli = function (options) {
 
     const getCliCommandsMethods = function (argsOptions, processName) {
       return new Promise((resolve, reject) => {
-        const core = new Core(argsOptions, processName)
+        const core = new bases.Core(argsOptions, processName)
         core.config.get()
           .then((configuration) => {
-            const pm2Process = new Process({
+            const pm2Process = new bases.Process({
               script: options.script,
               name: configuration.name
             }, core.paths, core.errors)
@@ -47,7 +45,7 @@ const Cli = function (options) {
     }
 
     const runCommand = function () {
-      return new Arguments().runCommand(commands, getCliCommandsMethods)
+      return new bases.Arguments().runCommand(commands, getCliCommandsMethods)
     }
 
     resolve({
