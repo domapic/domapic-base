@@ -125,15 +125,7 @@ const Process = function (options, paths, errors) {
       }
 
       const log = childProcess.spawn(path.resolve(__dirname, '..', '..', '..', 'node_modules', '.bin', 'pm2'), pm2Options)
-      log.stdout.on('data', (data) => {
-        const cleaned = _.trim(data.toString())
-        if (cleaned.length) {
-          console.log(cleaned)
-        }
-      })
-      log.stderr.on('data', (data) => {
-        reject(new errors.ChildProcess(data))
-      })
+
       log.on('close', (code) => {
         if (code !== 0) {
           reject(new errors.ChildProcess('Process exited with code ' + code))
@@ -141,7 +133,25 @@ const Process = function (options, paths, errors) {
           resolve()
         }
       })
+
+      log.stdout.on('data', (data) => {
+        const cleaned = _.trim(data.toString())
+        if (cleaned.length) {
+          console.log(cleaned)
+        }
+      })
+
+      log.stderr.on('data', (data) => {
+        reject(new errors.ChildProcess(data))
+      })
     })
+  }
+
+  const disconnectAndResolve = function (processData) {
+    return disconnect()
+          .then(() => {
+            return Promise.resolve(processData)
+          })
   }
 
   const start = function (args) {
@@ -149,22 +159,13 @@ const Process = function (options, paths, errors) {
       .then(() => {
         return startPm2(args)
       })
-      .then((pm2Process) => {
-        return disconnect()
-          .then(() => {
-            return Promise.resolve(pm2Process)
-          })
-      })
+      .then(disconnectAndResolve)
   }
 
   const stop = function () {
     return connect()
-      .then(() => {
-        return stopPm2()
-      })
-      .then(() => {
-        return disconnect()
-      })
+      .then(stopPm2)
+      .then(disconnectAndResolve)
   }
 
   const logs = function (customOptions) {
@@ -173,9 +174,7 @@ const Process = function (options, paths, errors) {
       .then(() => {
         return printPm2Logs(customOptions)
       })
-      .then(() => {
-        return disconnect()
-      })
+      .then(disconnect)
   }
 
   return {

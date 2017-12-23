@@ -11,17 +11,22 @@ const pm2ConnectError = 'foo PM2 Connect Error'
 const processSpawn = function () {
   let functionToExecute
   let returns
+  let resolver
+  let resolverReturn
 
   const callsFake = function (actionToExecute, data) {
     functionToExecute = actionToExecute
-    returns = data
+    if (actionToExecute === 'on') {
+      resolverReturn = data
+    } else {
+      returns = data
+    }
   }
 
   const stdout = test.sinon.spy((eventName, func) => {
     if (functionToExecute === 'stdout') {
-      test.sinon.stub(console, 'log')
       func(returns)
-      console.log.restore()
+      resolver(resolverReturn)
     }
   })
 
@@ -33,7 +38,9 @@ const processSpawn = function () {
 
   const on = test.sinon.spy((eventName, func) => {
     if (functionToExecute === 'on') {
-      func(returns)
+      func(resolverReturn)
+    } else {
+      resolver = func
     }
   })
 
