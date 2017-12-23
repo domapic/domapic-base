@@ -1,19 +1,18 @@
-'use strict'
 
 const _ = require('lodash')
 
-const stringTemplateCompile = require('string-template/compile')
+const test = require('../../index')
 
-const compile = function (templates) {
-  let compiled = {}
+const templates = require('../../../lib/utils/templates')
+const cliTemplates = require('../../../lib/templates/cli')
 
-  _.each(templates, (template, key) => {
-    compiled[key] = stringTemplateCompile(template)
+test.describe('Utils -> templates', () => {
+  test.describe('compile', () => {
+    test.it('should return a template function for each received template', () => {
+      const compiledTemplates = templates.compile(cliTemplates)
+      _.each(cliTemplates, (stringTemplate, templateName) => {
+        test.expect(compiledTemplates[templateName]).to.be.a('function')
+      })
+    })
   })
-
-  return compiled
-}
-
-module.exports = {
-  compile: compile
-}
+})
