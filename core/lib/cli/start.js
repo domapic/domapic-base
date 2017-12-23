@@ -10,45 +10,14 @@ const start = function (config, cli) {
     name: config.name
   }))
     .then(() => {
-      return cli.tracer.log(templates.stopServiceHelp({
-        name: config.name
-      }))
-    })
-    .then(() => {
-      return cli.tracer.trace(templates.stopServiceHelp({
-        name: config.name
-      }))
-    })
-    .then(() => {
-      return cli.tracer.debug(templates.stopServiceHelp({
-        name: config.name
-      }))
-    })
-    .then(() => {
-      return cli.tracer.info(templates.stopServiceHelp({
-        name: config.name
-      }))
-    })
-    .then(() => {
-      return cli.tracer.warn(templates.stopServiceHelp({
-        name: config.name
-      }))
-    })
-    .then(() => {
       return cli.process.start(config)
     })
     .then(() => {
-      return cli.tracer.info(templates.stopServiceHelp({
-        name: config.name
-      }))
-    })
-    .then(() => {
-      return cli.tracer.info(templates.displayLogsHelp({
-        name: config.name
-      }))
-    })
-    .then(() => {
-      return cli.tracer.debug(config)
+      return cli.tracer.group([
+        {info: templates.stopServiceHelp({name: config.name})},
+        {info: templates.displayLogsHelp({name: config.name})},
+        {debug: config}
+      ])
     })
 }
 

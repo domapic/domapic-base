@@ -153,4 +153,46 @@ test.describe('Bases -> Core -> Tracer', () => {
       }
     })
   })
+
+  test.describe('group', () => {
+    const fooLogsGroup = [
+      {log: 'foo-log'},
+      {debug: 'foo-debug'},
+      {trace: 'foo-trace'},
+      {error: 'foo-error'},
+      {warn: 'foo-warn'}
+    ]
+
+    test.beforeEach(() => {
+      _.each(coreTracer, (logMethod, methodName) => {
+        test.sinon.spy(coreTracer, methodName)
+      })
+    })
+
+    test.afterEach(() => {
+      _.each(coreTracer, (logMethod, methodName) => {
+        coreTracer[methodName].restore()
+      })
+    })
+
+    test.it('should return a Promise', (done) => {
+      const response = coreTracer.group([])
+        .then(() => {
+          test.expect(response).to.be.an.instanceof(Promise)
+          done()
+        })
+    })
+
+    test.it('should call to correspondant log method for each element of group', (done) => {
+      coreTracer.group(fooLogsGroup)
+        .then(() => {
+          _.each(fooLogsGroup, (logData) => {
+            const logMethod = _.keys(logData)[0]
+            const logText = logData[logMethod]
+            test.expect(coreTracer[logMethod]).to.have.been.calledWith(logText)
+          })
+          done()
+        })
+    })
+  })
 })

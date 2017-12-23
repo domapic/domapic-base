@@ -121,11 +121,23 @@ const Tracer = function (config, paths, errors) {
     }
   }
 
+  const Group = function (methods) {
+    return function (logs) {
+      return Promise.mapSeries(logs, (logData) => {
+        const methodName = _.keys(logData)[0]
+        const toLog = logData[methodName]
+        return methods[methodName](toLog)
+      })
+    }
+  }
+
   const createMethods = function (methodNames) {
     let methods = {}
     _.each(methodNames, (methodName) => {
       methods[methodName] = new LogMethod(methodName)
     })
+
+    methods.group = new Group(methods)
 
     return methods
   }

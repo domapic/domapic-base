@@ -1,56 +1,38 @@
-/* const test = require('../../test')
+const Promise = require('bluebird')
+
+const test = require('../../index')
 const mocks = require('../../mocks')
 
-const enums = require('../../../lib/enums/log')
-const stop = require('../../../cli/commands/stop')
+const stop = require('../../../lib/cli/stop')
 
-test.describe('CLI stop command', () => {
-  let logStub,
-    processStub
+test.describe('Cli Commands -> stop', () => {
+  let cliMethods
 
   test.beforeEach(() => {
-    logStub = new mocks.log.Stub()
-    processStub = new mocks.process.Stub()
+    cliMethods = mocks.core.cliMethodsStub()
   })
 
-  test.afterEach(() => {
-    logStub.restore()
-    processStub.restore()
-  })
-
-  test.it('should log the stopping process message', (done) => {
-    stop.command(mocks.commands.stop.options)
+  test.it('should return a Promise', (done) => {
+    let response = stop.command(mocks.config.getResult, cliMethods)
       .then(() => {
-        test.expect(logStub.info).to.have.been.calledWith(enums['stopping-server-pm2'])
+        test.expect(response).to.be.an.instanceof(Promise)
         done()
       })
   })
 
-  test.it('should create a new Process instance of ./server.js, passing to it the received options', (done) => {
-    stop.command(mocks.commands.stop.options)
+  test.it('should display info about the command execution', (done) => {
+    stop.command(mocks.config.getResult, cliMethods)
       .then(() => {
-        test.expect(processStub._constructor).to.have.been.calledWithNew()
-        test.expect(processStub._constructor.getCall(0).args[0].args).to.eql(mocks.commands.stop.options)
-        test.expect(processStub._constructor.getCall(0).args[0].name).to.equal(mocks.commands.stop.options.name)
+        test.expect(cliMethods.tracer.info).to.have.been.called()
         done()
       })
   })
 
   test.it('should call to stop the process', (done) => {
-    stop.command(mocks.commands.stop.options)
+    stop.command(mocks.config.getResult, cliMethods)
       .then(() => {
-        test.expect(processStub.stop).to.have.been.called()
-        done()
-      })
-  })
-
-  test.it('should log the start commands instructions', (done) => {
-    stop.command(mocks.commands.stop.options)
-      .then(() => {
-        test.expect(logStub.info).to.have.been.calledWith(enums['start-process-instructions'])
+        test.expect(cliMethods.process.stop).to.have.been.called()
         done()
       })
   })
 })
-
-*/
