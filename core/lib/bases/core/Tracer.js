@@ -83,7 +83,7 @@ const Tracer = function (config, paths, errors) {
 
         // TODO, make this deactivable
         const file = tracer.dailyfile({
-          level: results.config.logLevel,
+          level: results.config.logLevel, // TODO, increase here the log Level
           root: results.logsPath,
           maxLogFiles: 10,
           allLogsFileName: results.config.name,

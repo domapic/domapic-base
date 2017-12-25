@@ -133,6 +133,8 @@ mongodb | String | MongoDB connection string URI |
 autosearch | String | Range of IPs in which the controller will look to restore paired services connections | 192.168.1.1-255
 path | String | Path to be used for domapic as home (.domapic path will be created inside) | ~
 
+// TODO, add real options
+
 ## Database
 ___
 
@@ -162,7 +164,7 @@ To make easier the configuration and connection between services and the control
 
 The admin and users has it own password each one, and has to be defined when the user is added.
 
-By default, there is an user with name "admin", and password "12345". The passwords for the *service* and *plugin* roles are 12345 too.
+By default, there is an user with name "admin", role "admin", and password "12345". The default passwords for the *service* and *plugin* roles are 12345 too.
 You can add your own users, or modify passwords using the CLI:
 
 ```shell
@@ -181,7 +183,7 @@ For deleting an existing user:
 domapic userdel SERVERNAME --user=USERNAME
 ```
 
-> NOTE: All the user-related commands above will only apply to *user* or *admin* roles. The users for *service* and *plugin* roles are added automatically when pairing with them is executed.
+> NOTE: All the user-related commands above will only apply to *user* or *admin* roles. The users for *service* and *plugin* roles are added automatically when the pairing with them is executed.
 
 You can change the passwords for *service* and *plugin* roles with the commands:
 
@@ -201,7 +203,7 @@ Domapic services or plugins can be developed in any technology if the API is com
 npm i example-domapic-service
 
 #Start it
-npm start -- --name=SERVICENAME --controllerhost=192.168.1.50 --password=12345
+npm start -- --name=SERVICENAME --controllerhost=192.168.1.50 --controllerSSL=true --ignoreSSLCertErrors=true --controllerPassword=12345 --sslKey=pathTo/sslKey --sslCert=pathTo/sslCert
 ```
 
 If no *controllerhost* is provided, the service will search automatically for the controller in a range of IPs (specifiable with the *autosearch* option).
@@ -228,12 +230,12 @@ You can display logs using the [CLI logs command](#cli-cheatsheet).
 
 Logs are also available in files:
 
-* ~/.domapic/SERVERNAME.pm2.logs
+* ~/.domapic/SERVERNAME/logs/SERVERNAME.pm2.logs
   * Stored with ANSI colors, for CLI and HMTL purposes.
   * Only available if the process has been started using the CLI start command.
   * To avoid this file increasing without limits, install [pm2-logrotate](https://github.com/pm2-hive/pm2-logrotate)
 
-* ~/.domapic/SERVERNAME.DATE.logs
+* ~/.domapic/SERVERNAME/logs/SERVERNAME.DATE.logs
   * Stored always in plain format, without ANSI colors.
   * This file rotates automatically every day.
   * Only log files for last 10 days are kept.
