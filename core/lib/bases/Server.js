@@ -1,15 +1,19 @@
 'use strict'
 
+const hbs = require('hbs')
 const http = require('http')
 const https = require('https')
+const path = require('path')
 
 const express = require('express')
 const Promise = require('bluebird')
 
 const Api = require('./server/Api')
 const Middlewares = require('./server/Middlewares')
+const serverTemplates = require('../templates/server')
 
 const Server = function (core) {
+  const templates = core.utils.templates.compile(serverTemplates)
   const app = express()
   const middlewares = new Middlewares(core)
   const api = new Api(core, middlewares)
@@ -17,6 +21,9 @@ const Server = function (core) {
   let started = false
   let startPromise
   let preMiddlewaresPromise
+
+  app.set('view engine', 'html')
+  app.engine('html', hbs.__express)
 
   const addPreMiddlewares = function () {
     if (!preMiddlewaresPromise) {
@@ -26,16 +33,14 @@ const Server = function (core) {
   }
 
   const validateOptions = function (options) {
-    // TODO, move to templates the logs
-    const errorPhrase = 'Invalid server options. '
     if (options.sslKey && !options.sslCert) {
-      return Promise.reject(new core.errors.BadData(errorPhrase + 'Provided sslKey, but not sslCert'))
+      return Promise.reject(new core.errors.BadData(templates.invalidOptionsError({message: templates.noSslCertError()})))
     }
     if (options.sslCert && !options.sslKey) {
-      return Promise.reject(new core.errors.BadData(errorPhrase + 'Provided sslCert, but not sslKey'))
+      return Promise.reject(new core.errors.BadData(templates.invalidOptionsError({message: templates.noSslKeyError()})))
     }
     if (!options.port) {
-      return Promise.reject(new core.errors.BadData(errorPhrase + 'No port provided'))
+      return Promise.reject(new core.errors.BadData(templates.invalidOptionsError({message: templates.noPortError()})))
     }
 
     return Promise.resolve(options)
@@ -47,6 +52,22 @@ const Server = function (core) {
 
   const startHTTP = function (options, app) {
     return http.createServer(app)
+  }
+
+  const registerViewPartials = function (partialsPath) {
+    return new Promise((resolve, reject) => {
+      hbs.registerPartials(partialsPath, (error) => {
+        if (error) {
+          reject(error)
+        } else {
+          resolve()
+        }
+      })
+    })
+  }
+
+  const registerBaseViewPartials = function () {
+    return registerViewPartials(path.resolve(__dirname, '..', 'views', 'partials'))
   }
 
   const startServer = function (options, routers) {
@@ -72,11 +93,15 @@ const Server = function (core) {
             switch (error.code) {
               case 'EADDRINUSE':
               // TODO, convert from code
-                customError = new core.errors.BadImplementation('Port already in use')
+                customError = new core.errors.BadImplementation(templates.portInUseError({
+                  port: options.port
+                }))
                 break
               case 'EACCES':
               // TODO, convert from code
-                customError = new core.errors.BadImplementation('Permission denied to use port')
+                customError = new core.errors.BadImplementation(templates.portDeniedError({
+                  port: options.port
+                }))
                 break
               default:
                 customError = error
@@ -100,7 +125,7 @@ const Server = function (core) {
 
   const getRouters = function () {
     return Promise.props({
-      api: api.getRouter()
+      api: api.initRouter()
     })
   }
 
@@ -108,19 +133,22 @@ const Server = function (core) {
     return validateOptions(options)
       .then(getRouters)
       .then((routers) => {
-        return startServer(options, routers)
+        return registerBaseViewPartials()
+          .then(() => {
+            return startServer(options, routers)
+          })
       })
       .then((server) => {
         return core.tracer.group([
-          { info: 'Server started' },
-          { debug: options }
+          { info: templates.serverStarted({port: options.port}) },
+          { debug: [templates.serverOptionsLogTitle(), options] }
         ])
       })
   }
 
   const start = function () {
     if (started) {
-      return Promise.reject(new core.errors.Conflict('Server was already started'))
+      return Promise.reject(new core.errors.Conflict(templates.serverStartedError()))
     }
     if (!startPromise) {
       startPromise = core.config.get()

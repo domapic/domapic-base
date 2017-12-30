@@ -27,7 +27,7 @@ const Cli = function (options) {
             const pm2Process = new bases.Process({
               script: options.script,
               name: configuration.name
-            }, core.paths, core.errors)
+            }, core)
 
             resolve({
               process: pm2Process,

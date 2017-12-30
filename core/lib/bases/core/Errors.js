@@ -100,7 +100,7 @@ const Errors = function () {
   }
 
   const isControlled = function (error) {
-    return !error.isDomapic
+    return !!error.isDomapic
   }
 
   const byType = createConstructors()

@@ -2,13 +2,17 @@
 
 const _ = require('lodash')
 
-const stringTemplateCompile = require('string-template/compile')
+const hbs = require('hbs')
+
+hbs.registerHelper('toJSON', function (object) {
+  return new hbs.SafeString(JSON.stringify(object, null, 2))
+})
 
 const compile = function (templates) {
   let compiled = {}
 
   _.each(templates, (template, key) => {
-    compiled[key] = stringTemplateCompile(template)
+    compiled[key] = hbs.handlebars.compile(template)
   })
 
   return compiled

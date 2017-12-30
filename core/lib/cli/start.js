@@ -16,7 +16,7 @@ const start = function (config, cli) {
       return cli.tracer.group([
         {info: templates.stopServiceHelp({name: config.name})},
         {info: templates.displayLogsHelp({name: config.name})},
-        {debug: config}
+        {debug: ['Config:', config]}
       ])
     })
 }

@@ -7,7 +7,10 @@ const _ = require('lodash')
 const pm2 = require('pm2')
 const Promise = require('bluebird')
 
-const Process = function (options, paths, errors) {
+const processTemplates = require('../templates/process')
+
+const Process = function (options, core) {
+  const templates = core.utils.templates.compile(processTemplates)
   let pm2OptionsPromise
 
   const defaultOptions = {
@@ -19,12 +22,12 @@ const Process = function (options, paths, errors) {
     env: {
       DEBUG_COLORS: true
     },
-    logDateFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
+    logDateFormat: templates.logDateFormat()
   }
 
   const getPm2Options = function () {
     if (!pm2OptionsPromise) {
-      pm2OptionsPromise = paths.ensureFile('logs/' + options.name + '.pm2.log')
+      pm2OptionsPromise = core.paths.ensureFile('logs/' + options.name + '.pm2.log')
         .then((homePath) => {
           const extendedOptions = _.extend(
             {},
@@ -36,10 +39,10 @@ const Process = function (options, paths, errors) {
             options
           )
           if (!extendedOptions.name) {
-            throw new errors.BadData('No name was provided for process')
+            throw new core.errors.BadData(templates.noNameError())
           }
           if (!extendedOptions.script) {
-            throw new errors.BadData('No script path was provided for process')
+            throw new core.errors.BadData(templates.noScriptPathError())
           }
           return Promise.resolve(extendedOptions)
         })
@@ -61,7 +64,7 @@ const Process = function (options, paths, errors) {
     return new Promise((resolve, reject) => {
       pm2.connect((error) => {
         if (error) {
-          reject(new errors.ChildProcess('PM2 connect: ' + error.message, error.stack))
+          reject(new core.errors.ChildProcess(templates.pm2Error({method: 'connect', message: error.message}), error.stack))
         } else {
           resolve()
         }
@@ -92,7 +95,7 @@ const Process = function (options, paths, errors) {
         return new Promise((resolve, reject) => {
           pm2.start(pm2Options, (error, pm2Process) => {
             if (error) {
-              reject(new errors.ChildProcess('PM2 start: ' + error.message, error.stack))
+              reject(new core.errors.ChildProcess(templates.pm2Error({method: 'start', message: error.message}), error.stack))
             } else {
               resolve(pm2Process)
             }
@@ -107,7 +110,7 @@ const Process = function (options, paths, errors) {
         return new Promise((resolve, reject) => {
           pm2.stop(pm2Options.name, (error, pm2Process) => {
             if (error) {
-              reject(new errors.ChildProcess('PM2 stop: ' + error.message, error.stack))
+              reject(new core.errors.ChildProcess(templates.pm2Error({method: 'stop', message: error.message}), error.stack))
             } else {
               resolve(pm2Process)
             }
@@ -128,7 +131,7 @@ const Process = function (options, paths, errors) {
 
       log.on('close', (code) => {
         if (code !== 0) {
-          reject(new errors.ChildProcess('Process exited with code ' + code))
+          reject(new core.errors.ChildProcess(templates.pm2CloseError({code: code})))
         } else {
           resolve()
         }
@@ -142,7 +145,7 @@ const Process = function (options, paths, errors) {
       })
 
       log.stderr.on('data', (data) => {
-        reject(new errors.ChildProcess(data))
+        reject(new core.errors.ChildProcess(data))
       })
     })
   }

@@ -14,6 +14,10 @@ const Tracer = function (config, paths, errors) {
   const methodNames = ['log', 'trace', 'debug', 'info', 'warn', 'error']
   let initTracerPromise
 
+  const ensureArray = function (param) {
+    return _.isArray(param) ? param : [param]
+  }
+
   const initTracers = function () {
     let inspectOpt = {}
 
@@ -43,15 +47,14 @@ const Tracer = function (config, paths, errors) {
               warn: '{{title}}' + chalk.yellow('{{message}}'),
               error: '{{title}}' +
                 chalk.red('{{message}}') +
-                chalk.white('\nAt: ') +
-                chalk.grey('{{timestamp}}') +
-                chalk.white('\nCall Stack:\n') +
+                '{{timestamp}}' +
                 chalk.grey('{{stack}}')
             }
           ],
           dateformat: 'yyyy/mm/dd - HH:MM:ss.L',
           preprocess: (data) => {
             let subtitle = ''
+            let showErrorStack
             switch (data.title) {
               case 'log':
                 subtitle = chalk.grey('[log] ')
@@ -70,11 +73,22 @@ const Tracer = function (config, paths, errors) {
                 break
               case 'error':
                 subtitle = chalk.redBright.bold('[ERROR] ')
-                if (data.args[0] instanceof Error) {
-                  data.stack = data.args[0].stack
-                  data.args[0] = data.args[0].toString()
+                _.each(data.args, (arg, index) => {
+                  if (arg instanceof Error) {
+                    showErrorStack = true
+                    data.timestamp = chalk.white('\nAt: ') + chalk.grey(data.timestamp) + chalk.white('\nCall Stack: ')
+                    data.stack = arg.stack
+                    data.args[index] = arg.toString()
+                  }
+                })
+                if (!showErrorStack) {
+                  data.timestamp = ''
+                  data.stack = ''
                 }
                 break
+            }
+            if (data.args.length > 1 && !_.isObject(data.args[0])) {
+              data.args[0] = chalk.bold(data.args[0])
             }
             data.title = chalk.grey('[' + results.config.name + '] ') + subtitle
           },
@@ -106,18 +120,18 @@ const Tracer = function (config, paths, errors) {
     return initTracerPromise
   }
 
-  const print = function (text, method) {
+  const print = function (texts, method) {
     return initTracers()
       .then((tracers) => {
-        tracers.logger[method](text)
-        tracers.file[method](text)
+        tracers.logger[method].apply(this, texts)
+        tracers.file[method].apply(this, texts)
         return Promise.resolve()
       })
   }
 
   const LogMethod = function (methodName) {
-    return function (text) {
-      return print(text, methodName)
+    return function () {
+      return print(arguments, methodName)
     }
   }
 
@@ -126,7 +140,7 @@ const Tracer = function (config, paths, errors) {
       return Promise.mapSeries(logs, (logData) => {
         const methodName = _.keys(logData)[0]
         const toLog = logData[methodName]
-        return methods[methodName](toLog)
+        return methods[methodName].apply(this, ensureArray(toLog))
       })
     }
   }
