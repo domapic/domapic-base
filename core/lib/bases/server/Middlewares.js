@@ -19,17 +19,18 @@ const Middlewares = function (core) {
   }
 
   const logRequest = function (req, res, next) {
+    // TODO, do not trace assets
     const debug = [templates.receivedRequestTitleLog({req: req}), templates.receivedRequestLog({req: req}), templates.requestIdLog({req: req})]
     const log = [templates.requestHeadersTitleLog(), templates.requestIdLog({req: req}), '\n', req.headers]
     let trace = [templates.requestInfoTitleLog(), templates.requestIdLog({req: req})]
     if (!_.isEmpty(req.params)) {
-      trace.push(templates.requestParamsLog(req))
+      trace.push(templates.requestParamsLog({req: req}))
     }
     if (!_.isEmpty(req.body)) {
-      trace.push(templates.requestBodyLog(req))
+      trace.push(templates.requestBodyLog({req: req}))
     }
     if (!_.isEmpty(req.query)) {
-      trace.push(templates.requestQueryLog(req))
+      trace.push(templates.requestQueryLog({req: req}))
     }
     core.tracer.group([{debug: debug}, {trace: trace}, {log: log}]).then(() => {
       next()
@@ -74,7 +75,7 @@ const Middlewares = function (core) {
     if (_.isUndefined(response)) {
       res.send()
     } else {
-      if (req.accepts('html')) {
+      if (req.accepts('html') && template) {
         res.type('html').render(template, _.extend({}, response, {body: new hbs.SafeString(tableify(response))}))
       } else if (req.accepts('json')) {
         res.type('json').send(response)

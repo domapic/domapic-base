@@ -16,14 +16,14 @@ const Service = function () {
       const server = new bases.Server(core)
       const client = new bases.Client(core)
 
-      return server.addApiRoutes(idRoute)
-        .then(() => {
-          return Promise.resolve({
-            tracer: core.tracer,
-            server: server,
-            client: client
-          })
+      return server.addApi(idRoute)
+      .then(() => {
+        return Promise.resolve({
+          tracer: core.tracer,
+          server: server,
+          client: client
         })
+      })
     })
 }
 

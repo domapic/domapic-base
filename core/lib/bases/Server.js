@@ -9,19 +9,23 @@ const express = require('express')
 const Promise = require('bluebird')
 
 const Api = require('./server/Api')
+const Doc = require('./server/Doc')
 const Middlewares = require('./server/Middlewares')
 const serverTemplates = require('../templates/server')
+const swaggerUiAssetPath = require('swagger-ui-dist').getAbsoluteFSPath()
 
 const Server = function (core) {
   const templates = core.utils.templates.compile(serverTemplates)
   const app = express()
   const middlewares = new Middlewares(core)
   const api = new Api(core, middlewares)
+  const doc = new Doc(core, middlewares, api)
 
   let started = false
   let startPromise
   let preMiddlewaresPromise
 
+  app.disable('etag')
   app.set('view engine', 'html')
   app.engine('html', hbs.__express)
 
@@ -79,6 +83,8 @@ const Server = function (core) {
         cert: options.sslCert
       } : {}
 
+      app.use('/assets/swagger', express.static(swaggerUiAssetPath))
+      app.use('/doc', routers.doc)
       app.use('/api', routers.api)
 
       middlewares.addPost(app)
@@ -92,13 +98,11 @@ const Server = function (core) {
             let customError
             switch (error.code) {
               case 'EADDRINUSE':
-              // TODO, convert from code
                 customError = new core.errors.BadImplementation(templates.portInUseError({
                   port: options.port
                 }))
                 break
               case 'EACCES':
-              // TODO, convert from code
                 customError = new core.errors.BadImplementation(templates.portDeniedError({
                   port: options.port
                 }))
@@ -125,7 +129,8 @@ const Server = function (core) {
 
   const getRouters = function () {
     return Promise.props({
-      api: api.initRouter()
+      api: api.initRouter(),
+      doc: doc.initRouter()
     })
   }
 
@@ -163,15 +168,15 @@ const Server = function (core) {
     return startPromise
   }
 
-  const addApiRoutes = function (routes) {
+  const addApi = function (openApiDefinitions) {
     return addPreMiddlewares()
       .then(() => {
-        return api.addRoutes(routes)
+        return api.addApi(openApiDefinitions)
       })
   }
 
   return {
-    addApiRoutes: addApiRoutes,
+    addApi: addApi,
     start: start
   }
 }
