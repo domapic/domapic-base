@@ -37,9 +37,11 @@ const Docs = function (core, middlewares, api) {
     openapi.definitions = extendedDefinitions
 
     _.each(openapi.paths, (pathMethods, path) => {
+      let pathTags = []
       _.each(pathMethods, (methodProperties, method) => {
         const defaultsResponsesCodes = _.isArray(responsesDefinitions[method].statusCode) ? responsesDefinitions[method].statusCode : [responsesDefinitions[method].statusCode]
         const defaultsHasBody = _.isArray(responsesDefinitions[method].responseBody) ? responsesDefinitions[method].responseBody : [responsesDefinitions[method].responseBody]
+        pathTags = _.union(pathTags, methodProperties.tags || [])
         if (!methodProperties.parameters) {
           methodProperties.parameters = []
         }
@@ -73,11 +75,24 @@ const Docs = function (core, middlewares, api) {
           methodProperties.responses['422'] = {
             description: templates.validationFailed(),
             schema: {
-              '$ref': '#/definitions/Error'
+              '$ref': '#/components/responses/Error'
             }
           }
         }
       })
+      pathMethods['options'] = {
+        tags: _.uniq(pathTags),
+        summary: 'Identify allowed request methods', // TODO, templates
+        description: 'Find out which request methods supports', // TODO, templates
+        responses: {
+          '200': {
+            description: 'Successful operation', // TODO, templates,
+            headers: {
+              '$ref': '#/components/headers/Allow'
+            }
+          }
+        }
+      }
     })
     return Promise.resolve(openapi)
   }

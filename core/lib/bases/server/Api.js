@@ -353,13 +353,17 @@ const Api = function (core, middlewares) {
   }
 
   const addOptionsMethod = function (route, methods) {
-    const sendResponse = new SendResponse('options')
+    const methodToUse = 'options'
+    const responseCustomizator = new ResponseCustomizator(methodToUse)
+    const sendResponse = new SendResponse(methodToUse, responseCustomizator)
     route.options((req, res, next) => {
       res.set({
         'Allow': _.map(_.keys(methods), (method) => {
           return method.toUpperCase()
         }).join(', ')
       })
+      // TODO, send methods after parsing it in Docs. (if possible) (replace references to json urls as specification says)
+      // https://swagger.io/docs/specification/using-ref/
       sendResponse(req, res, methods)
     })
     return Promise.resolve(route)
