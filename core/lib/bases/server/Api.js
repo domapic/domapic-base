@@ -48,6 +48,8 @@ const Api = function (core, middlewares) {
   }
   let getRouterPromise
 
+  router.use(middlewares.sendOnlyJson)
+
   const ensureRouterNotInitialized = function () {
     if (getRouterPromise) {
       return Promise.reject(new core.errors.Conflict(templates.routerAlreadyInitializedError()))
@@ -205,7 +207,8 @@ const Api = function (core, middlewares) {
 
     routes[route.path] = routes[route.path] || {}
     routes[route.path][methodToUse] = route
-
+    // Maybe it is better to use a middleware for all api methods, instead of adding it to every call ...
+    // Securize all, but custom with roles and users (*)
     router.route(route.path)[methodToUse](/* TODO, add authorization handler */ (req, res, next) => {
       return parseParameters(req)
         .then(validateParameters)

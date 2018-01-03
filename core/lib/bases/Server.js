@@ -31,6 +31,7 @@ const Server = function (core) {
 
   const addPreMiddlewares = function () {
     if (!preMiddlewaresPromise) {
+      app.use('/assets/swagger', middlewares.lowerRequestLogLevel)
       preMiddlewaresPromise = middlewares.addPre(app)
     }
     return preMiddlewaresPromise

@@ -19,20 +19,27 @@ const Middlewares = function (core) {
   }
 
   const logRequest = function (req, res, next) {
-    // TODO, do not trace assets
-    const debug = [templates.receivedRequestTitleLog({req: req}), templates.receivedRequestLog({req: req}), templates.requestIdLog({req: req})]
-    const log = [templates.requestHeadersTitleLog(), templates.requestIdLog({req: req}), '\n', req.headers]
-    let trace = [templates.requestInfoTitleLog(), templates.requestIdLog({req: req})]
+    const logRequest = [templates.receivedRequestTitleLog({req: req}), templates.receivedRequestLog({req: req}), templates.requestIdLog({req: req})]
+    const logHeaders = [templates.requestHeadersTitleLog(), templates.requestIdLog({req: req}), '\n', req.headers]
+    let logParameters = [templates.requestInfoTitleLog(), templates.requestIdLog({req: req})]
+    let log
+
     if (!_.isEmpty(req.params)) {
-      trace.push(templates.requestParamsLog({req: req}))
+      logParameters.push(templates.requestParamsLog({req: req}))
     }
     if (!_.isEmpty(req.body)) {
-      trace.push(templates.requestBodyLog({req: req}))
+      logParameters.push(templates.requestBodyLog({req: req}))
     }
     if (!_.isEmpty(req.query)) {
-      trace.push(templates.requestQueryLog({req: req}))
+      logParameters.push(templates.requestQueryLog({req: req}))
     }
-    core.tracer.group([{debug: debug}, {trace: trace}, {log: log}]).then(() => {
+    if (!req.lowerRequestLogLevel) {
+      log = [{debug: logRequest}, {trace: logParameters}, {log: logHeaders}]
+    } else {
+      log = [{trace: logRequest}, {log: logHeaders}]
+    }
+
+    core.tracer.group(log).then(() => {
       next()
     })
   }
@@ -72,16 +79,14 @@ const Middlewares = function (core) {
   }
 
   const sendResponse = function (req, res, response, template) {
+    let sendType = req.sendOnly ? req.sendOnly : (req.accepts('html') && template ? 'html' : (req.accepts('json') ? 'json' : 'text'))
+
     if (_.isUndefined(response)) {
       res.send()
+    } else if (sendType === 'html') {
+      res.type(sendType).render(template, _.extend({}, response, {body: new hbs.SafeString(tableify(response))}))
     } else {
-      if (req.accepts('html') && template) {
-        res.type('html').render(template, _.extend({}, response, {body: new hbs.SafeString(tableify(response))}))
-      } else if (req.accepts('json')) {
-        res.type('json').send(response)
-      } else {
-        res.type('txt').send(response)
-      }
+      res.type(sendType).send(response)
     }
     logResponse(req, res, response, template)
   }
@@ -117,11 +122,23 @@ const Middlewares = function (core) {
     return Promise.resolve(route)
   }
 
+  const sendOnlyJson = function (req, res, next) {
+    req.sendOnly = 'json'
+    next()
+  }
+
+  const lowerRequestLogLevel = function (req, res, next) {
+    req.lowerRequestLogLevel = true
+    next()
+  }
+
   return {
     addPre: addPre,
     addPost: addPost,
     addMethodNotAllowed: addMethodNotAllowed,
-    sendResponse: sendResponse
+    sendResponse: sendResponse,
+    sendOnlyJson: sendOnlyJson,
+    lowerRequestLogLevel: lowerRequestLogLevel
   }
 }
 

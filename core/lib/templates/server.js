@@ -36,6 +36,6 @@ module.exports = {
   sendResponseLog: '{{{res.statusCode}}} |',
   responseHeadersTitleLog: 'Response headers |',
   responseContentTitleLog: 'Response Content | {{{type}}} |',
-  responseContentLog: '\n Content: {{toJSON response}}',
-  responseTemplateLog: '\n Template: {{template}}'
+  responseContentLog: '\nContent: {{toJSON response}}',
+  responseTemplateLog: '\nTemplate: {{template}}'
 }

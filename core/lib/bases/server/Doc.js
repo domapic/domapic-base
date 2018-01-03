@@ -122,8 +122,6 @@ const Docs = function (core, middlewares, api) {
       })
   }
 
-  // TODO, add method not allowed?
-
   const initRouter = function () {
     if (!getRouterPromise) {
       getRouterPromise = addRoutes()
