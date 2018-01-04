@@ -9,9 +9,10 @@ const Promise = require('bluebird')
 const openapiBase = require('./openapi')
 const openApiTemplates = require('../../templates/openapi')
 
+const APP_JSON = 'application/json'
+
 const Docs = function (core, middlewares, api) {
   const templates = core.utils.templates.compile(openApiTemplates)
-  const router = express.Router()
   let getRouterPromise
   let openApiDocPromise
 
@@ -30,69 +31,105 @@ const Docs = function (core, middlewares, api) {
     }).length > 0
   }
 
+  const AddOpenApiToMethods = function (sharedInfo, responsesDefinitions, path) {
+    return function (methodProperties, method) {
+      const defaultsResponsesCodes = _.isArray(responsesDefinitions[method].statusCode) ? responsesDefinitions[method].statusCode : [responsesDefinitions[method].statusCode]
+      const defaultsHasBody = _.isArray(responsesDefinitions[method].responseBody) ? responsesDefinitions[method].responseBody : [responsesDefinitions[method].responseBody]
+      const defaultsResponsesHeaders = responsesDefinitions[method].responseHeaders && _.isArray(responsesDefinitions[method].responseHeaders[0]) ? responsesDefinitions[method].responseHeaders : [responsesDefinitions[method].responseHeaders]
+
+      sharedInfo.pathTags = _.union(sharedInfo.pathTags, methodProperties.tags || [])
+      if (!methodProperties.parameters) {
+        methodProperties.parameters = []
+      }
+
+      if (methodProperties.parameters.length && hasBodyParams(methodProperties.parameters) && (!methodProperties.consumes || methodProperties.consumes.indexOf(APP_JSON) < 0)) {
+        methodProperties.consumes = methodProperties.consumes || []
+        methodProperties.consumes.push(APP_JSON)
+      }
+
+      // Sucessful responses
+      methodProperties.responses = methodProperties.responses || {}
+
+      _.each(defaultsResponsesCodes, (defaultResponseCode, index) => {
+        // Add produces
+        if (defaultsHasBody[index] && (!methodProperties.produces || methodProperties.produces.indexOf(APP_JSON) < 0)) {
+          methodProperties.produces = methodProperties.produces || []
+          methodProperties.produces.push(APP_JSON)
+        }
+
+        // Add responses
+        methodProperties.responses[defaultResponseCode] = methodProperties.responses[defaultResponseCode] || {}
+        if (!methodProperties.responses[defaultResponseCode].description) {
+          methodProperties.responses[defaultResponseCode].description = templates.sucessfulOperation()
+        }
+
+        // Add headers
+        if (defaultsResponsesHeaders[index]) {
+          _.each(defaultsResponsesHeaders[index], (header) => {
+            if (!methodProperties.responses[defaultResponseCode].headers || !methodProperties.responses[defaultResponseCode].headers[header]) {
+              methodProperties.responses[defaultResponseCode].headers = methodProperties.responses[defaultResponseCode].headers || {}
+              methodProperties.responses[defaultResponseCode].headers[header.toLowerCase()] = {
+                '$ref': '#/components/headers/' + header.replace(/-/g, '')
+              }
+            }
+          })
+        }
+
+        // Add default definition
+        if (defaultsHasBody[index] && !methodProperties.responses[defaultResponseCode].schema) {
+          methodProperties.responses[defaultResponseCode].schema = {
+            '$ref': '#/definitions/' + _.capitalize(path.replace('/', ''))
+          }
+        }
+      })
+
+      // Error responses
+      if (methodProperties.parameters.length && !methodProperties.responses['422']) {
+        methodProperties.responses['422'] = { //TODO, to openapi.js
+          description: templates.validationFailed(),
+          schema: {
+            '$ref': '#/components/responses/Error'
+          }
+        }
+      }
+    }
+  }
+
+  const addOpenApiOptionsMethod = function (pathMethods, sharedInfo) {
+    pathMethods['options'] = pathMethods['options'] || {
+      tags: _.uniq(sharedInfo.pathTags),
+      summary: 'Identify allowed request methods', // TODO, templates
+      description: 'Find out which request methods supports', // TODO, templates
+      responses: {
+        '200': {
+          description: 'Successful operation', // TODO, templates,
+          produces: [
+            APP_JSON
+          ],
+          headers: {
+            allow: {
+              '$ref': '#/components/headers/Allow'
+            }
+          },
+          schema: {
+            '$ref': '#/components/responses/Options'
+          }
+        }
+      }
+    }
+  }
+
   const addOpenApiData = function (openapi, openApiProperties, responsesDefinitions) {
-    const applicationJson = 'application/json'
     const extendedDefinitions = _.extend(openapi.definitions, openApiProperties.definitions || {})
     _.extend(openapi, openApiProperties)
     openapi.definitions = extendedDefinitions
 
     _.each(openapi.paths, (pathMethods, path) => {
-      let pathTags = []
-      _.each(pathMethods, (methodProperties, method) => {
-        const defaultsResponsesCodes = _.isArray(responsesDefinitions[method].statusCode) ? responsesDefinitions[method].statusCode : [responsesDefinitions[method].statusCode]
-        const defaultsHasBody = _.isArray(responsesDefinitions[method].responseBody) ? responsesDefinitions[method].responseBody : [responsesDefinitions[method].responseBody]
-        pathTags = _.union(pathTags, methodProperties.tags || [])
-        if (!methodProperties.parameters) {
-          methodProperties.parameters = []
-        }
-
-        if (methodProperties.parameters.length && hasBodyParams(methodProperties.parameters) && (!methodProperties.consumes || methodProperties.consumes.indexOf(applicationJson) < 0)) {
-          methodProperties.consumes = methodProperties.consumes || []
-          methodProperties.consumes.push(applicationJson)
-        }
-
-        // Sucessful responses
-        methodProperties.responses = methodProperties.responses || {}
-
-        _.each(defaultsResponsesCodes, (defaultResponseCode, index) => {
-          if (defaultsHasBody[index] && (!methodProperties.produces || methodProperties.produces.indexOf(applicationJson) < 0)) {
-            methodProperties.produces = methodProperties.produces || []
-            methodProperties.produces.push(applicationJson)
-          }
-          methodProperties.responses[defaultResponseCode] = methodProperties.responses[defaultResponseCode] || {}
-          if (!methodProperties.responses[defaultResponseCode].description) {
-            methodProperties.responses[defaultResponseCode].description = templates.sucessfulOperation()
-          }
-          if (defaultsHasBody[index] && !methodProperties.responses[defaultResponseCode].schema) {
-            methodProperties.responses[defaultResponseCode].schema = {
-              '$ref': '#/definitions/' + _.capitalize(path.replace('/', ''))
-            }
-          }
-        })
-
-        // Error responses
-        if (methodProperties.parameters.length && !methodProperties.responses['422']) {
-          methodProperties.responses['422'] = {
-            description: templates.validationFailed(),
-            schema: {
-              '$ref': '#/components/responses/Error'
-            }
-          }
-        }
-      })
-      pathMethods['options'] = {
-        tags: _.uniq(pathTags),
-        summary: 'Identify allowed request methods', // TODO, templates
-        description: 'Find out which request methods supports', // TODO, templates
-        responses: {
-          '200': {
-            description: 'Successful operation', // TODO, templates,
-            headers: {
-              '$ref': '#/components/headers/Allow'
-            }
-          }
-        }
+      let sharedInfo = {
+        paths: []
       }
+      _.each(pathMethods, new AddOpenApiToMethods(sharedInfo, responsesDefinitions, path))
+      addOpenApiOptionsMethod(pathMethods, sharedInfo)
     })
     return Promise.resolve(openapi)
   }
@@ -116,7 +153,8 @@ const Docs = function (core, middlewares, api) {
     return openApiDocPromise
   }
 
-  const addRoutes = function (route) {
+  const addRoutes = function (openApiDoc) {
+    const router = express.Router()
     const openApiFile = 'openapi.json'
     const openApiDefinitionUrl = '/api/' + openApiFile
 
@@ -127,22 +165,18 @@ const Docs = function (core, middlewares, api) {
       })
     })
 
-    return getOpenApiDoc()
-      .then((openApiDoc) => {
-        router.route(openApiDefinitionUrl).get((req, res) => {
-          res.status(200)
-          res.type('json').send(openApiDoc)
-        })
-        return Promise.resolve(router)
-      })
+    router.route(openApiDefinitionUrl).get((req, res) => {
+      res.status(200)
+      res.type('json').send(openApiDoc)
+    })
+    return Promise.resolve(router)
   }
 
   const initRouter = function () {
     if (!getRouterPromise) {
-      getRouterPromise = addRoutes()
-      .then((router) => {
-        return Promise.resolve(router)
-      })
+      return getOpenApiDoc()
+        .then(api.setParsedOpenApi)
+        .then(addRoutes)
     }
     return getRouterPromise
   }

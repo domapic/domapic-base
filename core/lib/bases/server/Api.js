@@ -24,7 +24,8 @@ const Api = function (core, middlewares) {
     },
     put: {
       statusCode: [204, 201],
-      responseBody: [false, true]
+      responseBody: [false, true],
+      responseHeaders: [[], ['Content-Location']]
     },
     patch: {
       statusCode: 204,
@@ -32,11 +33,13 @@ const Api = function (core, middlewares) {
     },
     post: {
       statusCode: 201,
-      responseBody: true
+      responseBody: true,
+      responseHeaders: ['Content-Location']
     },
     options: {
       statusCode: 200,
-      responseBody: true
+      responseBody: true,
+      responseHeaders: ['Allow']
     }
   }
   let routes = {}
@@ -46,6 +49,7 @@ const Api = function (core, middlewares) {
     paths: {},
     definitions: {}
   }
+  let parsedOpenApi
   let getRouterPromise
 
   router.use(middlewares.sendOnlyJson)
@@ -352,10 +356,17 @@ const Api = function (core, middlewares) {
     return Promise.resolve(openApi)
   }
 
+  const setParsedOpenApi = function (openApi) {
+    parsedOpenApi = JSON.parse(JSON.stringify(openApi).replace(/#/g, '/doc/openapi.json#'))
+    return Promise.resolve(openApi)
+  }
+
   const addOptionsMethod = function (route, methods) {
     const methodToUse = 'options'
     const responseCustomizator = new ResponseCustomizator(methodToUse)
     const sendResponse = new SendResponse(methodToUse, responseCustomizator)
+    console.log(parsedOpenApi)
+    console.log(route)
     route.options((req, res, next) => {
       res.set({
         'Allow': _.map(_.keys(methods), (method) => {
@@ -364,7 +375,7 @@ const Api = function (core, middlewares) {
       })
       // TODO, send methods after parsing it in Docs. (if possible) (replace references to json urls as specification says)
       // https://swagger.io/docs/specification/using-ref/
-      sendResponse(req, res, methods)
+      sendResponse(req, res, parsedOpenApi.paths[route.path])
     })
     return Promise.resolve(route)
   }
@@ -396,6 +407,7 @@ const Api = function (core, middlewares) {
     addApi: addApi,
     getResponsesDefinitions: getResponsesDefinitions,
     getOpenApi: getOpenApi,
+    setParsedOpenApi: setParsedOpenApi,
     initRouter: initRouter
   }
 }
