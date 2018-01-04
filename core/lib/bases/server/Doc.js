@@ -67,6 +67,7 @@ const Docs = function (core, middlewares, api) {
         if (defaultsResponsesHeaders[index]) {
           _.each(defaultsResponsesHeaders[index], (header) => {
             if (!methodProperties.responses[defaultResponseCode].headers || !methodProperties.responses[defaultResponseCode].headers[header]) {
+              // TODO, to full schema. It seema like validator does not like the header 'ref' (or put data directly)
               methodProperties.responses[defaultResponseCode].headers = methodProperties.responses[defaultResponseCode].headers || {}
               methodProperties.responses[defaultResponseCode].headers[header.toLowerCase()] = {
                 '$ref': '#/components/headers/' + header.replace(/-/g, '')
@@ -85,11 +86,8 @@ const Docs = function (core, middlewares, api) {
 
       // Error responses
       if (methodProperties.parameters.length && !methodProperties.responses['422']) {
-        methodProperties.responses['422'] = { //TODO, to openapi.js
-          description: templates.validationFailed(),
-          schema: {
-            '$ref': '#/components/responses/Error'
-          }
+        methodProperties.responses['422'] = {
+          '$ref': '#/components/responses/BadDataError'
         }
       }
     }
@@ -102,18 +100,7 @@ const Docs = function (core, middlewares, api) {
       description: 'Find out which request methods supports', // TODO, templates
       responses: {
         '200': {
-          description: 'Successful operation', // TODO, templates,
-          produces: [
-            APP_JSON
-          ],
-          headers: {
-            allow: {
-              '$ref': '#/components/headers/Allow'
-            }
-          },
-          schema: {
-            '$ref': '#/components/responses/Options'
-          }
+          '$ref': '#/components/responses/Options'
         }
       }
     }
