@@ -34,7 +34,6 @@
     "method-override": "2.3.10",
     "pm2": "2.8.0",
     "swagger-ui-dist": "3.8.1",
-    "tableify": "1.1.0",
     "tracer": "0.8.11",
     "yargs": "10.0.3"
   },

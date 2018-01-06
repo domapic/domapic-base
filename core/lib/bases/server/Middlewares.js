@@ -5,10 +5,8 @@ const path = require('path')
 const _ = require('lodash')
 const addRequestId = require('express-request-id')
 const bodyParser = require('body-parser')
-const hbs = require('hbs')
 const methodOverride = require('method-override')
 const Promise = require('bluebird')
-const tableify = require('tableify')
 
 const serverTemplates = require('../../templates/server')
 
@@ -84,7 +82,7 @@ const Middlewares = function (core) {
     if (_.isUndefined(response)) {
       res.send()
     } else if (sendType === 'html') {
-      res.type(sendType).render(template, _.extend({}, response, {body: new hbs.SafeString(tableify(response))}))
+      res.type(sendType).render(template, response)
     } else {
       res.type(sendType).send(response)
     }
