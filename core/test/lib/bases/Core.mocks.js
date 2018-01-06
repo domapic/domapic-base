@@ -8,6 +8,17 @@ const configMocks = require('./core/Config.mocks')
 const processMocks = require('./Process.mocks')
 
 const Stub = function () {
+  const FooErrorConstructor = function (message, stack) {
+    this.message = message
+    this.name = 'Error'
+    this.typeof = 'fooType'
+    this.isDomapic = true
+    this.stack = stack || (new Error()).stack
+  }
+
+  FooErrorConstructor.prototype = Object.create(Error.prototype)
+  FooErrorConstructor.prototype.constructor = FooErrorConstructor
+
   return {
     config: {
       get: test.sinon.stub().usingPromise(Promise).resolves(configMocks.getResult)
@@ -27,6 +38,27 @@ const Stub = function () {
       templates: {
         compile: test.sinon.stub().callsFake(utils.templates.compile)
       }
+    },
+    errors: {
+      isControlled: test.sinon.stub(),
+      fromCode: test.sinon.stub(),
+      toHTML: test.sinon.stub(),
+      BadImplementation: FooErrorConstructor,
+      ChildProcess: FooErrorConstructor,
+      FileSystem: FooErrorConstructor,
+      NotImplemented: FooErrorConstructor,
+      BadData: FooErrorConstructor,
+      TimeOut: FooErrorConstructor,
+      ClienTimeOut: FooErrorConstructor,
+      Forbidden: FooErrorConstructor,
+      Unauthorized: FooErrorConstructor,
+      NotFound: FooErrorConstructor,
+      Conflict: FooErrorConstructor,
+      ServerUnavailable: FooErrorConstructor,
+      MethodNotAllowed: FooErrorConstructor
+    },
+    paths: {
+      ensureFile: test.sinon.stub().usingPromise(Promise).resolves()
     }
   }
 }
@@ -38,7 +70,8 @@ const cliMethodsStub = function () {
     process: stubCore.process,
     config: stubCore.config,
     tracer: stubCore.tracer,
-    utils: stubCore.utils
+    utils: stubCore.utils,
+    errors: stubCore.errors
   }
 }
 

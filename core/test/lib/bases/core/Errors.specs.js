@@ -1,35 +1,13 @@
+
 const _ = require('lodash')
-const Promise = require('bluebird')
 
 const test = require('../../../index')
 
 const Errors = require('../../../../lib/bases/core/Errors')
 
 test.describe('Bases -> Core -> Errors', () => {
-  const staticMethods = ['fromCode', 'toCode', 'toHTML']
+  const staticMethods = ['fromCode', 'toHTML', 'isControlled']
   const errors = new Errors()
-
-  const testPromise = function (method) {
-    test.it('should return a Promise', (done) => {
-      let response = errors[method]()
-        .then((dir) => {
-          test.expect(response).to.be.an.instanceof(Promise)
-          done()
-        })
-    })
-  }
-
-  test.describe('fromCode', () => {
-    testPromise('fromCode')
-  })
-
-  test.describe('toCode', () => {
-    testPromise('toCode')
-  })
-
-  test.describe('toHTML', () => {
-    testPromise('toHTML')
-  })
 
   _.each(errors, (Method, methodName) => {
     if (staticMethods.indexOf(methodName) < 0) {

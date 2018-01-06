@@ -1,3 +1,4 @@
+
 const Promise = require('bluebird')
 
 const test = require('../index')
@@ -8,7 +9,8 @@ const Service = require('../../lib/Service')
 
 test.describe('Service', () => {
   const fooServer = {
-    fooServerMethod: 'fooSMethod'
+    // TODO, add tests for addApi method
+    addApi: test.sinon.stub().usingPromise().resolves()
   }
   const fooClient = {
     fooClientMethod: 'fooCMethod'
@@ -38,34 +40,38 @@ test.describe('Service', () => {
     test.expect(new Service()).to.be.an.instanceof(Promise)
   })
 
-  test.it('should create a new instance of Core, with name "service"', () => {
+  test.it('should create a new instance of Core, with name "service"', (done) => {
     new Service()
       .then((result) => {
         test.expect(bases.Core.getCall(0).args[0]).to.deep.equal(mocks.arguments.getResult)
         test.expect(bases.Core.getCall(0).args[1]).to.equal('service')
+        done()
       })
   })
 
-  test.it('should return the core tracer', () => {
+  test.it('should return the core tracer', (done) => {
     new Service()
       .then((result) => {
         test.expect(result.tracer).to.deep.equal(coreStub.tracer)
+        done()
       })
   })
 
-  test.it('should create a new instance of Server, passing the core', () => {
+  test.it('should create a new instance of Server, passing the core', (done) => {
     new Service()
       .then((result) => {
         test.expect(bases.Server).to.have.been.calledWith(coreStub)
         test.expect(result.server).to.deep.equal(fooServer)
+        done()
       })
   })
 
-  test.it('should create a new instance of Client, passing the core', () => {
+  test.it('should create a new instance of Client, passing the core', (done) => {
     new Service()
       .then((result) => {
         test.expect(bases.Client).to.have.been.calledWith(coreStub)
         test.expect(result.client).to.deep.equal(fooClient)
+        done()
       })
   })
 })

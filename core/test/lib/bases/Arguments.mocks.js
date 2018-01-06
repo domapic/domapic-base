@@ -10,11 +10,12 @@ const getResult = {
     name: 'testing',
     logLevel: 'info',
     path: undefined,
-    port: undefined
+    port: 8090
   },
   defaults: {
     color: true,
-    logLevel: 'info'
+    logLevel: 'info',
+    port: 8090
   },
   explicit: {
     name: 'testing'

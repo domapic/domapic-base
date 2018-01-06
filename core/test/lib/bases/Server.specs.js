@@ -1,4 +1,4 @@
-
+/*
 const Promise = require('bluebird')
 
 const test = require('../../index')
@@ -40,4 +40,4 @@ test.describe('Bases -> Server', () => {
         })
     })
   })
-})
+}) */

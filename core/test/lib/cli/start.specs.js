@@ -1,3 +1,4 @@
+
 const Promise = require('bluebird')
 
 const test = require('../../index')
@@ -39,7 +40,7 @@ test.describe('Cli Commands -> start', () => {
   test.it('should display the received configuration in debug mode', (done) => {
     start.command(mocks.config.getResult, cliMethods)
       .then(() => {
-        test.expect(cliMethods.tracer.group.getCall(0).args[0][2].debug).to.deep.equal(mocks.config.getResult)
+        test.expect(cliMethods.tracer.group.getCall(0).args[0][2].debug[1]).to.deep.equal(mocks.config.getResult)
         done()
       })
   })

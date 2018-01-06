@@ -8,15 +8,12 @@ const pm2 = require('pm2')
 const test = require('../../index')
 const mocks = require('../../mocks')
 
-const Errors = require('../../../lib/bases/core/Errors')
-const Paths = require('../../../lib/bases/core/Paths')
 const Process = require('../../../lib/bases/Process')
 
 test.describe('Bases -> Process', () => {
   const fooFilePath = '/logs/fooName.pm2.log'
   const fooScriptPath = '/fooScript.js'
-  const errors = new Errors()
-  const paths = new Paths(mocks.arguments.options, errors)
+  let stubCore
   let pm2Connect
   let pm2ConnectResolver
   let pm2ConnectRejecter
@@ -25,10 +22,11 @@ test.describe('Bases -> Process', () => {
   let pm2Process
 
   test.beforeEach(() => {
+    stubCore = new mocks.core.Stub()
     pm2Process = new Process({
       script: fooScriptPath,
       name: mocks.arguments.options.name
-    }, paths, errors)
+    }, stubCore)
 
     pm2ConnectResolver = test.sinon.spy(function (cb) {
       cb(null)
@@ -44,13 +42,11 @@ test.describe('Bases -> Process', () => {
     })
     pm2Connect = test.sinon.stub(pm2, 'connect').callsFake(pm2ConnectResolver)
     test.sinon.stub(pm2, 'disconnect')
-    test.sinon.stub(paths, 'ensureFile').usingPromise(Promise).resolves(fooFilePath)
   })
 
   test.afterEach(() => {
     pm2.connect.restore()
     pm2.disconnect.restore()
-    paths.ensureFile.restore()
   })
 
   const commonTests = function (method) {
@@ -74,7 +70,7 @@ test.describe('Bases -> Process', () => {
       pm2Connect.callsFake(pm2ConnectRejecter)
       pm2Process[method]()
         .catch((err) => {
-          test.expect(err).to.be.an.instanceof(errors.ChildProcess)
+          test.expect(err).to.be.an.instanceof(Error)
           done()
         })
     })
@@ -90,7 +86,7 @@ test.describe('Bases -> Process', () => {
     test.it('should ensure that logs paths exists', (done) => {
       pm2Process[method]()
         .then(() => {
-          test.expect(paths.ensureFile.getCall(0).args[0].indexOf(mocks.arguments.options.name)).to.be.above(-1)
+          test.expect(stubCore.paths.ensureFile.getCall(0).args[0].indexOf(mocks.arguments.options.name)).to.be.above(-1)
           done()
         })
     })
@@ -100,17 +96,18 @@ test.describe('Bases -> Process', () => {
         .then(() => {
           pm2Process[method]()
             .then(() => {
-              test.expect(paths.ensureFile).to.have.been.calledOnce()
+              test.expect(stubCore.paths.ensureFile).to.have.been.calledOnce()
               done()
             })
         })
     })
 
     test.it('should reject the promise if no name was provided for process', (done) => {
-      pm2Process = new Process({}, paths, errors)
+      pm2Process = new Process({}, stubCore)
       pm2Process[method]()
         .catch((err) => {
-          test.expect(err).to.be.an.instanceof(errors.BadData)
+          // TODO, ensure error type
+          test.expect(err).to.be.an.instanceof(Error)
           done()
         })
     })
@@ -118,10 +115,11 @@ test.describe('Bases -> Process', () => {
     test.it('should reject the promise if no script path was provided for process', (done) => {
       pm2Process = new Process({
         name: mocks.arguments.options.name
-      }, paths, errors)
+      }, stubCore)
       pm2Process[method]()
         .catch((err) => {
-          test.expect(err).to.be.an.instanceof(errors.BadData)
+          // TODO, ensure error type
+          test.expect(err).to.be.an.instanceof(Error)
           done()
         })
     })
@@ -172,6 +170,7 @@ test.describe('Bases -> Process', () => {
     })
 
     test.it('should start the PM2 process with logs pointing to log file path', (done) => {
+      stubCore.paths.ensureFile.resolves(fooFilePath)
       pm2Process.start()
         .then(() => {
           test.expect(pm2Start.getCall(0).args[0].output).to.equal(fooFilePath)
@@ -192,7 +191,8 @@ test.describe('Bases -> Process', () => {
       pm2Start.callsFake(pm2Rejecter)
       pm2Process.start()
         .catch((err) => {
-          test.expect(err).to.be.an.instanceof(errors.ChildProcess)
+          // TODO, ensure error type
+          test.expect(err).to.be.an.instanceof(Error)
           done()
         })
     })
@@ -231,7 +231,8 @@ test.describe('Bases -> Process', () => {
       pm2Stop.callsFake(pm2Rejecter)
       pm2Process.stop()
         .catch((err) => {
-          test.expect(err).to.be.an.instanceof(errors.ChildProcess)
+          // TODO, ensure error type
+          test.expect(err).to.be.an.instanceof(Error)
           done()
         })
     })
@@ -300,7 +301,8 @@ test.describe('Bases -> Process', () => {
       spawnStub.callsFake('on', 1)
       pm2Process.logs()
         .catch((err) => {
-          test.expect(err).to.be.an.instanceof(errors.ChildProcess)
+          // TODO, ensure error type
+          test.expect(err).to.be.an.instanceof(Error)
           done()
         })
     })
@@ -309,7 +311,8 @@ test.describe('Bases -> Process', () => {
       spawnStub.callsFake('stderr', 'error')
       pm2Process.logs()
         .catch((err) => {
-          test.expect(err).to.be.an.instanceof(errors.ChildProcess)
+          // TODO, ensure error type
+          test.expect(err).to.be.an.instanceof(Error)
           done()
         })
     })
