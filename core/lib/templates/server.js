@@ -4,6 +4,7 @@ module.exports = {
   routerAlreadyInitializedError: 'Router was already initialized. It is not possible to add more routes to it',
   methodNotAllowedError: 'Wrong method {{method}}',
   bodyPropertiesValidationError: '{{property}}: {{{message}}}',
+  bodyEmptyValidationError: 'Request body is required',
   resourceNotFoundError: 'Resource not found',
   processRequestError: 'Error processing request |',
   processRequestControlledError: 'Controlled error | {{{message}}} |',

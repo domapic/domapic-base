@@ -8,46 +8,21 @@ const openApiToJsonschema = require('openapi-jsonschema-parameters')
 const Promise = require('bluebird')
 
 const serverTemplates = require('../../templates/server')
+const methodsSchemas = require('./methods')
+
+const APP_JSON = 'application/json'
+const CONTENT_SCHEMA_TAG = 'x-json-content-schema'
 
 const Api = function (core, middlewares) {
   const templates = core.utils.templates.compile(serverTemplates)
   const router = express.Router()
   const jsonSchemaValidator = new jsonschema.Validator()
-  const methods = {
-    get: {
-      statusCode: 200,
-      responseBody: true
-    },
-    delete: {
-      statusCode: 204,
-      responseBody: false
-    },
-    put: {
-      statusCode: [204, 201],
-      responseBody: [false, true],
-      responseHeaders: [[], ['Content-Location']]
-    },
-    patch: {
-      statusCode: 204,
-      responseBody: false
-    },
-    post: {
-      statusCode: 201,
-      responseBody: true,
-      responseHeaders: ['Content-Location']
-    },
-    options: {
-      statusCode: 200,
-      responseBody: true,
-      responseHeaders: ['Allow']
-    }
-  }
   let routes = {}
   let operations = {}
   let openApi = {
     tags: [],
     paths: {},
-    definitions: {}
+    schemas: {}
   }
   let parsedOpenApi
   let getRouterPromise
@@ -71,25 +46,22 @@ const Api = function (core, middlewares) {
   }
 
   const getStatusHeadersAndResponse = function (responseCustomizator, methodToUse) {
-    const headers = responseCustomizator.header()
-    const statusCode = responseCustomizator.status() || (_.isArray(methodToUse.statusCode) ? methodToUse.statusCode[0] : methodToUse.statusCode)
-    const responseBody = _.isArray(methodToUse.responseBody) ? methodToUse.responseBody[methodToUse.statusCode.indexOf(statusCode)] : methodToUse.responseBody
-
+    const statusCode = responseCustomizator.status() || Number(_.keys(methodToUse)[0])
     return {
-      headers: headers,
-      responseBody: responseBody,
-      statusCode: statusCode
+      statusCode: statusCode,
+      headers: responseCustomizator.header(),
+      responseContent: methodToUse[statusCode].responseContent
     }
   }
 
   const SendResponse = function (methodToUse, responseCustomizator) {
     const sendResponse = function (req, res, response) {
-      const statusHeadersAndResponse = getStatusHeadersAndResponse(responseCustomizator, methods[methodToUse])
+      const statusHeadersAndResponse = getStatusHeadersAndResponse(responseCustomizator, methodsSchemas[methodToUse])
       _.each(statusHeadersAndResponse.headers, (header) => {
         res.set(header.key, header.value)
       })
       res.status(statusHeadersAndResponse.statusCode)
-      if (statusHeadersAndResponse.responseBody) {
+      if (statusHeadersAndResponse.responseContent) {
         middlewares.sendResponse(req, res, response)
       } else {
         middlewares.sendResponse(req, res)
@@ -107,14 +79,34 @@ const Api = function (core, middlewares) {
         _.each(jsonSchemaProps, parse)
       }
     }
-    _.each(jsonSchema, parse)
+    parse(jsonSchema)
     return jsonSchema
   }
 
+  const requestBodyIsMandatory = function (methodName) {
+    return !!methodsSchemas[methodName].requestBody
+  }
+
   const ParamsValidator = function (route) {
-    let jsonSchemaParams = parseJsonschema(openApiToJsonschema(route.parameters || []))
+    const mandatoryBody = requestBodyIsMandatory(route.method)
+    const jsonSchemaParams = parseJsonschema(openApiToJsonschema(route.parameters || []))
+
+    if (mandatoryBody) {
+      if (route.requestBody && route.requestBody.content && route.requestBody.content[APP_JSON] && route.requestBody.content[APP_JSON].schema) {
+        jsonSchemaParams.body = parseJsonschema(route.requestBody.content[APP_JSON].schema)
+      } else if (route.requestBody && route.requestBody[CONTENT_SCHEMA_TAG]) {
+        jsonSchemaParams.body = parseJsonschema(route.requestBody[CONTENT_SCHEMA_TAG])
+      } else if (route[CONTENT_SCHEMA_TAG]) {
+        jsonSchemaParams.body = parseJsonschema(route[CONTENT_SCHEMA_TAG])
+      }
+    }
+
     return function (req) {
-      const validation = {
+      let validation
+      if (mandatoryBody && _.isEmpty(req.body)) {
+        return Promise.reject(new core.errors.BadData(templates.bodyEmptyValidationError()))
+      }
+      validation = {
         errors: _.flatten(_.map([
           jsonSchemaValidator.validate(req.body, jsonSchemaParams.body || {}),
           jsonSchemaValidator.validate(req.query, jsonSchemaParams.query || {}),
@@ -161,8 +153,7 @@ const Api = function (core, middlewares) {
   }
 
   const ResponseCustomizator = function (methodToUse) {
-    const methodProperties = methods[methodToUse]
-    const allowedStatusCodes = _.isArray(methodProperties.statusCode) ? methodProperties.statusCode : [methodProperties.statusCode]
+    const allowedStatusCodes = _.keys(methodsSchemas[methodToUse])
     let headers = []
     let statusToSet
 
@@ -203,7 +194,7 @@ const Api = function (core, middlewares) {
     const executeAction = new ActionExecutor(route.operationId, responseCustomizator)
     const sendResponse = new SendResponse(methodToUse, responseCustomizator)
 
-    if (!methods[methodToUse]) {
+    if (!methodsSchemas[methodToUse]) {
       return Promise.reject(new core.errors.MethodNotAllowed(templates.methodNotAllowedError({
         method: methodToUse
       })))
@@ -211,7 +202,7 @@ const Api = function (core, middlewares) {
 
     routes[route.path] = routes[route.path] || {}
     routes[route.path][methodToUse] = route
-    // Maybe it is better to use a middleware for all api methods, instead of adding it to every call ...
+    // About security, maybe it is better to use a middleware for all api methods, instead of adding it to every call ...
     // Securize all, but custom with roles and users (*)
     router.route(route.path)[methodToUse](/* TODO, add authorization handler */ (req, res, next) => {
       return parseParameters(req)
@@ -278,20 +269,20 @@ const Api = function (core, middlewares) {
     ])
   }
 
-  const addDefinitions = function (definitionsToAdd) {
+  const addSchemas = function (schemasToAdd) {
     let alreadyExists
-    _.each(definitionsToAdd, (definitionProperties, definitionId) => {
-      if (openApi.definitions[definitionId]) {
+    _.each(schemasToAdd, (schemaProperties, schemaId) => {
+      if (openApi.schemas[schemaId]) {
         alreadyExists = Promise.reject(new core.errors.Conflict(templates.apiAlreadyExistsError({
-          item: 'definition',
-          name: definitionId
+          item: 'schema',
+          name: schemaId
         })))
       } else {
-        jsonSchemaValidator.addSchema(definitionProperties, '/definitions/' + definitionId)
-        openApi.definitions[definitionId] = definitionProperties
+        jsonSchemaValidator.addSchema(schemaProperties, '/components/schemas/' + schemaId)
+        openApi.schemas[schemaId] = schemaProperties
       }
     })
-    return alreadyExists || Promise.resolve(definitionsToAdd)
+    return alreadyExists || Promise.resolve(schemasToAdd)
   }
 
   const addTag = function (tag) {
@@ -320,7 +311,7 @@ const Api = function (core, middlewares) {
     return Promise.all([
       addRoutesAndPaths(openApiDefinition.paths),
       addTags(openApiDefinition.tags),
-      addDefinitions(openApiDefinition.definitions)
+      addSchemas(openApiDefinition.schemas)
     ])
   }
 
@@ -357,7 +348,7 @@ const Api = function (core, middlewares) {
   }
 
   const setParsedOpenApi = function (openApi) {
-    parsedOpenApi = JSON.parse(JSON.stringify(openApi).replace(/#/g, '/doc/openapi.json#'))
+    parsedOpenApi = JSON.parse(JSON.stringify(openApi).replace(/#/g, '/doc/api/openapi.json#'))
     return Promise.resolve(openApi)
   }
 
@@ -365,16 +356,12 @@ const Api = function (core, middlewares) {
     const methodToUse = 'options'
     const responseCustomizator = new ResponseCustomizator(methodToUse)
     const sendResponse = new SendResponse(methodToUse, responseCustomizator)
-    console.log(parsedOpenApi)
-    console.log(route)
     route.options((req, res, next) => {
       res.set({
         'Allow': _.map(_.keys(methods), (method) => {
           return method.toUpperCase()
         }).join(', ')
       })
-      // TODO, send methods after parsing it in Docs. (if possible) (replace references to json urls as specification says)
-      // https://swagger.io/docs/specification/using-ref/
       sendResponse(req, res, parsedOpenApi.paths[route.path])
     })
     return Promise.resolve(route)
@@ -389,10 +376,6 @@ const Api = function (core, middlewares) {
     })
   }
 
-  const getResponsesDefinitions = function () {
-    return Promise.resolve(methods)
-  }
-
   const initRouter = function () {
     if (!getRouterPromise) {
       getRouterPromise = addMethodsHandling(routes)
@@ -405,7 +388,6 @@ const Api = function (core, middlewares) {
 
   return {
     addApi: addApi,
-    getResponsesDefinitions: getResponsesDefinitions,
     getOpenApi: getOpenApi,
     setParsedOpenApi: setParsedOpenApi,
     initRouter: initRouter

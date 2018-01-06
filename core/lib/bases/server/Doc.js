@@ -4,134 +4,251 @@ const path = require('path')
 
 const _ = require('lodash')
 const express = require('express')
+const hbs = require('hbs')
 const Promise = require('bluebird')
 
-const openapiBase = require('./openapi')
-const openApiTemplates = require('../../templates/openapi')
+const openApiBase = require('./openapi/base.json')
+const openapiTemplates = require('../../templates/openapi')
+const methodsSchema = require('./methods')
 
 const APP_JSON = 'application/json'
+const CONTENT_SCHEMA_TAG = 'x-json-content-schema'
+
+const template = function (source, data) {
+  return hbs.compile(source)(_.isObject(data) ? data : {data: data})
+}
 
 const Docs = function (core, middlewares, api) {
-  const templates = core.utils.templates.compile(openApiTemplates)
+  const templates = core.utils.templates.compile(openapiTemplates)
   let getRouterPromise
   let openApiDocPromise
 
   const addOpenApiInfo = function (openapi, configuration) {
-    openapi.info.description = 'Domapic service' // TODO, read from package.json
-    openapi.info.version = '1.0.0' // TODO, read from package.json
-    openapi.info.title = templates.title({name: configuration.name})
-    openapi.host = templates.host({host: 'localhost', port: configuration.port}) // TODO, get from config
-    openapi.schemes.push(configuration.sslKey ? 'https' : 'http')
+    openapi.info.version = template(openapi.info.description, '1.0.0')
+    openapi.info.title = template(openapi.info.title, configuration.name)
+    openapi.info.description = template(openapi.info.description, 'Domapic service')
+    // TODO, read from package.json
+    // TODO, add contact and license from package.json
+    // ID storage
+    /* "contact": {
+      "name": "Swagger API Team",
+      "email": "foo@example.com",
+      "url": "http://domapic.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT"
+    } */
+    openapi.servers[0].url = template(openapi.servers[0].url, {
+      protocol: configuration.sslKey ? 'https' : 'http',
+      host: 'localhost',
+      port: configuration.port
+    })
+
     return Promise.resolve(openapi)
   }
 
-  const hasBodyParams = function (parameters) {
-    return _.filter(parameters, (parameter) => {
-      return parameter.in === 'body'
-    }).length > 0
+  const requestBodyIsMandatory = function (methodName) {
+    return !!methodsSchema[methodName].requestBody
   }
 
-  const AddOpenApiToMethods = function (sharedInfo, responsesDefinitions, path) {
-    return function (methodProperties, method) {
-      const defaultsResponsesCodes = _.isArray(responsesDefinitions[method].statusCode) ? responsesDefinitions[method].statusCode : [responsesDefinitions[method].statusCode]
-      const defaultsHasBody = _.isArray(responsesDefinitions[method].responseBody) ? responsesDefinitions[method].responseBody : [responsesDefinitions[method].responseBody]
-      const defaultsResponsesHeaders = responsesDefinitions[method].responseHeaders && _.isArray(responsesDefinitions[method].responseHeaders[0]) ? responsesDefinitions[method].responseHeaders : [responsesDefinitions[method].responseHeaders]
+  const mustHaveResponseContent = function (statusCodeProperties) {
+    return !!statusCodeProperties.responseContent
+  }
 
-      sharedInfo.pathTags = _.union(sharedInfo.pathTags, methodProperties.tags || [])
-      if (!methodProperties.parameters) {
-        methodProperties.parameters = []
+  const mustHaveResponseHeaders = function (statusCodeProperties) {
+    return !!statusCodeProperties.headers && !!statusCodeProperties.headers.length
+  }
+
+  const mustHaveBadDataResponse = function (methodObject) {
+    return !!methodObject.parameters || !!methodObject.requestBody
+  }
+
+  const extendOpenApiRequestBody = function (methodObject, methodName) {
+    if (requestBodyIsMandatory(methodName)) {
+      methodObject.requestBody = methodObject.requestBody || {}
+      methodObject.requestBody.required = true
+
+      // Add content schema
+      methodObject.requestBody.content = methodObject.requestBody.content || {}
+      methodObject.requestBody.content[APP_JSON] = methodObject.requestBody.content[APP_JSON] || {}
+
+      if (!methodObject.requestBody.content[APP_JSON].schema) {
+        if (methodObject.requestBody[CONTENT_SCHEMA_TAG]) {
+          methodObject.requestBody.content[APP_JSON].schema = methodObject.requestBody[CONTENT_SCHEMA_TAG]
+          delete methodObject.requestBody[CONTENT_SCHEMA_TAG]
+        } else if (methodObject[CONTENT_SCHEMA_TAG]) {
+          methodObject.requestBody.content[APP_JSON].schema = methodObject[CONTENT_SCHEMA_TAG]
+        } else {
+          throw new core.errors.BadData(templates.noPropertyValidationError({
+            property: 'requestBody schema',
+            method: methodName
+          }))
+        }
       }
+    }
+  }
 
-      if (methodProperties.parameters.length && hasBodyParams(methodProperties.parameters) && (!methodProperties.consumes || methodProperties.consumes.indexOf(APP_JSON) < 0)) {
-        methodProperties.consumes = methodProperties.consumes || []
-        methodProperties.consumes.push(APP_JSON)
+  const extendOpenApiResponse = function (methodObject, methodName, statusCodeProperties, statusCode) {
+    methodObject.responses = methodObject.responses || {}
+    methodObject.responses[statusCode] = methodObject.responses[statusCode] || {}
+    methodObject.responses[statusCode].description = methodObject.responses[statusCode].description || statusCodeProperties.description
+
+    // Add content schema
+    if (mustHaveResponseContent(statusCodeProperties) && !methodObject.responses[statusCode]['$ref']) {
+      methodObject.responses[statusCode].content = methodObject.responses[statusCode].content || {}
+      methodObject.responses[statusCode].content[APP_JSON] = methodObject.responses[statusCode].content[APP_JSON] || {}
+
+      if (!methodObject.responses[statusCode].content[APP_JSON].schema) {
+        if (methodObject.responses[statusCode][CONTENT_SCHEMA_TAG]) {
+          methodObject.responses[statusCode].content[APP_JSON].schema = methodObject.responses[statusCode][CONTENT_SCHEMA_TAG]
+          delete methodObject.responses[statusCode][CONTENT_SCHEMA_TAG]
+        } else if (methodObject[CONTENT_SCHEMA_TAG]) {
+          methodObject.responses[statusCode].content[APP_JSON].schema = methodObject[CONTENT_SCHEMA_TAG]
+        } else {
+          throw new core.errors.BadData(templates.noPropertyValidationError({
+            property: statusCode + ' response schema',
+            method: methodName
+          }))
+        }
       }
+    }
 
-      // Sucessful responses
-      methodProperties.responses = methodProperties.responses || {}
-
-      _.each(defaultsResponsesCodes, (defaultResponseCode, index) => {
-        // Add produces
-        if (defaultsHasBody[index] && (!methodProperties.produces || methodProperties.produces.indexOf(APP_JSON) < 0)) {
-          methodProperties.produces = methodProperties.produces || []
-          methodProperties.produces.push(APP_JSON)
-        }
-
-        // Add responses
-        methodProperties.responses[defaultResponseCode] = methodProperties.responses[defaultResponseCode] || {}
-        if (!methodProperties.responses[defaultResponseCode].description) {
-          methodProperties.responses[defaultResponseCode].description = templates.sucessfulOperation()
-        }
-
-        // Add headers
-        if (defaultsResponsesHeaders[index]) {
-          _.each(defaultsResponsesHeaders[index], (header) => {
-            if (!methodProperties.responses[defaultResponseCode].headers || !methodProperties.responses[defaultResponseCode].headers[header]) {
-              // TODO, to full schema. It seema like validator does not like the header 'ref' (or put data directly)
-              methodProperties.responses[defaultResponseCode].headers = methodProperties.responses[defaultResponseCode].headers || {}
-              methodProperties.responses[defaultResponseCode].headers[header.toLowerCase()] = {
-                '$ref': '#/components/headers/' + header.replace(/-/g, '')
-              }
-            }
-          })
-        }
-
-        // Add default definition
-        if (defaultsHasBody[index] && !methodProperties.responses[defaultResponseCode].schema) {
-          methodProperties.responses[defaultResponseCode].schema = {
-            '$ref': '#/definitions/' + _.capitalize(path.replace('/', ''))
+    if (mustHaveResponseHeaders(statusCodeProperties)) {
+      methodObject.responses[statusCode].headers = methodObject.responses[statusCode].headers || {}
+      _.each(statusCodeProperties.headers, (headerName) => {
+        if (!methodObject.responses[statusCode].headers[headerName]) {
+          methodObject.responses[statusCode].headers[headerName] = {
+            '$ref': '#/components/headers/' + headerName.replace(/-/g, '')
           }
         }
       })
-
-      // Error responses
-      if (methodProperties.parameters.length && !methodProperties.responses['422']) {
-        methodProperties.responses['422'] = {
-          '$ref': '#/components/responses/BadDataError'
-        }
-      }
     }
   }
 
-  const addOpenApiOptionsMethod = function (pathMethods, sharedInfo) {
-    pathMethods['options'] = pathMethods['options'] || {
-      tags: _.uniq(sharedInfo.pathTags),
-      summary: 'Identify allowed request methods', // TODO, templates
-      description: 'Find out which request methods supports', // TODO, templates
+  const extendErrorResponses = function (methodObject) {
+    methodObject.responses = methodObject.responses || {}
+    if (mustHaveBadDataResponse(methodObject)) {
+      methodObject.responses['422'] = {
+        '$ref': '#/components/responses/BadDataError'
+      }
+    }
+    methodObject.responses['500'] = {
+      '$ref': '#/components/responses/UnexpectedError'
+    }
+  }
+
+  const extendOpenApiResponses = function (methodObject, methodName) {
+    extendErrorResponses(methodObject)
+    _.each(methodsSchema[methodName], (statusCodeProperties, statusCode) => {
+      if (statusCode !== 'requestBody') {
+        extendOpenApiResponse(methodObject, methodName, statusCodeProperties, statusCode)
+      }
+    })
+  }
+
+  const addOpenApiMethod = function (methodProperties, methodName, pathObject) {
+    pathObject[methodName] = {}
+    // summary
+    if (!methodProperties.summary && !methodProperties.description) {
+      throw new core.errors.BadData(templates.noPropertyValidationError({
+        property: 'summary or description',
+        method: methodName
+      }))
+    }
+    pathObject[methodName].summary = methodProperties.summary
+    pathObject[methodName].description = methodProperties.description
+
+    // operationId
+    if (!methodProperties.operationId) {
+      throw new core.errors.BadData(templates.noPropertyValidationError({
+        property: 'operationId',
+        method: methodName
+      }))
+    }
+    pathObject[methodName].operationId = methodProperties.operationId
+
+    // tags
+    if (!methodProperties.tags || !_.isArray(methodProperties.tags) || !methodProperties.tags.length) {
+      throw new core.errors.BadData(templates.noPropertyValidationError({
+        property: 'tags',
+        method: methodName
+      }))
+    }
+    pathObject[methodName].tags = methodProperties.tags
+
+    // add temporarily default schema definition
+    pathObject[methodName][CONTENT_SCHEMA_TAG] = methodProperties[CONTENT_SCHEMA_TAG]
+
+    // requestBody
+    pathObject[methodName].requestBody = methodProperties.requestBody
+    extendOpenApiRequestBody(pathObject[methodName], methodName)
+
+    // parameters
+    pathObject[methodName].parameters = methodProperties.parameters
+
+    // responses
+    pathObject[methodName].responses = methodProperties.responses
+    extendOpenApiResponses(pathObject[methodName], methodName)
+
+    delete pathObject[methodName][CONTENT_SCHEMA_TAG]
+  }
+
+  const addOpenApiOptionsMethod = function (pathObject) {
+    const tags = _.uniq(_.flatten(_.map(pathObject, (pathProperties) => {
+      return pathProperties.tags
+    })))
+    pathObject.options = {
+      tags: tags,
+      summary: templates.optionsSummary(),
+      description: templates.optionsDescription(),
       responses: {
         '200': {
-          '$ref': '#/components/responses/Options'
+          '$ref': '#/components/responses/OptionsSuccess'
         }
       }
     }
   }
 
-  const addOpenApiData = function (openapi, openApiProperties, responsesDefinitions) {
-    const extendedDefinitions = _.extend(openapi.definitions, openApiProperties.definitions || {})
-    _.extend(openapi, openApiProperties)
-    openapi.definitions = extendedDefinitions
-
-    _.each(openapi.paths, (pathMethods, path) => {
-      let sharedInfo = {
-        paths: []
+  const addOpenApiPath = function (pathMethods, pathName, openApi) {
+    openApi.paths[pathName] = {}
+    _.each(pathMethods, (methodProperties, methodName) => {
+      try {
+        addOpenApiMethod(methodProperties, methodName, openApi.paths[pathName])
+      } catch (err) {
+        err.message = templates.addOpenApiMethodError({
+          message: err.message,
+          pathName: pathName
+        })
+        throw err
       }
-      _.each(pathMethods, new AddOpenApiToMethods(sharedInfo, responsesDefinitions, path))
-      addOpenApiOptionsMethod(pathMethods, sharedInfo)
     })
-    return Promise.resolve(openapi)
+    addOpenApiOptionsMethod(openApi.paths[pathName])
+  }
+
+  const addOpenApiData = function (openApi, openApiProperties) {
+    // Add schemas // TODO, add any type of components
+    _.extend(openApi.components.schemas, openApiProperties.schemas)
+    // Add tags
+    openApi.tags = _.union(openApi.components.tags, openApiProperties.tags)
+    // Add paths
+    _.each(openApiProperties.paths, (pathMethods, path) => {
+      addOpenApiPath(pathMethods, path, openApi)
+    })
+
+    return Promise.resolve(openApi)
   }
 
   const getOpenApiDoc = function (routes) {
     if (!openApiDocPromise) {
       openApiDocPromise = Promise.props({
         openApiProperties: api.getOpenApi(),
-        configuration: core.config.get(),
-        responsesDefinitions: api.getResponsesDefinitions()
+        configuration: core.config.get()
       }).then((props) => {
-        let openapi = JSON.parse(JSON.stringify(openapiBase))
+        let openapi = JSON.parse(JSON.stringify(openApiBase))
         return Promise.all([
           addOpenApiInfo(openapi, props.configuration),
-          addOpenApiData(openapi, props.openApiProperties, props.responsesDefinitions)
+          addOpenApiData(openapi, props.openApiProperties)
         ]).then(() => {
           return Promise.resolve(openapi)
         })

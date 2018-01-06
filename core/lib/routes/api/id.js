@@ -7,15 +7,20 @@ module.exports = {
       name: 'id',
       description: 'Domapic service identifier'
     }],
-    definitions: {
+    schemas: {
       Id: {
+        description: 'Unique identifier of the service',
         type: 'object',
         properties: {
           name: {
+            description: 'Name of the service',
             type: 'string'
           }
         },
-        required: ['name']
+        required: ['name'],
+        example: {
+          name: 'domapic-controller'
+        }
       }
     },
     paths: {
@@ -24,26 +29,49 @@ module.exports = {
           tags: [
             'id'
           ],
+          'x-json-content-schema': {
+            '$ref': '#/components/schemas/Id'
+          },
           summary: 'Returns unique and constant data of the service',
           description: 'Returns a map with unique and constant data that allows to identify the service',
           operationId: 'getId'
         },
         put: {
+          'x-json-content-schema': {
+            '$ref': '#/components/schemas/Id'
+          },
+          summary: 'Modify id',
+          description: 'Returns a map of status codes to quantities',
           operationId: 'putId',
           tags: [
             'id'
+          ]
+        }
+      },
+      '/id/:name': {
+        get: {
+          'x-json-content-schema': {
+            '$ref': '#/components/schemas/Id'
+          },
+          summary: 'Returns unique and constant data of the service',
+          description: 'Returns a map with unique and constant data that allows to identify the service',
+          operationId: 'getIdName',
+          tags: [
+            'id'
           ],
-          summary: 'Returns pet inventories by status',
-          description: 'Returns a map of status codes to quantities',
-          parameters: [{
-            in: 'body',
-            name: 'body',
-            description: 'Modify the id of the service',
-            required: true,
-            schema: {
-              '$ref': '#/definitions/Id'
+          // Get as is
+          parameters: [
+            {
+              name: 'name',
+              in: 'path',
+              description: 'service name',
+              required: true,
+              example: 'service-name-example',
+              schema: {
+                type: 'string'
+              }
             }
-          }]
+          ]
         }
       }
     }
@@ -69,6 +97,18 @@ module.exports = {
         return {
           name: 'testing put'
         }
+      }
+    },
+    patchtId: {
+      handler: (parameters, response, core) => {
+        return {
+          name: 'testing patch'
+        }
+      }
+    },
+    getIdName: {
+      handler: (parameters, response, core) => {
+        return parameters
       }
     }
   }
