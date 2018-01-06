@@ -72,7 +72,7 @@ const Server = function (core) {
   }
 
   const registerBaseViewPartials = function () {
-    return registerViewPartials(path.resolve(__dirname, '..', 'views', 'partials'))
+    return registerViewPartials(path.resolve(__dirname, 'server', 'views', 'partials'))
   }
 
   const startServer = function (options, routers) {

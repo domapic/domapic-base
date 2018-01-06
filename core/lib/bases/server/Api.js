@@ -8,7 +8,7 @@ const openApiToJsonschema = require('openapi-jsonschema-parameters')
 const Promise = require('bluebird')
 
 const serverTemplates = require('../../templates/server')
-const methodsSchemas = require('./methods')
+const methodsSchemas = require('./definitions/methods')
 
 const APP_JSON = 'application/json'
 const CONTENT_SCHEMA_TAG = 'x-json-content-schema'

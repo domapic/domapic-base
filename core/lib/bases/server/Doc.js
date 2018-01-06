@@ -7,9 +7,9 @@ const express = require('express')
 const hbs = require('hbs')
 const Promise = require('bluebird')
 
-const openApiBase = require('./openapi/base.json')
+const openApiBase = require('./definitions/openapi.json')
 const openapiTemplates = require('../../templates/openapi')
-const methodsSchema = require('./methods')
+const methodsSchema = require('./definitions/methods')
 
 const APP_JSON = 'application/json'
 const CONTENT_SCHEMA_TAG = 'x-json-content-schema'
@@ -263,7 +263,7 @@ const Docs = function (core, middlewares, api) {
     const openApiDefinitionUrl = '/api/' + openApiFile
 
     router.route('/api').get((req, res, next) => {
-      res.type('html').render(path.resolve(__dirname, '..', '..', 'views', 'swagger.html'), {
+      res.type('html').render(path.resolve(__dirname, 'views', 'swagger.html'), {
         swaggerUiAssetPath: '/assets/swagger',
         apiDefinitionUrl: '/doc' + openApiDefinitionUrl
       })

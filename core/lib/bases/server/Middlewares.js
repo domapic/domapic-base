@@ -94,7 +94,7 @@ const Middlewares = function (core) {
   const errorHandler = function (err, req, res, next) {
     const htmlError = core.errors.toHTML(err)
     res.status(htmlError.output.statusCode)
-    sendResponse(req, res, htmlError.output.payload, path.resolve(__dirname, '..', '..', 'views', 'error.html'))
+    sendResponse(req, res, htmlError.output.payload, path.resolve(__dirname, 'views', 'error.html'))
   }
 
   const addPre = function (app) {
