@@ -1,13 +1,19 @@
 'use strict'
 
 const core = require('./core')
-const server = require('./lib/server')
-const start = require('./cli/commands/start')
 
-new core.Arguments().getOptions(start.options)
-  .then(server.start)
-  .then(() => {
-    setTimeout(() => {
-      console.log('finished')
-    })
+new core.Service()
+  .then((service) => {
+    return service.server.start()
+      .catch((error) => {
+        return service.tracer.error(error)
+          .then(() => {
+            process.exit(1)
+          })
+      })
+  })
+  .catch((error) => {
+    console.error('ERROR: ' + error.message)
+    console.error(error.stack)
+    process.exit(1)
   })

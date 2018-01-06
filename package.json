@@ -14,17 +14,28 @@
     "domapic": "./bin/domapic"
   },
   "scripts": {
-    "start": "./bin/domapic start",
-    "stop": "./bin/domapic stop",
-    "logs": "./bin/domapic logs",
-    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive",
+    "domapic": "node ./cli/index.js",
+    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test core/test",
     "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "dependencies": {
-    "yargs": "10.0.3",
     "bluebird": "3.5.1",
+    "body-parser": "1.18.2",
+    "boom": "7.1.1",
+    "chalk": "2.3.0",
+    "express": "4.16.2",
+    "express-request-id": "1.4.0",
+    "fs-extra": "5.0.0",
+    "hbs": "4.0.1",
+    "is-promise": "2.1.0",
+    "jsonschema": "1.2.2",
+    "openapi-jsonschema-parameters": "0.2.0",
     "lodash": "4.17.4",
-    "pm2": "2.8.0"
+    "method-override": "2.3.10",
+    "pm2": "2.8.0",
+    "swagger-ui-dist": "3.8.1",
+    "tracer": "0.8.11",
+    "yargs": "10.0.3"
   },
   "devDependencies": {
     "chai": "4.1.2",

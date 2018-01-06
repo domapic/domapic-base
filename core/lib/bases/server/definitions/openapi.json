@@ -1,0 +1,135 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "{{data}}",
+    "title": "{{capitalize data}} Domapic Service",
+    "description": "{{data}}"
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "{{protocol}}://{{host}}:{{port}}/api"
+    }
+  ],
+  "paths": {
+  },
+  "components": {
+    "responses": {
+      "OptionsSuccess" : {
+        "description": "Openapi descriptions for all resource methods",
+        "headers": {
+          "Allow": {
+            "$ref": "#/components/headers/Allow"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiResourceMethods"
+            }
+          }
+        }
+      },
+      "BadDataError" : {
+        "description": "Bad data provided",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Error"
+                },
+                {
+                  "example": {
+                    "statusCode": 422,
+                    "error": "Bad data provided",
+                    "message": "Validation error message"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "UnexpectedError" : {
+        "description": "Unexpected error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    },
+    "headers": {
+      "Allow": {
+        "description": "Supported request methods",
+        "schema": {
+          "type": "string",
+          "example": "PUT, GET"
+        }
+      },
+      "ContentLocation": {
+        "description": "Indicates an alternate location for the returned data",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": ["statusCode", "error", "message"],
+        "properties": {
+          "statusCode": {
+            "description": "Error HTML status code",
+            "type": "integer",
+            "format": "int32"
+          },
+          "error": {
+            "description": "Error name",
+            "type": "string"
+          },
+          "message": {
+            "description": "message",
+            "type": "string"
+          }
+        },
+        "example": {
+          "statusCode": 500,
+          "error": "Internal server error",
+          "message": "An internal server error ocurred"
+        }
+      },
+      "ApiResourceMethods": {
+        "description": "OpenApi spec for each supported method",
+        "required": ["options"],
+        "type": "object",
+        "properties": {
+          "get": {
+            "type": "object",
+            "description": "OpenApi spec for get method"
+          },
+          "patch": {
+            "type": "object",
+            "description": "OpenApi spec for patch method"
+          },
+          "post": {
+            "type": "object",
+            "description": "OpenApi spec for post method"
+          },
+          "put": {
+            "type": "object",
+            "description": "OpenApi spec for put method"
+          },
+          "options": {
+            "type": "object",
+            "description": "OpenApi spec for options method"
+          }
+        }
+      }
+    }
+  }
+}
