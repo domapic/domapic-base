@@ -85,6 +85,7 @@ module.exports = {
           }
         }
       },
+      // TODO, pass parameters/body as in openapi doc?
       // TODO, avoid core here ?
       handler: (parameters, response, core) => {
         return Promise.resolve({

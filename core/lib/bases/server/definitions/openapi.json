@@ -35,7 +35,18 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Error"
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Error"
+                },
+                {
+                  "example": {
+                    "statusCode": 422,
+                    "error": "Bad data provided",
+                    "message": "Validation error message"
+                  }
+                }
+              ]
             }
           }
         }

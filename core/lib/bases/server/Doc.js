@@ -205,6 +205,9 @@ const Docs = function (core, middlewares, api) {
       responses: {
         '200': {
           '$ref': '#/components/responses/OptionsSuccess'
+        },
+        '500': {
+          '$ref': '#/components/responses/UnexpectedError'
         }
       }
     }

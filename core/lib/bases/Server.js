@@ -88,6 +88,11 @@ const Server = function (core) {
       app.use('/doc', routers.doc)
       app.use('/api', routers.api)
 
+      // temporarily redirect index to api docs
+      app.use('/', (req, res) => {
+        res.redirect('/doc/api')
+      })
+
       middlewares.addPost(app)
         .catch((error) => {
           reject(error)
