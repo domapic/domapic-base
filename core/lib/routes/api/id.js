@@ -18,6 +18,7 @@ module.exports = {
           }
         },
         required: ['name'],
+        additionalProperties: false,
         example: {
           name: 'domapic-controller'
         }

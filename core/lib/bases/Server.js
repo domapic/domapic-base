@@ -84,12 +84,13 @@ const Server = function (core) {
         cert: options.sslCert
       } : {}
 
+      app.use('/assets', express.static(path.resolve(__dirname, 'server', 'assets')))
       app.use('/assets/swagger', express.static(swaggerUiAssetPath))
       app.use('/doc', routers.doc)
       app.use('/api', routers.api)
 
       // temporarily redirect index to api docs
-      app.use('/', (req, res) => {
+      app.get('/', (req, res) => {
         res.redirect('/doc/api')
       })
 
@@ -168,7 +169,7 @@ const Server = function (core) {
             sslKey: config.sslKey,
             sslCert: config.sslCert,
             port: config.port
-          }, core.errors)
+          })
         })
     }
     return startPromise
