@@ -8,33 +8,74 @@ const path = require('path')
 const express = require('express')
 const Promise = require('bluebird')
 
-const Api = require('./server/Api')
+const Api = require('./server/api/Api')
 const Doc = require('./server/Doc')
 const Middlewares = require('./server/Middlewares')
-const serverTemplates = require('../templates/server')
-const swaggerUiAssetPath = require('swagger-ui-dist').getAbsoluteFSPath()
 
-const Server = function (options, core) {
-  const templates = core.utils.templates.compile(serverTemplates)
+const Server = function (core) {
   const app = express()
-  const middlewares = new Middlewares(options, core)
-  const api = new Api(options, core, middlewares)
-  const doc = new Doc(options, core, middlewares, api)
+  const templates = core.utils.templates.compiled.server
+  const middlewares = new Middlewares(core)
+  const api = new Api(core, middlewares)
+  const doc = new Doc()
 
   let started = false
   let startPromise
-  let preMiddlewaresPromise
 
   app.disable('etag')
   app.set('view engine', 'html')
-  app.engine('html', hbs.__express)
+  app.engine('html', hbs.__express) // TODO, use hbs
 
-  const addPreMiddlewares = function () {
-    if (!preMiddlewaresPromise) {
-      app.use('/assets/swagger', middlewares.lowerRequestLogLevel)
-      preMiddlewaresPromise = middlewares.addPre(app)
+  app.use('/assets', middlewares.lowerRequestLogLevel)
+  app.use('/assets', express.static(path.resolve(__dirname, 'server', 'assets')))
+
+  app.use(middlewares.addRequestId)
+  app.use(middlewares.jsonBodyParser)
+  app.use(middlewares.urlEncoded)
+  app.use(middlewares.logRequest)
+
+  const StartServerErrorHandler = function (startOptions, reject) {
+    return function (error) {
+      let customError
+      switch (error.code) {
+        case 'EADDRINUSE':
+          customError = new core.errors.BadImplementation(templates.portInUseError({
+            port: startOptions.port
+          }))
+          break
+        case 'EACCES':
+          customError = new core.errors.BadImplementation(templates.portDeniedError({
+            port: startOptions.port
+          }))
+          break
+        default:
+          customError = error
+      }
+      reject(customError)
     }
-    return preMiddlewaresPromise
+  }
+
+  const ServerStarted = function (resolve, reject, server) {
+    return function (error) {
+      if (error) {
+        reject(error)
+      } else {
+        started = true
+        resolve(server)
+      }
+    }
+  }
+
+  const registerViewPartials = function (partialsPath) {
+    return new Promise((resolve, reject) => {
+      hbs.registerPartials(path.resolve(__dirname, 'server', 'views', 'partials'), (error) => {
+        if (error) {
+          reject(error)
+        } else {
+          resolve()
+        }
+      })
+    })
   }
 
   const validateOptions = function (startOptions) {
@@ -59,22 +100,6 @@ const Server = function (options, core) {
     return http.createServer(app)
   }
 
-  const registerViewPartials = function (partialsPath) {
-    return new Promise((resolve, reject) => {
-      hbs.registerPartials(partialsPath, (error) => {
-        if (error) {
-          reject(error)
-        } else {
-          resolve()
-        }
-      })
-    })
-  }
-
-  const registerBaseViewPartials = function () {
-    return registerViewPartials(path.resolve(__dirname, 'server', 'views', 'partials'))
-  }
-
   const startServer = function (startOptions, routers) {
     return new Promise((resolve, reject) => {
       let server
@@ -84,8 +109,6 @@ const Server = function (options, core) {
         cert: startOptions.sslCert
       } : {}
 
-      app.use('/assets', express.static(path.resolve(__dirname, 'server', 'assets')))
-      app.use('/assets/swagger', express.static(swaggerUiAssetPath))
       app.use('/doc', routers.doc)
       app.use('/api', routers.api)
 
@@ -94,43 +117,17 @@ const Server = function (options, core) {
         res.redirect('/doc/api')
       })
 
-      middlewares.addPost(app)
-        .catch((error) => {
-          reject(error)
-        })
-        .then(() => {
-          server = serverMethod(nodeServerOptions, app)
+      app.use(middlewares.notFound)
+      app.use(middlewares.errorTrace)
+      app.use(middlewares.errorHandler)
 
-          server.on('error', (error) => {
-            let customError
-            switch (error.code) {
-              case 'EADDRINUSE':
-                customError = new core.errors.BadImplementation(templates.portInUseError({
-                  port: startOptions.port
-                }))
-                break
-              case 'EACCES':
-                customError = new core.errors.BadImplementation(templates.portDeniedError({
-                  port: startOptions.port
-                }))
-                break
-              default:
-                customError = error
-            }
-            reject(customError)
-          })
+      server = serverMethod(nodeServerOptions, app)
 
-          server.listen({
-            port: startOptions.port
-          }, (error) => {
-            if (error) {
-              reject(error)
-            } else {
-              started = true
-              resolve(server)
-            }
-          })
-        })
+      server.on('error', new StartServerErrorHandler(startOptions, reject))
+
+      server.listen({
+        port: startOptions.port
+      }, new ServerStarted(resolve, reject, server))
     })
   }
 
@@ -143,12 +140,10 @@ const Server = function (options, core) {
 
   const validateAndStart = function (startOptions) {
     return validateOptions(startOptions)
+      .then(registerViewPartials)
       .then(getRouters)
       .then((routers) => {
-        return registerBaseViewPartials()
-          .then(() => {
-            return startServer(startOptions, routers)
-          })
+        return startServer(startOptions, routers)
       })
       .then((server) => {
         return core.tracer.group([
@@ -175,15 +170,9 @@ const Server = function (options, core) {
     return startPromise
   }
 
-  const addApi = function (openApiDefinitions) {
-    return addPreMiddlewares()
-      .then(() => {
-        return api.addApi(openApiDefinitions)
-      })
-  }
-
   return {
-    addApi: addApi,
+    extendOpenApi: api.extendOpenApi,
+    addApiOperations: api.addOperations,
     start: start
   }
 }

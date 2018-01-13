@@ -1,8 +1,12 @@
 'use strict'
 
 const _ = require('lodash')
-
 const hbs = require('hbs')
+
+const cli = require('./templates/cli')
+const openapi = require('./templates/openapi')
+const processTemplates = require('./templates/process')
+const server = require('./templates/server')
 
 hbs.registerHelper('toJSON', function (object) {
   return new hbs.SafeString(JSON.stringify(object, null, 2))
@@ -26,6 +30,23 @@ const compile = function (templates) {
   return compiled
 }
 
+const preCompile = function () {
+  const toPreCompile = {
+    cli: cli,
+    openapi: openapi,
+    proccess: processTemplates,
+    server: server
+  }
+  let compiled = {}
+
+  _.each(toPreCompile, (templates, templatesScope) => {
+    compiled[templatesScope] = compile(templates)
+  })
+
+  return compiled
+}
+
 module.exports = {
-  compile: compile
+  compile: compile,
+  compiled: preCompile()
 }

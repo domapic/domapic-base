@@ -1,10 +1,9 @@
 'use strict'
 
-const cliTemplates = require('../templates/cli')
 const logsArguments = require('../arguments/logs')
 
 const logs = function (config, cli) {
-  const templates = cli.utils.templates.compile(cliTemplates)
+  const templates = cli.utils.templates.compiled.cli
 
   return cli.tracer.info(templates.displayingLogs({
     name: config.name

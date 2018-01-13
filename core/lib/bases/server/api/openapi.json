@@ -17,6 +17,16 @@
   ],
   "components": {
     "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "apiKey": {
+        "type": "apiKey",
+        "name": "X-API-KEY",
+        "in": "header"
+      }
     },
     "responses": {
       "OptionsSuccess" : {

@@ -5,13 +5,9 @@ const path = require('path')
 const _ = require('lodash')
 const addRequestId = require('express-request-id')
 const bodyParser = require('body-parser')
-const methodOverride = require('method-override')
-const Promise = require('bluebird')
 
-const serverTemplates = require('../../templates/server')
-
-const Middlewares = function (options, core) {
-  const templates = core.utils.templates.compile(serverTemplates)
+const Middlewares = function (core) {
+  const templates = core.utils.templates.compiled.server
 
   const notFound = function (req, res, next) {
     next(new core.errors.NotFound(templates.resourceNotFoundError()))
@@ -96,29 +92,10 @@ const Middlewares = function (options, core) {
     sendResponse(req, res, htmlError.output.payload, path.resolve(__dirname, 'views', 'error.html'))
   }
 
-  const addPre = function (app) {
-    app.use(addRequestId())
-    app.use(methodOverride('_method'))
-    app.use(bodyParser.json())
-    app.use(bodyParser.urlencoded({ extended: true }))
-    app.use(logRequest)
-    return Promise.resolve()
-  }
-
-  const addPost = function (app) {
-    app.use(notFound)
-    app.use(errorTrace)
-    app.use(errorHandler)
-    return Promise.resolve()
-  }
-
-  const addMethodNotAllowed = function (route) {
-    route.all((req, res, next) => {
-      next(new core.errors.MethodNotAllowed(templates.methodNotAllowedError({
-        method: req.method
-      })))
-    })
-    return Promise.resolve(route)
+  const methodNotAllowed = function (req, res, next) {
+    next(new core.errors.MethodNotAllowed(templates.methodNotAllowedError({
+      method: req.method
+    })))
   }
 
   const sendOnlyJson = function (req, res, next) {
@@ -131,13 +108,26 @@ const Middlewares = function (options, core) {
     next()
   }
 
+  const OperationId = function (operationId) {
+    return function (req, res, next) {
+      req.operationId = operationId
+      next()
+    }
+  }
+
   return {
-    addPre: addPre,
-    addPost: addPost,
-    addMethodNotAllowed: addMethodNotAllowed,
+    methodNotAllowed: methodNotAllowed,
+    addRequestId: addRequestId(),
+    errorHandler: errorHandler,
+    errorTrace: errorTrace,
+    jsonBodyParser: bodyParser.json(),
+    logRequest: logRequest,
+    lowerRequestLogLevel: lowerRequestLogLevel,
+    notFound: notFound,
+    OperationId: OperationId,
     sendResponse: sendResponse,
     sendOnlyJson: sendOnlyJson,
-    lowerRequestLogLevel: lowerRequestLogLevel
+    urlEncoded: bodyParser.urlencoded({ extended: true })
   }
 }
 

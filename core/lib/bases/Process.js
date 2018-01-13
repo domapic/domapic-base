@@ -7,10 +7,8 @@ const _ = require('lodash')
 const pm2 = require('pm2')
 const Promise = require('bluebird')
 
-const processTemplates = require('../templates/process')
-
 const Process = function (options, core) {
-  const templates = core.utils.templates.compile(processTemplates)
+  const templates = core.utils.templates.compiled.process
   let pm2OptionsPromise
 
   const defaultOptions = {
