@@ -1,10 +1,9 @@
 'use strict'
 
-const cliTemplates = require('../templates/cli')
 const serviceArguments = require('../arguments/service')
 
 const start = function (config, cli) {
-  const templates = cli.utils.templates.compile(cliTemplates)
+  const templates = cli.utils.templates.compiled.cli
 
   return cli.tracer.info(templates.startingService({
     name: config.name

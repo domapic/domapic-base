@@ -1,9 +1,7 @@
 'use strict'
 
-const cliTemplates = require('../templates/cli')
-
 const stop = function (config, cli) {
-  const templates = cli.utils.templates.compile(cliTemplates)
+  const templates = cli.utils.templates.compiled.cli
 
   return cli.tracer.info(templates.stoppingService({
     name: config.name

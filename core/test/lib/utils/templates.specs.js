@@ -4,7 +4,7 @@ const _ = require('lodash')
 const test = require('../../index')
 
 const templates = require('../../../lib/utils/templates')
-const cliTemplates = require('../../../lib/templates/cli')
+const cliTemplates = require('../../../lib/utils/templates/cli')
 
 test.describe('Utils -> templates', () => {
   test.describe('compile', () => {

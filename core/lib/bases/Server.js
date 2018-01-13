@@ -8,60 +8,67 @@ const path = require('path')
 const express = require('express')
 const Promise = require('bluebird')
 
-const Api = require('./server/Api')
+const Api = require('./server/api/Api')
 const Doc = require('./server/Doc')
 const Middlewares = require('./server/Middlewares')
-const serverTemplates = require('../templates/server')
-const swaggerUiAssetPath = require('swagger-ui-dist').getAbsoluteFSPath()
 
 const Server = function (core) {
-  const templates = core.utils.templates.compile(serverTemplates)
   const app = express()
+  const templates = core.utils.templates.compiled.server
   const middlewares = new Middlewares(core)
   const api = new Api(core, middlewares)
-  const doc = new Doc(core, middlewares, api)
+  const doc = new Doc()
 
   let started = false
   let startPromise
-  let preMiddlewaresPromise
 
   app.disable('etag')
   app.set('view engine', 'html')
-  app.engine('html', hbs.__express)
+  app.engine('html', hbs.__express) // TODO, use hbs
 
-  const addPreMiddlewares = function () {
-    if (!preMiddlewaresPromise) {
-      app.use('/assets/swagger', middlewares.lowerRequestLogLevel)
-      preMiddlewaresPromise = middlewares.addPre(app)
+  app.use('/assets', middlewares.lowerRequestLogLevel)
+  app.use('/assets', express.static(path.resolve(__dirname, 'server', 'assets')))
+
+  app.use(middlewares.addRequestId)
+  app.use(middlewares.jsonBodyParser)
+  app.use(middlewares.urlEncoded)
+  app.use(middlewares.logRequest)
+
+  const StartServerErrorHandler = function (startOptions, reject) {
+    return function (error) {
+      let customError
+      switch (error.code) {
+        case 'EADDRINUSE':
+          customError = new core.errors.BadImplementation(templates.portInUseError({
+            port: startOptions.port
+          }))
+          break
+        case 'EACCES':
+          customError = new core.errors.BadImplementation(templates.portDeniedError({
+            port: startOptions.port
+          }))
+          break
+        default:
+          customError = error
+      }
+      reject(customError)
     }
-    return preMiddlewaresPromise
   }
 
-  const validateOptions = function (options) {
-    if (options.sslKey && !options.sslCert) {
-      return Promise.reject(new core.errors.BadData(templates.invalidOptionsError({message: templates.noSslCertError()})))
+  const ServerStarted = function (resolve, reject, server) {
+    return function (error) {
+      if (error) {
+        reject(error)
+      } else {
+        started = true
+        resolve(server)
+      }
     }
-    if (options.sslCert && !options.sslKey) {
-      return Promise.reject(new core.errors.BadData(templates.invalidOptionsError({message: templates.noSslKeyError()})))
-    }
-    if (!options.port) {
-      return Promise.reject(new core.errors.BadData(templates.invalidOptionsError({message: templates.noPortError()})))
-    }
-
-    return Promise.resolve(options)
-  }
-
-  const startHTTPS = function (options, app) {
-    return https.createServer(options, app)
-  }
-
-  const startHTTP = function (options, app) {
-    return http.createServer(app)
   }
 
   const registerViewPartials = function (partialsPath) {
     return new Promise((resolve, reject) => {
-      hbs.registerPartials(partialsPath, (error) => {
+      hbs.registerPartials(path.resolve(__dirname, 'server', 'views', 'partials'), (error) => {
         if (error) {
           reject(error)
         } else {
@@ -71,21 +78,37 @@ const Server = function (core) {
     })
   }
 
-  const registerBaseViewPartials = function () {
-    return registerViewPartials(path.resolve(__dirname, 'server', 'views', 'partials'))
+  const validateOptions = function (startOptions) {
+    if (startOptions.sslKey && !startOptions.sslCert) {
+      return Promise.reject(new core.errors.BadData(templates.invalidOptionsError({message: templates.noSslCertError()})))
+    }
+    if (startOptions.sslCert && !startOptions.sslKey) {
+      return Promise.reject(new core.errors.BadData(templates.invalidOptionsError({message: templates.noSslKeyError()})))
+    }
+    if (!startOptions.port) {
+      return Promise.reject(new core.errors.BadData(templates.invalidOptionsError({message: templates.noPortError()})))
+    }
+
+    return Promise.resolve(startOptions)
   }
 
-  const startServer = function (options, routers) {
+  const startHTTPS = function (nodeServerOptions, app) {
+    return https.createServer(nodeServerOptions, app)
+  }
+
+  const startHTTP = function (nodeServerOptions, app) {
+    return http.createServer(app)
+  }
+
+  const startServer = function (startOptions, routers) {
     return new Promise((resolve, reject) => {
       let server
-      const serverMethod = options.sslKey ? startHTTPS : startHTTP
-      const serverOptions = options.sslKey ? {
-        key: options.sslKey,
-        cert: options.sslCert
+      const serverMethod = startOptions.sslKey ? startHTTPS : startHTTP
+      const nodeServerOptions = startOptions.sslKey ? {
+        key: startOptions.sslKey,
+        cert: startOptions.sslCert
       } : {}
 
-      app.use('/assets', express.static(path.resolve(__dirname, 'server', 'assets')))
-      app.use('/assets/swagger', express.static(swaggerUiAssetPath))
       app.use('/doc', routers.doc)
       app.use('/api', routers.api)
 
@@ -94,43 +117,17 @@ const Server = function (core) {
         res.redirect('/doc/api')
       })
 
-      middlewares.addPost(app)
-        .catch((error) => {
-          reject(error)
-        })
-        .then(() => {
-          server = serverMethod(serverOptions, app)
+      app.use(middlewares.notFound)
+      app.use(middlewares.errorTrace)
+      app.use(middlewares.errorHandler)
 
-          server.on('error', (error) => {
-            let customError
-            switch (error.code) {
-              case 'EADDRINUSE':
-                customError = new core.errors.BadImplementation(templates.portInUseError({
-                  port: options.port
-                }))
-                break
-              case 'EACCES':
-                customError = new core.errors.BadImplementation(templates.portDeniedError({
-                  port: options.port
-                }))
-                break
-              default:
-                customError = error
-            }
-            reject(customError)
-          })
+      server = serverMethod(nodeServerOptions, app)
 
-          server.listen({
-            port: options.port
-          }, (error) => {
-            if (error) {
-              reject(error)
-            } else {
-              started = true
-              resolve(server)
-            }
-          })
-        })
+      server.on('error', new StartServerErrorHandler(startOptions, reject))
+
+      server.listen({
+        port: startOptions.port
+      }, new ServerStarted(resolve, reject, server))
     })
   }
 
@@ -141,19 +138,17 @@ const Server = function (core) {
     })
   }
 
-  const validateAndStart = function (options) {
-    return validateOptions(options)
+  const validateAndStart = function (startOptions) {
+    return validateOptions(startOptions)
+      .then(registerViewPartials)
       .then(getRouters)
       .then((routers) => {
-        return registerBaseViewPartials()
-          .then(() => {
-            return startServer(options, routers)
-          })
+        return startServer(startOptions, routers)
       })
       .then((server) => {
         return core.tracer.group([
-          { info: templates.serverStarted({port: options.port}) },
-          { debug: [templates.serverOptionsLogTitle(), options] }
+          { info: templates.serverStarted({port: startOptions.port}) },
+          { debug: [templates.serverOptionsLogTitle(), startOptions] }
         ])
       })
   }
@@ -175,15 +170,9 @@ const Server = function (core) {
     return startPromise
   }
 
-  const addApi = function (openApiDefinitions) {
-    return addPreMiddlewares()
-      .then(() => {
-        return api.addApi(openApiDefinitions)
-      })
-  }
-
   return {
-    addApi: addApi,
+    extendOpenApi: api.extendOpenApi,
+    addApiOperations: api.addOperations,
     start: start
   }
 }

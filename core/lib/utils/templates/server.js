@@ -18,6 +18,7 @@ module.exports = {
   serverStartedError: 'Server was already started',
   apiAlreadyExistsError: 'Api {{item}} {{name}} already exists',
   noHandlerDefinedError: 'Action to execute with id {{actionid}} not found',
+  noOperationIdError: 'No operation id provided for {{method}} in {{path}}',
   responseStatusNotAllowedError: 'Method {{methodToUse}} can´t send a {{statusCode}} status code. Please use one of {{comma-separated allowedStatusCodes}}',
 
   serverStarted: 'Server started and listening at port {{port}}',
@@ -38,5 +39,8 @@ module.exports = {
   responseHeadersTitleLog: 'Response headers |',
   responseContentTitleLog: 'Response Content | {{{type}}} |',
   responseContentLog: '\nContent: {{toJSON response}}',
-  responseTemplateLog: '\nTemplate: {{template}}'
+  responseTemplateLog: '\nTemplate: {{template}}',
+
+  authenticationRequiredError: 'Authentication required',
+  authorizationFailedError: 'Not authorized'
 }
