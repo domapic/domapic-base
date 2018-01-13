@@ -35,7 +35,10 @@ module.exports = {
           },
           summary: 'Returns unique and constant data of the service',
           description: 'Returns a map with unique and constant data that allows to identify the service',
-          operationId: 'getId'
+          operationId: 'getId',
+          security: [{
+            jwt: []
+          }]
         },
         put: {
           'x-json-content-schema': {
@@ -60,7 +63,6 @@ module.exports = {
           tags: [
             'id'
           ],
-          // Get as is
           parameters: [
             {
               name: 'name',
@@ -86,8 +88,15 @@ module.exports = {
           }
         }
       },
+      authorization: (userData) => {
+        // credentials should be username, or apikey (core security methods returns it)
+        console.log('getId')
+        console.log(userData) // Includes rol and username
+        throw new Error('Not allowed')// Or promise.resolve
+      },
       // TODO, pass parameters/body as in openapi doc?
-      // TODO, avoid core here ?
+      // TODO, avoid core here ? Yes
+      // TODO, instead of response, use "resHeaders", or something similar
       handler: (parameters, response, core) => {
         return Promise.resolve({
           name: 'testing get'
@@ -95,6 +104,12 @@ module.exports = {
       }
     },
     putId: {
+      authorization: (userData) => {
+        // credentials should be username, or apikey (core security methods returns it)
+        console.log('putId')
+        console.log(userData) // Includes rol and username
+        return Promise.resolve() // Or promise.resolve
+      },
       handler: (parameters, response, core) => {
         return {
           name: 'testing put'
@@ -102,6 +117,12 @@ module.exports = {
       }
     },
     patchtId: {
+      authorization: (userData) => {
+        // credentials should be username, or apikey (core security methods returns it)
+        console.log('patchId')
+        console.log(userData) // Includes rol and username
+        return Promise.resolve() // Or promise.resolve
+      },
       handler: (parameters, response, core) => {
         return {
           name: 'testing patch'
@@ -109,6 +130,12 @@ module.exports = {
       }
     },
     getIdName: {
+       authorization: (userData) => {
+        // credentials should be username, or apikey (core security methods returns it)
+        console.log('getIdName')
+        console.log(userData) // Includes rol and username
+        return true // Or promise.resolve
+      },
       handler: (parameters, response, core) => {
         return parameters
       }

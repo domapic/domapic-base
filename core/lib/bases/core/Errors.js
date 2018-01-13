@@ -38,12 +38,12 @@ const Errors = function () {
       toCode: 408
     },
     Forbidden: {
-      name: 'Forbidden', // Repiting it has no sense, always will be forbidden
+      name: 'Forbidden', // Authorization failed
       toCode: 403,
       fromCode: 403
     },
     Unauthorized: {
-      name: 'Unauthorized', // Not allowed without authorization
+      name: 'Unauthorized', // Authentication failed
       toCode: 401
     },
     NotFound: {

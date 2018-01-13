@@ -10,6 +10,7 @@ const Promise = require('bluebird')
 const openApiBase = require('./definitions/openapi.json')
 const openapiTemplates = require('../../templates/openapi')
 const methodsSchema = require('./definitions/methods')
+const securitySchemes = require('./definitions/securitySchemes')
 
 const APP_JSON = 'application/json'
 const CONTENT_SCHEMA_TAG = 'x-json-content-schema'
@@ -18,15 +19,21 @@ const template = function (source, data) {
   return hbs.compile(source)(_.isObject(data) ? data : {data: data})
 }
 
-const Docs = function (core, middlewares, api) {
-  const templates = core.utils.templates.compile(openapiTemplates)
+const Docs = function (options, core, middlewares, api) {
+  const templates = core.utils.templates.compile(openapiTemplates) // TODO, compile all in utils
   let getRouterPromise
   let openApiDocPromise
 
   const addOpenApiInfo = function (openapi, configuration) {
+    let authenticationMethod = {}
+    authenticationMethod[options.authenticationMethod] = []
+    openapi.security.push(authenticationMethod)
+
+    openapi.components.securitySchemes[options.authenticationMethod] = securitySchemes[options.authenticationMethod]
+
     openapi.info.version = template(openapi.info.description, '1.0.0')
     openapi.info.title = template(openapi.info.title, configuration.name)
-    openapi.info.description = template(openapi.info.description, 'Domapic service')
+    openapi.info.description = template(openapi.info.description, 'Domapic service') // TODO From options
     // TODO, read from package.json
     // TODO, add contact and license from package.json
     // ID storage
@@ -177,6 +184,8 @@ const Docs = function (core, middlewares, api) {
     }
     pathObject[methodName].tags = methodProperties.tags
 
+    pathObject[methodName].security = methodProperties.security
+
     // add temporarily default schema definition
     pathObject[methodName][CONTENT_SCHEMA_TAG] = methodProperties[CONTENT_SCHEMA_TAG]
 
@@ -194,11 +203,32 @@ const Docs = function (core, middlewares, api) {
     delete pathObject[methodName][CONTENT_SCHEMA_TAG]
   }
 
+  const parameterAlreadyExists = function (parameter, parameters) {
+    return _.filter(parameters, (storedParameter) => {
+      return storedParameter.in === parameter.in && storedParameter.name === parameter.name
+    }).length > 0
+  }
+
+  const getPathParameters = function (pathObject) {
+    let parameters = []
+    _.each(pathObject, (pathProperties) => {
+      _.each(pathProperties.parameters, (parameter) => {
+        if (parameter.in === 'path' && !parameterAlreadyExists(parameter, parameters)) {
+          parameters.push(_.clone(parameter))
+        }
+      })
+    })
+    return parameters
+  }
+
   const addOpenApiOptionsMethod = function (pathObject) {
     const tags = _.uniq(_.flatten(_.map(pathObject, (pathProperties) => {
       return pathProperties.tags
     })))
+    const pathParameters = getPathParameters(pathObject)
+
     pathObject.options = {
+      security: [],
       tags: tags,
       summary: templates.optionsSummary(),
       description: templates.optionsDescription(),
@@ -210,6 +240,10 @@ const Docs = function (core, middlewares, api) {
           '$ref': '#/components/responses/UnexpectedError'
         }
       }
+    }
+
+    if (pathParameters.length) {
+      pathObject.options.parameters = pathParameters
     }
   }
 
@@ -229,6 +263,15 @@ const Docs = function (core, middlewares, api) {
     addOpenApiOptionsMethod(openApi.paths[pathName])
   }
 
+  const expressToOpenApiPath = function (path) {
+    const regex = /(\/):(\S*?)(\/|$)/g
+
+    while ((regex.exec(path)) !== null) {
+      path = path.replace(regex, '$1{$2}$3')
+    }
+    return path
+  }
+
   const addOpenApiData = function (openApi, openApiProperties) {
     // Add schemas // TODO, add any type of components
     _.extend(openApi.components.schemas, openApiProperties.schemas)
@@ -236,7 +279,7 @@ const Docs = function (core, middlewares, api) {
     openApi.tags = _.union(openApi.components.tags, openApiProperties.tags)
     // Add paths
     _.each(openApiProperties.paths, (pathMethods, path) => {
-      addOpenApiPath(pathMethods, path, openApi)
+      addOpenApiPath(pathMethods, expressToOpenApiPath(path), openApi)
     })
 
     return Promise.resolve(openApi)

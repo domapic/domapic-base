@@ -10,8 +10,9 @@ const Promise = require('bluebird')
 
 const serverTemplates = require('../../templates/server')
 
-const Middlewares = function (core) {
+const Middlewares = function (options, core) {
   const templates = core.utils.templates.compile(serverTemplates)
+
   const notFound = function (req, res, next) {
     next(new core.errors.NotFound(templates.resourceNotFoundError()))
   }

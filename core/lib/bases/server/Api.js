@@ -7,13 +7,18 @@ const jsonschema = require('jsonschema')
 const openApiToJsonschema = require('openapi-jsonschema-parameters')
 const Promise = require('bluebird')
 
+const Security = require('./Security')
 const serverTemplates = require('../../templates/server')
 const methodsSchemas = require('./definitions/methods')
 
 const APP_JSON = 'application/json'
 const CONTENT_SCHEMA_TAG = 'x-json-content-schema'
 
-const Api = function (core, middlewares) {
+// TODO, refactor full API. Parse jsonschema only once, then initialize routers with it. Handle only API.
+// Move out of here the generic middlewares
+
+const Api = function (options, core, middlewares) {
+  const security = new Security(options, core)
   const templates = core.utils.templates.compile(serverTemplates)
   const router = express.Router()
   const jsonSchemaValidator = new jsonschema.Validator()
@@ -186,6 +191,16 @@ const Api = function (core, middlewares) {
     }
   }
 
+  const authentication = function (req, res, next) {
+    security.verify(req, res)
+      .then(() => {
+        next()
+      })
+      .catch((err) => {
+        next(err)
+      })
+  }
+
   const addRoute = function (route) {
     const methodToUse = route.method.toLowerCase()
     const parseParameters = new ParametersParser(route.operationId)
@@ -200,11 +215,26 @@ const Api = function (core, middlewares) {
       })))
     }
 
+    if (!route.operationId) {
+      return Promise.reject(new core.errors.BadData(templates.noOperationIdError({
+        method: methodToUse,
+        path: route.path
+      })))
+    }
+
     routes[route.path] = routes[route.path] || {}
     routes[route.path][methodToUse] = route
-    // About security, maybe it is better to use a middleware for all api methods, instead of adding it to every call ...
-    // Securize all, but custom with roles and users (*)
-    router.route(route.path)[methodToUse](/* TODO, add authorization handler */ (req, res, next) => {
+
+    router.route(route.path)[methodToUse]((req, res, next) => {
+      req.operationId = route.operationId
+      next()
+    })
+
+    if (!route.security || (route.security && _.isEmpty(route.security))) {
+      router.route(route.path)[methodToUse](authentication)
+    }
+
+    router.route(route.path)[methodToUse]((req, res, next) => {
       return parseParameters(req)
         .then(validateParameters)
         .then(executeAction)
@@ -384,6 +414,10 @@ const Api = function (core, middlewares) {
       })
     }
     return getRouterPromise
+  }
+
+  const addAuthentication = function (authProperties) {
+    
   }
 
   return {

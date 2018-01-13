@@ -13,7 +13,11 @@
   ],
   "paths": {
   },
+  "security": [
+  ],
   "components": {
+    "securitySchemes": {
+    },
     "responses": {
       "OptionsSuccess" : {
         "description": "Openapi descriptions for all resource methods",

@@ -14,12 +14,12 @@ const Middlewares = require('./server/Middlewares')
 const serverTemplates = require('../templates/server')
 const swaggerUiAssetPath = require('swagger-ui-dist').getAbsoluteFSPath()
 
-const Server = function (core) {
+const Server = function (options, core) {
   const templates = core.utils.templates.compile(serverTemplates)
   const app = express()
-  const middlewares = new Middlewares(core)
-  const api = new Api(core, middlewares)
-  const doc = new Doc(core, middlewares, api)
+  const middlewares = new Middlewares(options, core)
+  const api = new Api(options, core, middlewares)
+  const doc = new Doc(options, core, middlewares, api)
 
   let started = false
   let startPromise
@@ -37,25 +37,25 @@ const Server = function (core) {
     return preMiddlewaresPromise
   }
 
-  const validateOptions = function (options) {
-    if (options.sslKey && !options.sslCert) {
+  const validateOptions = function (startOptions) {
+    if (startOptions.sslKey && !startOptions.sslCert) {
       return Promise.reject(new core.errors.BadData(templates.invalidOptionsError({message: templates.noSslCertError()})))
     }
-    if (options.sslCert && !options.sslKey) {
+    if (startOptions.sslCert && !startOptions.sslKey) {
       return Promise.reject(new core.errors.BadData(templates.invalidOptionsError({message: templates.noSslKeyError()})))
     }
-    if (!options.port) {
+    if (!startOptions.port) {
       return Promise.reject(new core.errors.BadData(templates.invalidOptionsError({message: templates.noPortError()})))
     }
 
-    return Promise.resolve(options)
+    return Promise.resolve(startOptions)
   }
 
-  const startHTTPS = function (options, app) {
-    return https.createServer(options, app)
+  const startHTTPS = function (nodeServerOptions, app) {
+    return https.createServer(nodeServerOptions, app)
   }
 
-  const startHTTP = function (options, app) {
+  const startHTTP = function (nodeServerOptions, app) {
     return http.createServer(app)
   }
 
@@ -75,13 +75,13 @@ const Server = function (core) {
     return registerViewPartials(path.resolve(__dirname, 'server', 'views', 'partials'))
   }
 
-  const startServer = function (options, routers) {
+  const startServer = function (startOptions, routers) {
     return new Promise((resolve, reject) => {
       let server
-      const serverMethod = options.sslKey ? startHTTPS : startHTTP
-      const serverOptions = options.sslKey ? {
-        key: options.sslKey,
-        cert: options.sslCert
+      const serverMethod = startOptions.sslKey ? startHTTPS : startHTTP
+      const nodeServerOptions = startOptions.sslKey ? {
+        key: startOptions.sslKey,
+        cert: startOptions.sslCert
       } : {}
 
       app.use('/assets', express.static(path.resolve(__dirname, 'server', 'assets')))
@@ -99,19 +99,19 @@ const Server = function (core) {
           reject(error)
         })
         .then(() => {
-          server = serverMethod(serverOptions, app)
+          server = serverMethod(nodeServerOptions, app)
 
           server.on('error', (error) => {
             let customError
             switch (error.code) {
               case 'EADDRINUSE':
                 customError = new core.errors.BadImplementation(templates.portInUseError({
-                  port: options.port
+                  port: startOptions.port
                 }))
                 break
               case 'EACCES':
                 customError = new core.errors.BadImplementation(templates.portDeniedError({
-                  port: options.port
+                  port: startOptions.port
                 }))
                 break
               default:
@@ -121,7 +121,7 @@ const Server = function (core) {
           })
 
           server.listen({
-            port: options.port
+            port: startOptions.port
           }, (error) => {
             if (error) {
               reject(error)
@@ -141,19 +141,19 @@ const Server = function (core) {
     })
   }
 
-  const validateAndStart = function (options) {
-    return validateOptions(options)
+  const validateAndStart = function (startOptions) {
+    return validateOptions(startOptions)
       .then(getRouters)
       .then((routers) => {
         return registerBaseViewPartials()
           .then(() => {
-            return startServer(options, routers)
+            return startServer(startOptions, routers)
           })
       })
       .then((server) => {
         return core.tracer.group([
-          { info: templates.serverStarted({port: options.port}) },
-          { debug: [templates.serverOptionsLogTitle(), options] }
+          { info: templates.serverStarted({port: startOptions.port}) },
+          { debug: [templates.serverOptionsLogTitle(), startOptions] }
         ])
       })
   }
