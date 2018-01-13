@@ -34,7 +34,7 @@ const preCompile = function () {
   const toPreCompile = {
     cli: cli,
     openapi: openapi,
-    proccess: processTemplates,
+    process: processTemplates,
     server: server
   }
   let compiled = {}

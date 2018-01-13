@@ -36,7 +36,8 @@ const Stub = function () {
     },
     utils: {
       templates: {
-        compile: test.sinon.stub().callsFake(utils.templates.compile)
+        compile: test.sinon.stub().callsFake(utils.templates.compile),
+        compiled: utils.templates.compiled
       }
     },
     errors: {
