@@ -1,0 +1,41 @@
+{ 
+  "tags": [{
+    "name": "security",
+    "description": "Domapic service authentication"
+  }],
+  "components": {
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/auth/jwt": {
+      "post": {
+        "tags": ["security"],
+        "summary": "Creates a JWT",
+        "description": "Returns jwt token and properties",
+        "operationId": "jwtAuthenticate",
+        "responses": {
+          "200": {
+            "description": "Token created"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["security"],
+        "summary": "Remove JWT Refresh Token",
+        "description": "Remove an existant jwt refresh token",
+        "operationId": "jwtReject",
+        "responses": {
+          "200": {
+            "description": "Api Key sucessfully removed"
+          }
+        }
+      }
+    }
+  }
+}

@@ -65,6 +65,8 @@
         },
         "security": [{
           "jwt": []
+        }, {
+          "apiKey": []
         }]
       },
       "post": {

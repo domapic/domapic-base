@@ -32,7 +32,6 @@
     "jsonwebtoken": "8.1.0",
     "openapi-jsonschema-parameters": "0.2.0",
     "lodash": "4.17.4",
-    "method-override": "2.3.10",
     "pm2": "2.8.0",
     "swagger-ui-dist": "3.8.1",
     "tracer": "0.8.11",

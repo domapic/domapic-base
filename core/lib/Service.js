@@ -17,8 +17,32 @@ const Service = function () {
       const client = new bases.Client(core)
 
       return Promise.all([
+        server.addAuthentication({
+          jwt: {
+            authenticate: (userData) => {
+              // UserData can be data, or refresh token. If token, only check if exists, and return it
+              console.log('Trying to log in with JWT')
+              console.log(userData)
+              return Promise.reject(new core.errors.Forbidden())
+            },
+            reject: (refreshToken) => {
+              // Delete available refresh tokens
+              return Promise.resolve()
+            }
+          },
+          apiKey: {
+            authenticate: (userData) => {
+              console.log('Trying to log in with api key')
+              console.log(userData)
+              return Promise.reject(new core.errors.Forbidden())
+            },
+            reject: (apiKey) => {
+              // Delete available api Key
+            }
+          }
+        }),
         server.extendOpenApi(idOpenApi),
-        server.addApiOperations(new IdOperations(core))
+        server.addOperations(new IdOperations(core))
       ]).then(() => {
         return Promise.resolve({
           tracer: core.tracer,

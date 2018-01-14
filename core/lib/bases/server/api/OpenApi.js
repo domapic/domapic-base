@@ -52,13 +52,9 @@ const OpenApi = function (core) {
     const similarTag = _.filter(openapi.tags, (existantTag) => {
       return existantTag.name === tag.name
     })
-    if (similarTag.length) {
-      return Promise.reject(new core.errors.Conflict(templates.server.apiAlreadyExistsError({
-        item: 'tag',
-        name: tag.name
-      })))
+    if (!similarTag.length) {
+      openapi.tags.push(tag)
     }
-    openapi.tags.push(tag)
     return Promise.resolve(tag)
   }
 
@@ -167,10 +163,11 @@ const OpenApi = function (core) {
         } else {
           ensureResponse500(methodProperties)
           ensureResponse422(methodProperties)
+          // TODO, ensure 401 response
           openapi.paths[routePath][methodName] = methodProperties
         }
       })
-      openapi.paths[routePath].options = getOptionsMethod(pathMethods, routePath)
+      openapi.paths[routePath].options = getOptionsMethod(pathMethods)
     })
     if (errors.length) {
       return Promise.reject(new core.errors.Conflict(templates.server.apiAlreadyExistsError({

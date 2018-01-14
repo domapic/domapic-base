@@ -1,5 +1,7 @@
 'use strict'
 
+// TODO, review unused templates
+
 module.exports = {
   noNameError: 'No name was provided for process',
   noScriptPathError: 'No script path was provided for process',

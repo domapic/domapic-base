@@ -1,5 +1,7 @@
 'use strict'
 
+// TODO, review unused templates
+
 module.exports = {
   noPropertyValidationError: 'No {{property}} provided for method {{method}}',
   addOpenApiMethodError: '{{message}} in path {{pathName}}',

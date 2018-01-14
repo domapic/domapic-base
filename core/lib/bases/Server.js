@@ -9,6 +9,7 @@ const express = require('express')
 const Promise = require('bluebird')
 
 const Api = require('./server/api/Api')
+const SecurityMethods = require('./server/security')
 const Doc = require('./server/Doc')
 const Middlewares = require('./server/Middlewares')
 
@@ -16,7 +17,8 @@ const Server = function (core) {
   const app = express()
   const templates = core.utils.templates.compiled.server
   const middlewares = new Middlewares(core)
-  const api = new Api(core, middlewares)
+  const securityMethods = new SecurityMethods(core)
+  const api = new Api(core, middlewares, securityMethods)
   const doc = new Doc()
 
   let started = false
@@ -172,7 +174,8 @@ const Server = function (core) {
 
   return {
     extendOpenApi: api.extendOpenApi,
-    addApiOperations: api.addOperations,
+    addOperations: api.addOperations,
+    addAuthentication: api.addAuthentication,
     start: start
   }
 }

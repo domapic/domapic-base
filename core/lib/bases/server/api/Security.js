@@ -1,76 +1,101 @@
 'use strict'
 
-const jwt = require('jsonwebtoken')
+const _ = require('lodash')
 const Promise = require('bluebird')
+const isPromise = require('is-promise')
 
-// TODO /auth/token ->> handle both user/name or refresh_token
+const METHODS_PREFERENCE = ['jwt', 'apiKey']
 
-// TODO, generate secret, or from configuration
-const serverTemplates = require('../../templates/server')
-const secret = 'dasdsndgfkdsfgdfotrwñweñtfmvkfng'
+const Security = function (core, supportedMethods) {
+  const templates = core.utils.templates.compiled.server
 
-const Security = function (options, core) {
-  const templates = core.utils.templates.compile(serverTemplates)
-
-  const authorize = function (operationId, credentials) {
-    return options.authorization(operationId, credentials)
-      .catch(() => {
-        // TODO, log unathorized attempt
+  const Authorize = function (authMethod) {
+    return function (decoded) {
+      return new Promise((resolve, reject) => {
+        const result = authMethod(decoded)
+        if (isPromise(result)) {
+          result.then(() => {
+            resolve()
+            return Promise.resolve()
+          }).catch((err) => {
+            reject(err)
+          })
+        } else if (result === true) {
+          resolve()
+        } else {
+          reject(new Error())
+        }
+      }).catch(() => {
         return Promise.reject(new core.errors.Forbidden(templates.authorizationFailedError()))
       })
+    }
   }
 
-  const Jwt = function () {
-    const verifyToken = function (token) {
-      return new Promise((resolve, reject) => {
-        jwt.verify(token, secret, (err, decoded) => {
-          if (err) {
-            reject(new core.errors.Unauthorized(templates.authenticationRequiredError()))
-          } else {
-            resolve(decoded)
-          }
-        })
-      })
-    }
+  const getPreferredMethod = function (securityMethods) {
+    return _.sortBy(securityMethods, (method) => {
+      return METHODS_PREFERENCE.indexOf(method)
+    })[0]
+  }
 
-    const ensureAuthenticationHeader = function (req) {
-      if (!req.headers.authorization) {
-        return Promise.reject(new core.errors.Unauthorized(templates.authenticationRequiredError()))
+  const verifySecurityHeaders = function (headers) {
+    const methods = _.keys(headers)
+    const methodToUse = methods.length > 1 ? getPreferredMethod(methods) : methods[0]
+    const parsedHeader = supportedMethods[methodToUse].parseHeader ? supportedMethods[methodToUse].parseHeader(headers[methodToUse]) : headers[methodToUse]
+    return supportedMethods[methodToUse].verify(parsedHeader)
+  }
+
+  const getSecurityHeaders = function (req, authMethods) {
+    let headers = {}
+    _.each(authMethods, (method) => {
+      const header = req.headers[supportedMethods[method].header]
+      if (header) {
+        headers[method] = header
       }
-      return Promise.resolve(req.headers.authorization)
+    })
+    if (_.isEmpty(headers)) {
+      return Promise.reject(new core.errors.Unauthorized(templates.authenticationRequiredError({
+        message: templates.authenticationHeadersNotFoundError()
+      })))
     }
+    return Promise.resolve(headers)
+  }
 
-    const verify = function (req, res) {
-      console.log('verifying')
-      return ensureAuthenticationHeader(req)
-        .then(verifyToken)
+  const getSecurityMethods = function (securityDefinitions) {
+    return _.uniq(_.map(securityDefinitions, (security) => {
+      const method = _.keys(security)[0]
+      if (_.keys(supportedMethods).indexOf(method) < 0) {
+        throw new core.errors.BadImplementation(templates.wrongAuthenticationMethod({
+          method: method,
+          supported: _.keys(supportedMethods)
+        }))
+      }
+      return method
+    }))
+  }
+
+  const Middleware = function (securityDefinitions, authorize) {
+    const authMethods = getSecurityMethods(securityDefinitions)
+    const auth = new Authorize(authorize)
+    return function (req, res, next) {
+      getSecurityHeaders(req, authMethods)
+        .then(verifySecurityHeaders)
+        .then(auth)
+        .then(() => {
+          next()
+          return Promise.resolve()
+        })
         .catch((err) => {
           res.set({
-            'WWW-Authenticate': 'Bearer realm="Domapic service", charset="UTF-8"'
+            'WWW-Authenticate': 'Bearer realm="Domapic service", charset="utf-8"'
           })
-          return Promise.reject(err)
+          next(err)
         })
-        .then((jwtDecoded) => {
-          return authorize(req.operationId, jwtDecoded)
-        })
-    }
-
-    return {
-      verify: verify
     }
   }
 
-  const Apikey = function () {
-    const verify = function (req) {
-      return Promise.resolve()
-    }
-
-    return {
-      verify: verify
-    }
+  return {
+    Middleware: Middleware
   }
-
-  return options.authenticationMethod === 'jwt' ? new Jwt() : new Apikey()
 }
 
 module.exports = Security

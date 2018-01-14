@@ -1,5 +1,7 @@
 'use strict'
 
+// TODO, review unused templates
+
 module.exports = {
   startingService: 'Starting "{{name}}" service in background',
   startServiceHelp: 'Run "domapic start {{name}}" to start the service again',

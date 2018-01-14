@@ -7,18 +7,19 @@ const jsonschema = require('jsonschema')
 const openApiToJsonschema = require('openapi-jsonschema-parameters')
 const Promise = require('bluebird')
 
-// const Security = require('./Security')
+const Security = require('./Security')
 const OpenApi = require('./OpenApi')
 
 const APP_JSON = 'application/json'
 
-const Api = function (core, middlewares) {
+const Api = function (core, middlewares, securityMethods) {
   const templates = core.utils.templates.compiled.server
-  // const security = new Security(core)
+  const supportedSecurityMethods = {}
   const openApi = new OpenApi(core)
   const router = express.Router()
   const jsonSchemaValidator = new jsonschema.Validator()
   let getRouterPromise
+  let security
 
   let operations = {}
 
@@ -130,7 +131,7 @@ const Api = function (core, middlewares) {
   const ActionExecutor = function (operationId, responseCustomizator) {
     return function (req) {
       if (!operations[operationId] || !operations[operationId].handler) {
-        return Promise.reject(new core.errors.BadImplementation(templates.noHandlerDefinedError({
+        return Promise.reject(new core.errors.BadImplementation(templates.operationIdNotFoundError({
           operationId: operationId
         })))
       }
@@ -178,9 +179,10 @@ const Api = function (core, middlewares) {
 
     router.route(routePath)[methodToUse](new middlewares.OperationId(methodDefinition.operationId))
 
-    /* if (methodDefinition.security && !_.isEmpty(methodDefinition.security)) {
-      router.route(routePath)[methodToUse](security.authorize(operations[methodDefinition.operationId], methodDefinition.security))
-    } */
+    if (methodDefinition.security && !_.isEmpty(methodDefinition.security)) {
+      router.route(routePath)[methodToUse](new security.Middleware(methodDefinition.security, operations[methodDefinition.operationId] && operations[methodDefinition.operationId].auth))
+    }
+
     router.route(routePath)[methodToUse]((req, res, next) => {
       return parseParameters(req)
         .then(validateParameters)
@@ -241,6 +243,8 @@ const Api = function (core, middlewares) {
     return ensureRouterNotInitialized()
       .then(() => {
         if (operations[operationId]) {
+          console.log(operations)
+          console.log(operationId)
           return Promise.reject(new core.errors.Conflict(templates.apiAlreadyExistsError({
             item: 'operation',
             name: operationId
@@ -266,9 +270,15 @@ const Api = function (core, middlewares) {
     return Promise.resolve(JSON.parse(JSON.stringify(openApiDefinition)))
   }
 
+  const initSecurity = function () {
+    security = new Security(core, supportedSecurityMethods)
+    return Promise.resolve()
+  }
+
   const initRouter = function () {
     if (!getRouterPromise) {
-      getRouterPromise = openApi.get()
+      getRouterPromise = initSecurity()
+        .then(openApi.get)
         .then(addOpenApiRoute)
         .then(addRoutes)
         .then(() => {
@@ -287,10 +297,40 @@ const Api = function (core, middlewares) {
     return openApi.extend(openApiDefinition)
   }
 
+  const addAuthenticationOperations = function (authentication, method) {
+    if (authentication.authenticate && authentication.reject) {
+      securityMethods[method].setAuthenticate(authentication.authenticate)
+      securityMethods[method].setReject(authentication.reject)
+      return addOperations(securityMethods[method].operations)
+    }
+    return Promise.reject(new core.errors.BadImplementation(templates.malFormedAuthenticationMethodError({
+      method: method
+    })))
+  }
+
+  const addAuthentication = function (authentications) {
+    return Promise.map(_.keys(authentications), (method) => {
+      if (!securityMethods[method]) {
+        return Promise.reject(new core.errors.BadImplementation(templates.wrongAuthenticationMethod({
+          method: method,
+          supported: _.keys(securityMethods)
+        })))
+      }
+      return extendOpenApi(securityMethods[method].openApi)
+        .then(() => {
+          return addAuthenticationOperations(authentications[method], method)
+        }).then(() => {
+          supportedSecurityMethods[method] = securityMethods[method]
+          return Promise.resolve(authentications[method])
+        })
+    })
+  }
+
   return {
     initRouter: initRouter,
     addOperations: addOperations,
-    extendOpenApi: extendOpenApi
+    extendOpenApi: extendOpenApi,
+    addAuthentication: addAuthentication
   }
 }
 
