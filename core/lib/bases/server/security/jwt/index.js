@@ -2,17 +2,27 @@
 
 const jwt = require('jsonwebtoken')
 
-const openApi = require('./jwtOpenApi.json')
+const openApi = require('./openapi.json')
 
 // TODO, random, from storage, or from configuration
 const SECRET = 'dasdsndgfkdsfgdfotrwñweñtfmvkfng'
 
 // TODO, extend all security methods from one constructor, to share the "set" methods
 
+const EXPIRES_IN = 300
+
 const SecurityModule = function (core) {
   const templates = core.utils.templates.compiled.server
   let authenticateHandler
   let rejectHandler
+
+  const setAuthenticate = function (authenticate) {
+    authenticateHandler = authenticate
+  }
+
+  const setReject = function (reject) {
+    rejectHandler = reject
+  }
 
   const parseHeader = function (header) {
     return header.replace('Bearer ', '')
@@ -32,37 +42,43 @@ const SecurityModule = function (core) {
     })
   }
 
-  const sign = function () {
-
+  const sign = function (userData) {
+    return new Promise((resolve, reject) => {
+      jwt.sign(userData, SECRET, {
+        expiresIn: EXPIRES_IN
+      }, (err, token) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(token)
+        }
+      })
+    })
   }
 
-  const authenticateOperation = function (parameters, requestBody, response) {
+  const createToken = function (parameters, requestBody, response) {
     return authenticateHandler(requestBody)
-      .then((userDataOrToken) => {
-        // TODO, sign user data. Get expires, and refreshToken
-
-        return Promise.resolve({
-          access_token: 'dasdafsdfsdf',
-          expires_in: 300,
-          refresh_token: 'dafsdfsdgfsasd34qw'
-        })
+      .then((userDataAndToken) => {
+        return sign(userDataAndToken.userData)
+          .then((accessToken) => {
+            let response = {
+              access_token: accessToken,
+              expires_in: EXPIRES_IN * 1000
+            }
+            if (userDataAndToken.refresh_token) {
+              response.refresh_token = userDataAndToken.refresh_token
+            }
+            return Promise.resolve(response)
+          })
       })
   }
 
-  const rejectOperation = function (parameters, requestBody, response) {
+  const removeRefreshToken = function (parameters, requestBody, response) {
     return rejectHandler(requestBody)
       .then(() => {
         response.status(204)
         return Promise.resolve()
       })
-  }
-
-  const setAuthenticate = function (authenticate) {
-    authenticateHandler = authenticate
-  }
-
-  const setReject = function (reject) {
-    rejectHandler = reject
   }
 
   return {
@@ -72,11 +88,11 @@ const SecurityModule = function (core) {
     verify: verify,
     openApi: openApi,
     operations: {
-      jwtAuthenticate: {
-        handler: authenticateOperation
+      jwtCreateToken: {
+        handler: createToken
       },
-      jwtReject: {
-        handler: rejectOperation
+      jwtRemoveRefreshToken: {
+        handler: removeRefreshToken
       }
     },
     setAuthenticate: setAuthenticate,

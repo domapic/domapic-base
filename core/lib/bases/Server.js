@@ -172,6 +172,7 @@ const Server = function (core) {
     return startPromise
   }
 
+  // TODO, expose authentication methods
   return {
     extendOpenApi: api.extendOpenApi,
     addOperations: api.addOperations,

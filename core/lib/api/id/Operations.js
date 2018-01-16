@@ -19,7 +19,7 @@ const Operations = function (core) {
       auth: (userData) => {
         console.log('patchId')
         console.log(userData) // Includes rol and username
-        return false // or Promise.reject
+        return Promise.resolve() // or Promise.reject
       },
       handler: (parameters, requestBody, response) => {
         console.log(parameters)

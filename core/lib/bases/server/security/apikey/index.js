@@ -1,11 +1,19 @@
 'use strict'
 
-const openApi = require('./ApiKeyOpenApi.json')
+const openApi = require('./openapi.json')
 
 const SecurityModule = function (core) {
   const templates = core.utils.templates.compiled.server
   let authenticateHandler
   let rejectHandler
+
+  const setAuthenticate = function (authenticate) {
+    authenticateHandler = authenticate
+  }
+
+  const setReject = function (reject) {
+    rejectHandler = reject
+  }
 
   const verify = function (token) {
     console.log('api key')
@@ -19,10 +27,10 @@ const SecurityModule = function (core) {
 
   }
 
-  const authenticateOperation = function (parameters, requestBody, response) {
+  const apiKeyCreate = function (parameters, requestBody, response) {
     return authenticateHandler(requestBody)
       .then((apiKey) => {
-        // TODO, check standard method to work with apoi keys
+        // TODO, check standard method to work with api keys
         return Promise.resolve({
           api_key: apiKey,
           expires_in: 300
@@ -30,7 +38,7 @@ const SecurityModule = function (core) {
       })
   }
 
-  const rejectOperation = function (parameters, requestBody, response) {
+  const apiKeyRemove = function (parameters, requestBody, response) {
     return rejectHandler(requestBody)
       .then(() => {
         response.status(204)
@@ -38,24 +46,16 @@ const SecurityModule = function (core) {
       })
   }
 
-  const setAuthenticate = function (authenticate) {
-    authenticateHandler = authenticate
-  }
-
-  const setReject = function (reject) {
-    rejectHandler = reject
-  }
-
   return {
     header: 'x-api-key',
     sign: sign,
     verify: verify,
     operations: {
-      apiKeyAuthenticate: {
-        handler: authenticateOperation
+      apiKeyCreate: {
+        handler: apiKeyCreate
       },
-      apiKeyReject: {
-        handler: rejectOperation
+      apiKeyRemove: {
+        handler: apiKeyRemove
       }
     },
     openApi: openApi,

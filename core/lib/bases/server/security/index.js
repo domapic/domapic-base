@@ -1,7 +1,7 @@
 'use strict'
 
-const Jwt = require('./Jwt')
-const ApiKey = require('./ApiKey')
+const Jwt = require('./jwt')
+const ApiKey = require('./apikey')
 
 const SecurityMethods = function (core) {
   return {

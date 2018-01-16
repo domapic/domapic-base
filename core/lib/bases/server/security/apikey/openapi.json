@@ -1,0 +1,97 @@
+{  
+  "tags": [{
+    "name": "security",
+    "description": "Domapic service authentication"
+  }],
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "name": "X-Api-Key",
+        "in": "header"
+      }
+    }
+  },
+  "paths": {
+    "/auth/apikey": {
+      "post": {
+        "tags": ["security"],
+        "summary": "Create Api Key",
+        "description": "Creates an api key",
+        "operationId": "apiKeyCreate",
+        "requestBody": {
+          "description": "User owner of the api key",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userName": {
+                    "type": "string"
+                  }
+                },
+                "required": ["userName"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Api key created",
+            "content": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["apiKey"],
+                "example": {
+                  "apiKey": "fooApiKey"
+                }
+              }
+            }
+          }
+        },
+        "security": [{
+          "jwt": [],
+          "apiKey": []
+        }]
+      },
+      "delete": {
+        "tags": ["security"],
+        "summary": "Remove Api Key",
+        "description": "Removes an existant api key",
+        "operationId": "apiKeyRemove", 
+        "requestBody": {
+          "description": "Api key to be removed",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string"
+                  }
+                },
+                "required": ["apiKey"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Api Key removed"
+          }
+        },
+        "security": [{
+          "jwt": [],
+          "apiKey": []
+        }]
+      }
+    }
+  }
+}

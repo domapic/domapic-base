@@ -8,6 +8,6 @@ module.exports = {
 
   requestBodyDescription: 'Data to perform the operation',
 
-  optionsSummary: 'Communication options',
+  optionsSummary: 'Api resource self-description',
   optionsDescription: 'Describe the communication options for the target resource'
 }
