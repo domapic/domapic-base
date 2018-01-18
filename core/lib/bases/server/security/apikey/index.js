@@ -3,64 +3,72 @@
 const openApi = require('./openapi.json')
 
 const SecurityModule = function (core) {
-  const templates = core.utils.templates.compiled.server
+  let authenticateAuth
   let authenticateHandler
-  let rejectHandler
+  let revokeHandler
+  let revokeAuth
+  let verifyHandler
 
   const setAuthenticate = function (authenticate) {
-    authenticateHandler = authenticate
+    authenticateAuth = authenticate.auth
+    authenticateHandler = authenticate.handler
   }
 
-  const setReject = function (reject) {
-    rejectHandler = reject
+  const setRevoke = function (revoke) {
+    revokeAuth = revoke.auth
+    revokeHandler = revoke.handler
   }
 
-  const verify = function (token) {
-    console.log('api key')
-    console.log(token)
-    return Promise.reject(new core.errors.Unauthorized(templates.authenticationRequiredError({
-      message: templates.invalidApiKeyError()
-    })))
+  const setVerify = function (verify) {
+    verifyHandler = verify
   }
 
-  const sign = function () {
-
+  const verify = function (apiKey) {
+    return verifyHandler(apiKey)
   }
 
   const apiKeyCreate = function (parameters, requestBody, response) {
     return authenticateHandler(requestBody)
       .then((apiKey) => {
-        // TODO, check standard method to work with api keys
         return Promise.resolve({
-          api_key: apiKey,
-          expires_in: 300
+          apiKey: apiKey
         })
       })
   }
 
+  const apiKeyCreateAuth = function (userData) {
+    return authenticateAuth(userData)
+  }
+
   const apiKeyRemove = function (parameters, requestBody, response) {
-    return rejectHandler(requestBody)
+    return revokeHandler(requestBody)
       .then(() => {
         response.status(204)
         return Promise.resolve()
       })
   }
 
+  const apiKeyRemoveAuth = function (userData) {
+    return revokeAuth(userData)
+  }
+
   return {
     header: 'x-api-key',
-    sign: sign,
     verify: verify,
     operations: {
       apiKeyCreate: {
+        auth: apiKeyCreateAuth,
         handler: apiKeyCreate
       },
       apiKeyRemove: {
+        auth: apiKeyRemoveAuth,
         handler: apiKeyRemove
       }
     },
     openApi: openApi,
     setAuthenticate: setAuthenticate,
-    setReject: setReject
+    setVerify: setVerify,
+    setRevoke: setRevoke
   }
 }
 

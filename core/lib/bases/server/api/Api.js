@@ -243,8 +243,6 @@ const Api = function (core, middlewares, securityMethods) {
     return ensureRouterNotInitialized()
       .then(() => {
         if (operations[operationId]) {
-          console.log(operations)
-          console.log(operationId)
           return Promise.reject(new core.errors.Conflict(templates.apiAlreadyExistsError({
             item: 'operation',
             name: operationId
@@ -298,9 +296,12 @@ const Api = function (core, middlewares, securityMethods) {
   }
 
   const addAuthenticationOperations = function (authentication, method) {
-    if (authentication.authenticate && authentication.reject) {
+    if (authentication.authenticate && authentication.revoke) {
       securityMethods[method].setAuthenticate(authentication.authenticate)
-      securityMethods[method].setReject(authentication.reject)
+      securityMethods[method].setRevoke(authentication.revoke)
+      if (authentication.verify) {
+        securityMethods[method].setVerify(authentication.verify)
+      }
       return addOperations(securityMethods[method].operations)
     }
     return Promise.reject(new core.errors.BadImplementation(templates.malFormedAuthenticationMethodError({

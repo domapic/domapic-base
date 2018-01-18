@@ -129,6 +129,7 @@ option | type | description | default
 name | String | Controller server name | domapic
 port | Number | Http port | 53152
 ssl | Boolean | Secured http server | true
+authDisabled | String | IP or range of IPs where authentication will be disabled | 127.0.0.1
 mongodb | String | MongoDB connection string URI | 
 autosearch | String | Range of IPs in which the controller will look to restore paired services connections | 192.168.1.1-255
 path | String | Path to be used for domapic as home (.domapic path will be created inside) | ~

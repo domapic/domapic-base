@@ -7,21 +7,23 @@ const openApi = require('./openapi.json')
 // TODO, random, from storage, or from configuration
 const SECRET = 'dasdsndgfkdsfgdfotrwñweñtfmvkfng'
 
-// TODO, extend all security methods from one constructor, to share the "set" methods
-
 const EXPIRES_IN = 300
 
 const SecurityModule = function (core) {
   const templates = core.utils.templates.compiled.server
+  let authenticateAuth
   let authenticateHandler
-  let rejectHandler
+  let revokeHandler
+  let revokeAuth
 
   const setAuthenticate = function (authenticate) {
-    authenticateHandler = authenticate
+    authenticateAuth = authenticate.auth
+    authenticateHandler = authenticate.handler
   }
 
-  const setReject = function (reject) {
-    rejectHandler = reject
+  const setRevoke = function (revoke) {
+    revokeAuth = revoke.auth
+    revokeHandler = revoke.handler
   }
 
   const parseHeader = function (header) {
@@ -62,41 +64,50 @@ const SecurityModule = function (core) {
         return sign(userDataAndToken.userData)
           .then((accessToken) => {
             let response = {
-              access_token: accessToken,
-              expires_in: EXPIRES_IN * 1000
+              accessToken: accessToken,
+              expiresIn: EXPIRES_IN * 1000
             }
-            if (userDataAndToken.refresh_token) {
-              response.refresh_token = userDataAndToken.refresh_token
+            if (userDataAndToken.refreshToken) {
+              response.refreshToken = userDataAndToken.refreshToken
             }
             return Promise.resolve(response)
           })
       })
   }
 
+  const authCreateToken = function (userData) {
+    return authenticateAuth(userData)
+  }
+
   const removeRefreshToken = function (parameters, requestBody, response) {
-    return rejectHandler(requestBody)
+    return revokeHandler(requestBody)
       .then(() => {
         response.status(204)
         return Promise.resolve()
       })
   }
 
+  const authRemoveRefreshToken = function (userData) {
+    return revokeAuth(userData)
+  }
+
   return {
     header: 'authorization',
     parseHeader: parseHeader,
-    sign: sign,
     verify: verify,
     openApi: openApi,
     operations: {
       jwtCreateToken: {
+        auth: authCreateToken,
         handler: createToken
       },
       jwtRemoveRefreshToken: {
+        auth: authRemoveRefreshToken,
         handler: removeRefreshToken
       }
     },
     setAuthenticate: setAuthenticate,
-    setReject: setReject
+    setRevoke: setRevoke
   }
 }
 
