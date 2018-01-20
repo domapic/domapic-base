@@ -3,11 +3,13 @@
 const _ = require('lodash')
 const Promise = require('bluebird')
 const isPromise = require('is-promise')
+const ipRangeCheck = require('ip-range-check')
 
 const METHODS_PREFERENCE = ['jwt', 'apiKey']
 
 const Security = function (core, supportedMethods) {
   const templates = core.utils.templates.compiled.server
+  let authDisabledRangePromise
 
   const Authorize = function (authMethod) {
     return function (decoded) {
@@ -73,16 +75,48 @@ const Security = function (core, supportedMethods) {
     }))
   }
 
-  const Middleware = function (securityDefinitions, authorize) {
-    const authMethods = getSecurityMethods(securityDefinitions)
-    const auth = new Authorize(authorize)
-    return function (req, res, next) {
-      getSecurityHeaders(req, authMethods)
+  const getAuthDisabledRange = function (req) {
+    if (!authDisabledRangePromise) {
+      authDisabledRangePromise = core.config.get('authDisabled')
+    }
+    return authDisabledRangePromise
+  }
+
+  const authenticationIsDisabled = function (req) {
+    return getAuthDisabledRange()
+      .then((allowedRange) => {
+        if (ipRangeCheck(req.ip, allowedRange)) {
+          return core.tracer.warn(templates.disabledAuthenticationRequest({
+            req: req
+          })).then(() => {
+            return Promise.resolve(true)
+          })
+        }
+        return Promise.resolve(false)
+      })
+  }
+
+  const checkAuth = function (req, res, next, authMethods, auth) {
+    return getSecurityHeaders(req, authMethods)
         .then(verifySecurityHeaders)
         .then(auth)
         .then(() => {
           next()
           return Promise.resolve()
+        })
+  }
+
+  const Middleware = function (securityDefinitions, authorize) {
+    const authMethods = getSecurityMethods(securityDefinitions)
+    const auth = new Authorize(authorize)
+    return function (req, res, next) {
+      authenticationIsDisabled(req)
+        .then((disabled) => {
+          if (disabled) {
+            next()
+            return Promise.resolve()
+          }
+          return checkAuth(req, res, next, authMethods, auth)
         })
         .catch((err) => {
           res.set({

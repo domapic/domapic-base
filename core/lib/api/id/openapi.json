@@ -40,7 +40,12 @@
               }
             }
           }
-        }
+        },
+        "security": [{
+          "jwt": []
+        }, {
+          "apiKey": []
+        }]
       },
       "patch": {
         "summary": "Modify id",

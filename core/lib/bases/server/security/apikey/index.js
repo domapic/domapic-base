@@ -3,6 +3,7 @@
 const openApi = require('./openapi.json')
 
 const SecurityModule = function (core) {
+  const templates = core.utils.templates.compiled.server
   let authenticateAuth
   let authenticateHandler
   let revokeHandler
@@ -52,6 +53,18 @@ const SecurityModule = function (core) {
     return revokeAuth(userData)
   }
 
+  const set = function (options) {
+    if (!options.authenticate || !options.revoke || !options.verify) {
+      return Promise.reject(new core.errors.BadImplementation(templates.malFormedAuthenticationMethodError({
+        method: 'apiKey'
+      })))
+    }
+    setAuthenticate(options.authenticate)
+    setRevoke(options.revoke)
+    setVerify(options.verify)
+    return Promise.resolve()
+  }
+
   return {
     header: 'x-api-key',
     verify: verify,
@@ -66,9 +79,7 @@ const SecurityModule = function (core) {
       }
     },
     openApi: openApi,
-    setAuthenticate: setAuthenticate,
-    setVerify: setVerify,
-    setRevoke: setRevoke
+    set: set
   }
 }
 

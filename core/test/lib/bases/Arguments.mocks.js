@@ -15,7 +15,15 @@ const getResult = {
   defaults: {
     color: true,
     logLevel: 'info',
-    port: 8090
+    port: 8090,
+    authDisabled: ['127.0.0.1', '::1/128'],
+    saveConfig: false
+  },
+  defaultsToStore: {
+    color: true,
+    logLevel: 'info',
+    port: 8090,
+    authDisabled: ['127.0.0.1', '::1/128']
   },
   explicit: {
     name: 'testing'

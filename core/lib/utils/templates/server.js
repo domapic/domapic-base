@@ -28,7 +28,7 @@ module.exports = {
 
   requestIdLog: '{{req.url}} | {{req.id}}',
 
-  receivedRequestTitleLog: 'Received {{req.method}} |',
+  receivedRequestTitleLog: 'Request {{req.method}} |',
   receivedRequestLog: '{{req.ip}} |',
   requestHeadersTitleLog: 'Request headers |',
   requestInfoTitleLog: 'Request info |',
@@ -36,7 +36,7 @@ module.exports = {
   requestBodyLog: '\nBody: {{toJSON req.body}}',
   requestQueryLog: '\nQuery: {{toJSON req.query}}',
 
-  sendResponseTitleLog: 'Send response |',
+  sendResponseTitleLog: 'Response |',
   sendResponseLog: '{{{res.statusCode}}} |',
   responseHeadersTitleLog: 'Response headers |',
   responseContentTitleLog: 'Response Content | {{{type}}} |',
@@ -48,5 +48,6 @@ module.exports = {
   authorizationFailedError: 'Not authorized',
   wrongAuthenticationMethod: 'Authentication method "{{method}}" not supported. Supported methods are: {{comma-separated supported}}',
   invalidApiKeyError: 'Invalid Api Key',
-  malFormedAuthenticationMethodError: 'Authentication method "{{method}}" is malformed'
+  malFormedAuthenticationMethodError: 'Authentication method "{{method}}" is malformed',
+  disabledAuthenticationRequest: 'Request authentication disabled | {{req.ip}} | {{req.id}}'
 }

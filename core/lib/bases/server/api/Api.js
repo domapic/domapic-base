@@ -295,18 +295,11 @@ const Api = function (core, middlewares, securityMethods) {
     return openApi.extend(openApiDefinition)
   }
 
-  const addAuthenticationOperations = function (authentication, method) {
-    if (authentication.authenticate && authentication.revoke) {
-      securityMethods[method].setAuthenticate(authentication.authenticate)
-      securityMethods[method].setRevoke(authentication.revoke)
-      if (authentication.verify) {
-        securityMethods[method].setVerify(authentication.verify)
-      }
-      return addOperations(securityMethods[method].operations)
-    }
-    return Promise.reject(new core.errors.BadImplementation(templates.malFormedAuthenticationMethodError({
-      method: method
-    })))
+  const addAuthenticationOperations = function (authenticationOptions, method) {
+    return securityMethods[method].set(authenticationOptions)
+      .then(() => {
+        return addOperations(securityMethods[method].operations)
+      })
   }
 
   const addAuthentication = function (authentications) {

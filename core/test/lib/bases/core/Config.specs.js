@@ -59,7 +59,7 @@ test.describe('Bases -> Core -> Config', () => {
       storageGet.resolves({})
       config.get()
         .then(() => {
-          test.expect(storageSet).to.have.been.calledWith(mocks.arguments.getResult.defaults)
+          test.expect(storageSet).to.have.been.calledWith(mocks.arguments.getResult.defaultsToStore)
           done()
         })
     })

@@ -56,12 +56,22 @@ const Service = function () {
   return new bases.Arguments(serviceArguments).get()
     .then((args) => {
       const core = new bases.Core(args, 'service')
-      const server = new bases.Server(core)
+      const server = new bases.Server(core, 'develop') // Service type (controller, plugin, service)
       const client = new bases.Client(core)
+
+      const logCreated = function () {
+        return core.config.get()
+          .then((configuration) => {
+            return core.tracer.debug(core.utils.templates.compiled.service.serviceCreated({
+              config: configuration
+            }))
+          })
+      }
 
       return Promise.all([
         server.addAuthentication({
           jwt: {
+            secret: 'manoloElDelBombo',
             authenticate: {
               handler: (userData) => {
                 // UserData can be data, or refresh token. If token, only check if exists, and return it
@@ -157,11 +167,14 @@ const Service = function () {
         server.extendOpenApi(idOpenApi),
         server.addOperations(new IdOperations(core))
       ]).then(() => {
-        return Promise.resolve({
-          tracer: core.tracer,
-          server: server,
-          client: client
-        })
+        return logCreated()
+          .then(() => {
+            return Promise.resolve({
+              tracer: core.tracer,
+              server: server,
+              client: client
+            })
+          })
       })
     })
 }

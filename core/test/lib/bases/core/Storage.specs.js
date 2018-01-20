@@ -180,7 +180,7 @@ test.describe('Bases -> Core -> Storage', () => {
         })
     })
 
-    test.it('should call to save all data asynchronously after modifying it', (done) => {
+    test.it('should call to save all data after modifying it', (done) => {
       const fooKey = 'fooKey'
       const fooData = {
         fooKey: 'fooValue'
@@ -271,7 +271,7 @@ test.describe('Bases -> Core -> Storage', () => {
         })
     })
 
-    test.it('should call to save all data asynchronously after modifying it', (done) => {
+    test.it('should call to save all data after modifying it', (done) => {
       const mocksCopy = JSON.parse(JSON.stringify(mocks.storage.data))
       const fooKey = 'fooObject'
       storage.remove(fooKey)

@@ -1,20 +1,26 @@
 'use strict'
 
 const jwt = require('jsonwebtoken')
+const randToken = require('rand-token')
 
 const openApi = require('./openapi.json')
 
-// TODO, random, from storage, or from configuration
-const SECRET = 'dasdsndgfkdsfgdfotrwñweñtfmvkfng'
-
-const EXPIRES_IN = 300
-
 const SecurityModule = function (core) {
   const templates = core.utils.templates.compiled.server
+  let secret
+  let expiresIn
   let authenticateAuth
   let authenticateHandler
   let revokeHandler
   let revokeAuth
+
+  const setSecret = function (secretToSet) {
+    secret = secretToSet || randToken.generate(32)
+  }
+
+  const setExpires = function (expires) {
+    expiresIn = expires || 300
+  }
 
   const setAuthenticate = function (authenticate) {
     authenticateAuth = authenticate.auth
@@ -32,7 +38,7 @@ const SecurityModule = function (core) {
 
   const verify = function (token) {
     return new Promise((resolve, reject) => {
-      jwt.verify(token, SECRET, (err, decoded) => {
+      jwt.verify(token, secret, (err, decoded) => {
         if (err) {
           reject(new core.errors.Unauthorized(templates.authenticationRequiredError({
             message: err.message
@@ -46,8 +52,8 @@ const SecurityModule = function (core) {
 
   const sign = function (userData) {
     return new Promise((resolve, reject) => {
-      jwt.sign(userData, SECRET, {
-        expiresIn: EXPIRES_IN
+      jwt.sign(userData, secret, {
+        expiresIn: expiresIn
       }, (err, token) => {
         if (err) {
           reject(err)
@@ -65,7 +71,7 @@ const SecurityModule = function (core) {
           .then((accessToken) => {
             let response = {
               accessToken: accessToken,
-              expiresIn: EXPIRES_IN * 1000
+              expiresIn: expiresIn * 1000
             }
             if (userDataAndToken.refreshToken) {
               response.refreshToken = userDataAndToken.refreshToken
@@ -91,6 +97,19 @@ const SecurityModule = function (core) {
     return revokeAuth(userData)
   }
 
+  const set = function (options) {
+    if (!options.authenticate || !options.revoke) {
+      return Promise.reject(new core.errors.BadImplementation(templates.malFormedAuthenticationMethodError({
+        method: 'jwt'
+      })))
+    }
+    setAuthenticate(options.authenticate)
+    setRevoke(options.revoke)
+    setSecret(options.secret)
+    setExpires(options.expiresIn)
+    return Promise.resolve()
+  }
+
   return {
     header: 'authorization',
     parseHeader: parseHeader,
@@ -106,8 +125,7 @@ const SecurityModule = function (core) {
         handler: removeRefreshToken
       }
     },
-    setAuthenticate: setAuthenticate,
-    setRevoke: setRevoke
+    set: set
   }
 }
 

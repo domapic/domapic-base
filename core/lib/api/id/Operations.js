@@ -7,7 +7,7 @@ const Operations = function (core) {
       auth: (userData) => {
         console.log('getId')
         console.log(userData) // Includes rol and username
-        throw new Error('Not allowed')// Or promise.reject
+        return true// Or promise.reject
       },
       handler: () => {
         return Promise.resolve({
