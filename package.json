@@ -36,6 +36,7 @@
     "lodash": "4.17.4",
     "pm2": "2.8.0",
     "rand-token": "0.4.0",
+    "request": "2.83.0",
     "swagger-ui-dist": "3.8.1",
     "tracer": "0.8.11",
     "yargs": "10.0.3"
