@@ -134,7 +134,7 @@ const Server = function (core, serviceType) {
 
       server.listen({
         port: startOptions.port,
-        host: '0.0.0.0'
+        host: startOptions.hostName
       }, new ServerStarted(resolve, reject, server))
     })
   }
@@ -171,6 +171,7 @@ const Server = function (core, serviceType) {
           return validateAndStart({
             sslKey: config.sslKey,
             sslCert: config.sslCert,
+            hostName: config.hostName,
             port: config.port,
             name: config.name
           })

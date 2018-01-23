@@ -31,5 +31,11 @@ module.exports = {
     describe: 'SSL key',
     normalize: true,
     coerce: toAbsolutePath
+  },
+  hostName: {
+    type: 'string',
+    alias: ['host'],
+    describe: 'Host name for the server',
+    default: '0.0.0.0'
   }
 }
