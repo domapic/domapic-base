@@ -5,9 +5,9 @@ const core = require('./core')
 new core.Service()
   .then((service) => {
     const client = new service.client.Connection('http://localhost:8090', {
-      apiKey: 'dadsadfd',
+      apiKey: '8hDjN0Q7ZNKFlVPyzzjpZdju86aT8JuX',
       jwt: {
-        userName: 'mansolo',
+        userName: 'manolo',
         password: 'testing'
       }
     })

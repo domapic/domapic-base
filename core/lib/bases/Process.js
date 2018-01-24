@@ -53,9 +53,13 @@ const Process = function (options, core) {
     _.each(argsObject, (value, key) => {
       if (value !== undefined) {
         let values = _.isArray(value) ? value : [value]
-        _.each(values, (val) => {
-          argsArray.push('--' + key + '=' + val)
-        })
+        if (_.isEmpty(values)) {
+          argsArray.push('--' + key)
+        } else {
+          _.each(values, (val) => {
+            argsArray.push('--' + key + '=' + val)
+          })
+        }
       }
     })
     return argsArray

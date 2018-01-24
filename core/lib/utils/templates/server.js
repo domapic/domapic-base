@@ -28,7 +28,7 @@ module.exports = {
 
   requestIdLog: '{{req.url}} | {{req.id}}',
 
-  receivedRequestTitleLog: 'Request {{req.method}} |',
+  receivedRequestTitleLog: 'Received Request {{req.method}} |',
   receivedRequestLog: '{{req.ip}} |',
   requestHeadersTitleLog: 'Request headers |',
   requestInfoTitleLog: 'Request info |',
@@ -36,7 +36,7 @@ module.exports = {
   requestBodyLog: '\nBody: {{toJSON req.body}}',
   requestQueryLog: '\nQuery: {{toJSON req.query}}',
 
-  sendResponseTitleLog: 'Response |',
+  sendResponseTitleLog: 'Send Response |',
   sendResponseLog: '{{{res.statusCode}}} |',
   responseHeadersTitleLog: 'Response headers |',
   responseContentTitleLog: 'Response Content | {{{type}}} |',
