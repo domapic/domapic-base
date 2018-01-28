@@ -1,22 +1,25 @@
 {
-  "name": "domapic",
+  "name": "domapic-microservice",
   "version": "0.1.0-alpha.1",
-  "description": "Controller for Domapic api based domotic system",
-  "main": "server.js",
+  "description": "Microservice base for nodejs Domapic packages",
+  "main": "index.js",
   "keywords": [
+    "microservice",
+    "process management",
     "api",
-    "domotic",
-    "services",
-    "robotic",
-    "microservices"
+    "openapi",
+    "service",
+    "cli",
+    "client",
+    "ssl",
+    "server",
+    "auth",
+    "jwt",
+    "apiKey",
+    "tracer"
   ],
-  "bin": {
-    "domapic": "./bin/domapic"
-  },
   "scripts": {
-    "domapic": "node ./cli/index.js",
-    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test core/test",
-    "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
+    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test"
   },
   "dependencies": {
     "bluebird": "3.5.1",
@@ -27,7 +30,6 @@
     "express-request-id": "1.4.0",
     "fs-extra": "5.0.0",
     "hbs": "4.0.1",
-    "ip": "1.1.5",
     "ip-range-check": "0.0.2",
     "is-promise": "2.1.0",
     "jsonschema": "1.2.2",
