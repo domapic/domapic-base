@@ -1,5 +1,7 @@
 'use strict'
 
+// TODO, review unused templates
+
 module.exports = {
   routerAlreadyInitializedError: 'Router was already initialized. It is not possible to add more routes to it',
   methodNotAllowedError: 'Wrong method {{method}}',
@@ -17,7 +19,7 @@ module.exports = {
   portDeniedError: 'Permission denied to use port {{port}}',
   serverStartedError: 'Server was already started',
   apiAlreadyExistsError: 'Api {{item}} {{name}} already exists',
-  noHandlerDefinedError: 'Action to execute with id {{actionid}} not found',
+  operationIdNotFoundError: 'Operation to execute with id {{operationId}} not found',
   noOperationIdError: 'No operation id provided for {{method}} in {{path}}',
   responseStatusNotAllowedError: 'Method {{methodToUse}} can´t send a {{statusCode}} status code. Please use one of {{comma-separated allowedStatusCodes}}',
 
@@ -26,7 +28,7 @@ module.exports = {
 
   requestIdLog: '{{req.url}} | {{req.id}}',
 
-  receivedRequestTitleLog: 'Received {{req.method}} |',
+  receivedRequestTitleLog: 'Received Request {{req.method}} |',
   receivedRequestLog: '{{req.ip}} |',
   requestHeadersTitleLog: 'Request headers |',
   requestInfoTitleLog: 'Request info |',
@@ -34,13 +36,18 @@ module.exports = {
   requestBodyLog: '\nBody: {{toJSON req.body}}',
   requestQueryLog: '\nQuery: {{toJSON req.query}}',
 
-  sendResponseTitleLog: 'Send response |',
+  sendResponseTitleLog: 'Send Response |',
   sendResponseLog: '{{{res.statusCode}}} |',
   responseHeadersTitleLog: 'Response headers |',
   responseContentTitleLog: 'Response Content | {{{type}}} |',
   responseContentLog: '\nContent: {{toJSON response}}',
   responseTemplateLog: '\nTemplate: {{template}}',
 
-  authenticationRequiredError: 'Authentication required',
-  authorizationFailedError: 'Not authorized'
+  authenticationRequiredError: 'Authentication required. {{capitalize message}}',
+  authenticationHeadersNotFoundError: 'Authentication headers not found',
+  authorizationFailedError: 'Not authorized',
+  wrongAuthenticationMethod: 'Authentication method "{{method}}" not supported. Supported methods are: {{comma-separated supported}}',
+  invalidApiKeyError: 'Invalid Api Key',
+  malFormedAuthenticationMethodError: 'Authentication method "{{method}}" is malformed',
+  disabledAuthenticationRequest: 'Request authentication disabled | {{req.ip}} | {{req.id}}'
 }

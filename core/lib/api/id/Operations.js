@@ -4,10 +4,10 @@ const Promise = require('bluebird')
 const Operations = function (core) {
   return {
     getId: {
-      authorization: (userData) => {
+      auth: (userData) => {
         console.log('getId')
         console.log(userData) // Includes rol and username
-        throw new Error('Not allowed')// Or promise.reject
+        return true// Or promise.reject
       },
       handler: () => {
         return Promise.resolve({
@@ -16,10 +16,10 @@ const Operations = function (core) {
       }
     },
     patchId: {
-      authorization: (userData) => {
+      auth: (userData) => {
         console.log('patchId')
         console.log(userData) // Includes rol and username
-        return false // or Promise.reject
+        return Promise.resolve() // or Promise.reject
       },
       handler: (parameters, requestBody, response) => {
         console.log(parameters)
@@ -29,7 +29,7 @@ const Operations = function (core) {
       }
     },
     postId: {
-      authorization: (userData) => {
+      auth: (userData) => {
         console.log('patchId')
         console.log(userData) // Includes rol and username
         return Promise.resolve() // Or promise.resolve
@@ -50,7 +50,7 @@ const Operations = function (core) {
           }
         }
       },
-      authorization: (userData) => {
+      auth: (userData) => {
         console.log('getIdName')
         console.log(userData) // Includes rol and username
         return true

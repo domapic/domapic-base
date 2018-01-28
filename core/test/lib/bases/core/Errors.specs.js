@@ -6,7 +6,7 @@ const test = require('../../../index')
 const Errors = require('../../../../lib/bases/core/Errors')
 
 test.describe('Bases -> Core -> Errors', () => {
-  const staticMethods = ['fromCode', 'toHTML', 'isControlled']
+  const staticMethods = ['FromCode', 'toHTML', 'isControlled']
   const errors = new Errors()
 
   _.each(errors, (Method, methodName) => {

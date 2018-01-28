@@ -4,19 +4,22 @@ const hbs = require('hbs')
 const http = require('http')
 const https = require('https')
 const path = require('path')
+const fs = require('fs')
 
 const express = require('express')
 const Promise = require('bluebird')
 
 const Api = require('./server/api/Api')
+const SecurityMethods = require('./server/security')
 const Doc = require('./server/Doc')
 const Middlewares = require('./server/Middlewares')
 
-const Server = function (core) {
+const Server = function (core, serviceType) {
   const app = express()
   const templates = core.utils.templates.compiled.server
   const middlewares = new Middlewares(core)
-  const api = new Api(core, middlewares)
+  const securityMethods = new SecurityMethods(core)
+  const api = new Api(core, middlewares, securityMethods)
   const doc = new Doc()
 
   let started = false
@@ -105,10 +108,14 @@ const Server = function (core) {
       let server
       const serverMethod = startOptions.sslKey ? startHTTPS : startHTTP
       const nodeServerOptions = startOptions.sslKey ? {
-        key: startOptions.sslKey,
-        cert: startOptions.sslCert
+        key: fs.readFileSync(startOptions.sslKey),
+        cert: fs.readFileSync(startOptions.sslCert)
       } : {}
 
+      app.use(new middlewares.DomapicHeaders({
+        name: startOptions.name,
+        serviceType: serviceType
+      }))
       app.use('/doc', routers.doc)
       app.use('/api', routers.api)
 
@@ -126,7 +133,8 @@ const Server = function (core) {
       server.on('error', new StartServerErrorHandler(startOptions, reject))
 
       server.listen({
-        port: startOptions.port
+        port: startOptions.port,
+        host: startOptions.hostName
       }, new ServerStarted(resolve, reject, server))
     })
   }
@@ -163,16 +171,20 @@ const Server = function (core) {
           return validateAndStart({
             sslKey: config.sslKey,
             sslCert: config.sslCert,
-            port: config.port
+            hostName: config.hostName,
+            port: config.port,
+            name: config.name
           })
         })
     }
     return startPromise
   }
 
+  // TODO, expose authentication methods
   return {
     extendOpenApi: api.extendOpenApi,
-    addApiOperations: api.addOperations,
+    addOperations: api.addOperations,
+    addAuthentication: api.addAuthentication,
     start: start
   }
 }

@@ -9,9 +9,10 @@ const Service = require('../../lib/Service')
 
 test.describe('Service', () => {
   const fooServer = {
-    // TODO, add tests for addApi method
+    // TODO, add tests for this methods
     extendOpenApi: test.sinon.stub().usingPromise().resolves(),
-    addApiOperations: test.sinon.stub().usingPromise().resolves()
+    addOperations: test.sinon.stub().usingPromise().resolves(),
+    addAuthentication: test.sinon.stub().usingPromise().resolves()
   }
   const fooClient = {
     fooClientMethod: 'fooCMethod'

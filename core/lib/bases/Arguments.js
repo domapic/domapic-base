@@ -78,10 +78,9 @@ const Arguments = function (baseArguments) {
     _.each(usualOptions, (option) => {
       const splittedOption = option.split('=')
       const name = splittedOption[0].replace(/^-*/, '')
-      const value = splittedOption.length > 1 ? splittedOption[1] : true
       _.each(options, (properties, optionName) => {
         if (name === optionName || (properties.alias && properties.alias.indexOf(name) > -1)) {
-          explicit[optionName] = value
+          explicit[optionName] = values && !_.isUndefined(values[optionName]) ? values[optionName] : (splittedOption.length > 1 ? splittedOption[1] : true)
         }
       })
     })
@@ -119,6 +118,7 @@ const Arguments = function (baseArguments) {
             defaults: getDefaults(extendedArguments),
             explicit: getExplicit(extendedArguments, userOptions, properties.cli)
           }
+
           return getCliCommandsMethods(args, properties.processName)
             .then((cliCommandMethods) => {
               return cliCommandMethods.config.get()
@@ -151,7 +151,6 @@ const Arguments = function (baseArguments) {
     return new Promise((resolve) => {
       new Options(defaultArguments).get()
       const options = clean(init(), defaultArguments)
-
       resolve({
         options: options,
         defaults: getDefaults(defaultArguments),

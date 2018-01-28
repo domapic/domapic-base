@@ -42,7 +42,7 @@ const Stub = function () {
     },
     errors: {
       isControlled: test.sinon.stub(),
-      fromCode: test.sinon.stub(),
+      FromCode: test.sinon.stub(),
       toHTML: test.sinon.stub(),
       BadImplementation: FooErrorConstructor,
       ChildProcess: FooErrorConstructor,

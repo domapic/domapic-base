@@ -1,0 +1,123 @@
+{ 
+  "tags": [{
+    "name": "security",
+    "description": "Domapic service authentication"
+  }],
+  "components": {
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/auth/jwt": {
+      "post": {
+        "tags": ["security"],
+        "summary": "Create an access token",
+        "description": "Creates a new jwt access token",
+        "operationId": "jwtCreateToken",
+        "requestBody": {
+          "description": "User credentials",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                  "type": "object",
+                  "properties": {
+                    "userName": {
+                      "description": "User name",
+                      "type": "string"
+                    },
+                    "password": {
+                      "description": "User password",
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "description": "Refresh token",
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "example": {
+                    "userName": "fooUser",
+                    "password": "fooPassword"
+                  }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Access token, refresh token and expiration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "description": "Token needed to access an api resource. Short time expiration",
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "description": "Token needed to ask for a new access token. Long lived",
+                      "type": "string"
+                    },
+                    "expiresIn": {
+                      "description": "Expiration time of access_token in miliseconds",
+                      "type": "number",
+                      "format": "int32"
+                    }
+                  },
+                  "required": ["accessToken", "refreshToken", "expiresIn"],
+                  "example": {
+                    "accessToken": "fooAccessToken",
+                    "refreshToken": "fooRefreshToken",
+                    "expiresIn": "300000"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["security"],
+        "summary": "Remove Refresh Token",
+        "description": "Removes an existant jwt refresh token",
+        "operationId": "jwtRemoveRefreshToken",
+        "requestBody": {
+          "description": "Refresh token to be removed",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refresh_token": {
+                    "description": "User name",
+                    "type": "string"
+                  }
+                },
+                "required": ["refresh_token"],
+                "example": {
+                  "refresh_token": "fooRefreshToken"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Refresh token sucessfully removed"
+          }
+        },
+        "security": [{
+          "jwt": []
+        }]
+      }
+    }
+  }
+}

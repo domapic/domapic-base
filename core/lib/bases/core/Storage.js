@@ -7,6 +7,8 @@ const Storage = function (fileName, paths, errors) {
   let getDataPromise
   let data
 
+  // TODO, templates for errors
+
   if (!fileName) {
     throw new errors.BadData('No file name provided')
   }
@@ -68,8 +70,10 @@ const Storage = function (fileName, paths, errors) {
         } else {
           data = value
         }
-        saveData()
-        return Promise.resolve(fullClone(key ? data[key] : data))
+        return saveData()
+          .then(() => {
+            return Promise.resolve(fullClone(key ? data[key] : data))
+          })
       })
   }
 
@@ -80,8 +84,10 @@ const Storage = function (fileName, paths, errors) {
     return getData()
       .then(() => {
         delete data[key]
-        saveData()
-        return Promise.resolve(fullClone(data))
+        return saveData()
+          .then(() => {
+            return Promise.resolve(fullClone(data))
+          })
       })
   }
 

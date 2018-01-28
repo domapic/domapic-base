@@ -23,5 +23,11 @@ module.exports = {
   path: {
     type: 'string',
     describe: 'Path to be used as Domapic home path (.domapic folder will be created inside)'
+  },
+  saveConfig: {
+    type: 'boolean',
+    alias: ['save'],
+    describe: 'Save current configuration parameters for next executions',
+    default: false
   }
 }

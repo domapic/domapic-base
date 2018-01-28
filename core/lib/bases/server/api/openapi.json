@@ -16,19 +16,15 @@
   "security": [
   ],
   "components": {
-    "securitySchemes": {
-      "jwt": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      },
-      "apiKey": {
-        "type": "apiKey",
-        "name": "X-API-KEY",
-        "in": "header"
-      }
-    },
     "responses": {
+      "UnauthorizedError": {
+        "description": "Unauthorized",
+        "headers": {
+          "WWW-Authenticate": {
+            "$ref": "#/components/headers/WWWAuthenticate"
+          }
+        }
+      },
       "OptionsSuccess" : {
         "description": "Openapi descriptions for all resource methods",
         "headers": {
@@ -89,6 +85,12 @@
         "schema": {
           "type": "string",
           "format": "uri"
+        }
+      },
+      "WWWAuthenticate": {
+        "description": "Authentication preferred method",
+        "schema": {
+          "type": "string"
         }
       }
     },

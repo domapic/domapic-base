@@ -115,7 +115,16 @@ const Middlewares = function (core) {
     }
   }
 
+  const DomapicHeaders = function (options) {
+    return function (req, res, next) {
+      res.set('X-Domapic-Service-Type', options.serviceType)
+      res.set('X-Domapic-Service-Name', options.name)
+      next()
+    }
+  }
+
   return {
+    DomapicHeaders: DomapicHeaders,
     methodNotAllowed: methodNotAllowed,
     addRequestId: addRequestId(),
     errorHandler: errorHandler,

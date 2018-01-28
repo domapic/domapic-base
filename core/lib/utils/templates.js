@@ -4,8 +4,10 @@ const _ = require('lodash')
 const hbs = require('hbs')
 
 const cli = require('./templates/cli')
+const client = require('./templates/client')
 const openapi = require('./templates/openapi')
 const processTemplates = require('./templates/process')
+const service = require('./templates/service')
 const server = require('./templates/server')
 
 hbs.registerHelper('toJSON', function (object) {
@@ -32,7 +34,9 @@ const compile = function (templates) {
 
 const preCompile = function () {
   const toPreCompile = {
+    service: service,
     cli: cli,
+    client: client,
     openapi: openapi,
     process: processTemplates,
     server: server
