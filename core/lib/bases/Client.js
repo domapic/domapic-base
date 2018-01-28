@@ -12,6 +12,8 @@ const Client = function (core) {
   const templates = core.utils.templates.compiled.client
 
   const Connection = function (hostName, securityOptions) {
+    let loginPromise
+    let makingLogin
     let apiKey = securityOptions && securityOptions.apiKey
     let jwt = {}
 
@@ -36,7 +38,6 @@ const Client = function (core) {
       mainTrace[level || 'error'] = [templates.receivedResponseTitleLog({request: request}), templates.receivedResponseInfoLog({request: request}), templates.requestErrorMessage({error: request.error})]
 
       traces.push(mainTrace)
-      console.log(isControlled)
       if (!isControlled) {
         traces.push({
           error: [templates.requestErrorTitle(), templates.receivedResponseInfoLog({request: request}), '\n', request.error]
@@ -46,23 +47,51 @@ const Client = function (core) {
       return core.tracer.group(traces)
     }
 
+    const getLoginCredentials = function () {
+      return jwt.refreshToken ? {
+        refreshToken: jwt.refreshToken
+      } : {
+        userName: securityOptions.jwt.userName,
+        password: securityOptions.jwt.password
+      }
+    }
+
+    const setLoginCredentials = function (credentials) {
+      jwt.accessToken = credentials.accessToken
+      if (credentials.refreshToken) {
+        jwt.refreshToken = credentials.refreshToken
+      }
+    }
+
+    const deleteLoginRefreshToken = function () {
+      if (jwt.refreshToken) {
+        delete jwt.refreshToken
+      }
+    }
+
     const authenticate = function () {
       if (securityOptions && securityOptions.jwt) {
-        let requestBody = jwt.refreshToken ? {
-          refreshToken: jwt.refreshToken
-        } : {
-          userName: securityOptions.jwt.userName,
-          password: securityOptions.jwt.password
+        if (!makingLogin) {
+          makingLogin = true
+          loginPromise = new Request('POST', {
+            isLogin: true
+          })('/auth/jwt', getLoginCredentials())
+          .catch((err) => {
+            makingLogin = false
+            if (jwt.refreshToken) {
+              // Retry without refresh token
+              deleteLoginRefreshToken()
+              return authenticate()
+            } else {
+              return Promise.reject(err)
+            }
+          }).then((credentials) => {
+            makingLogin = false
+            setLoginCredentials(credentials)
+            return Promise.resolve(credentials)
+          })
         }
-        return new Request('POST', {
-          isLogin: true
-        })('/auth/jwt', requestBody).then((credentials) => {
-          jwt.accessToken = credentials.accessToken
-          if (credentials.refreshToken) {
-            jwt.refreshToken = credentials.refreshToken
-          }
-          return Promise.resolve()
-        })
+        return loginPromise
       } else {
         return Promise.reject(new core.errors.Unauthorized())
       }
@@ -72,8 +101,34 @@ const Client = function (core) {
       requestOptions = requestOptions || {}
       let fullUrl, requestId, responseId, statusCode, logOptions
 
+      const setRequestData = function (url, body) {
+        fullUrl = hostName + '/api' + (url || '')
+        requestId = uuidv4()
+        logOptions = {
+          method: method,
+          url: fullUrl,
+          requestId: requestId,
+          type: requestOptions.isPostLogin ? 'POST-LOGIN ' : requestOptions.isLogin ? 'LOGIN ' : ''
+        }
+      }
+
+      const setResponseData = function (response) {
+        statusCode = response.statusCode
+        if (response && response.headers) {
+          responseId = response.headers['x-request-id']
+        }
+      }
+
+      const authenticationError = function () {
+        return new core.errors.Unauthorized(templates.unauthorizedError({
+          hostName: hostName,
+          method: method,
+          url: fullUrl
+        }))
+      }
+
       const doRequest = function (url, body) {
-        return new Promise((resolve, reject) => {
+        const getOptions = function () {
           let options = {
             method: method,
             url: fullUrl,
@@ -91,16 +146,12 @@ const Client = function (core) {
           if (jwt.accessToken) {
             options.headers['authorization'] = 'Bearer ' + jwt.accessToken
           }
-          request(options, (error, response, responseBody) => {
-            let authenticationError = new core.errors.Unauthorized(templates.unauthorizedError({
-              hostName: hostName,
-              method: method,
-              url: url
-            }))
-            statusCode = response.statusCode
-            if (response && response.headers) {
-              responseId = response.headers['x-request-id']
-            }
+          return options
+        }
+
+        return new Promise((resolve, reject) => {
+          request(getOptions(), (error, response, responseBody) => {
+            setResponseData(response)
             if (error) {
               if (error.code === 'ECONNREFUSED') {
                 reject(new core.errors.ServerUnavailable(templates.serverUnavailableError({
@@ -109,12 +160,12 @@ const Client = function (core) {
               } else {
                 reject(error)
               }
-            } else if (unAuthenticatedResponses.indexOf(response.statusCode) > -1) {
+            } else if (unAuthenticatedResponses.indexOf(statusCode) > -1) {
               if (!requestOptions.isLogin) {
-                logResponseError(_.extend({}, logOptions, {responseId: responseId, statusCode: statusCode, error: authenticationError}), 'warn')
+                logResponseError(_.extend({}, logOptions, {responseId: responseId, statusCode: statusCode, error: authenticationError()}), 'warn')
                 authenticate()
                   .catch(() => {
-                    return Promise.reject(authenticationError)
+                    return Promise.reject(authenticationError())
                   })
                   .then(() => {
                     return new Request(method, {
@@ -130,9 +181,9 @@ const Client = function (core) {
               } else {
                 reject(authenticationError)
               }
-            } else if (successResponses.indexOf(response.statusCode) < 0) {
-              reject(new core.errors.FromCode(response.statusCode, templates.receivedErrorStatus({
-                statusCode: response.statusCode
+            } else if (successResponses.indexOf(statusCode) < 0) {
+              reject(new core.errors.FromCode(statusCode, templates.receivedErrorStatus({
+                statusCode: statusCode
               })))
             } else {
               resolve(responseBody)
@@ -142,14 +193,7 @@ const Client = function (core) {
       }
 
       return function (url, body) {
-        fullUrl = hostName + '/api' + (url || '')
-        requestId = uuidv4()
-        logOptions = {
-          method: method,
-          url: fullUrl,
-          requestId: requestId,
-          type: requestOptions.isPostLogin ? 'POST-LOGIN ' : requestOptions.isLogin ? 'LOGIN ' : ''
-        }
+        setRequestData(url, body)
         return logRequest(_.extend({}, logOptions, {requestBody: body})).then(() => {
           return doRequest(url, body)
         }).then((responseBody) => {
