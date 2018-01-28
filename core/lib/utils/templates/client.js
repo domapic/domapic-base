@@ -14,5 +14,6 @@ module.exports = {
   receivedResponseInfoLog: '{{request.statusCode}} | {{request.url}} | {{request.requestId}} | {{request.responseId}}',
   responseBodyLog: '\n Body: {{toJSON request.responseBody}}',
   requestErrorTitle: 'Request error | ',
-  requestErrorMessage: '| {{error.message}}'
+  requestErrorMessage: '| {{error.message}}',
+  receivedErrorStatus: 'Received error status code {{statusCode}}'
 }

@@ -36,6 +36,7 @@ const Client = function (core) {
       mainTrace[level || 'error'] = [templates.receivedResponseTitleLog({request: request}), templates.receivedResponseInfoLog({request: request}), templates.requestErrorMessage({error: request.error})]
 
       traces.push(mainTrace)
+      console.log(isControlled)
       if (!isControlled) {
         traces.push({
           error: [templates.requestErrorTitle(), templates.receivedResponseInfoLog({request: request}), '\n', request.error]
@@ -130,9 +131,9 @@ const Client = function (core) {
                 reject(authenticationError)
               }
             } else if (successResponses.indexOf(response.statusCode) < 0) {
-              // TODO, log with request ID
-              // TODO, map with domapic errors
-              reject(new Error('Error ' + response.statusCode))
+              reject(new core.errors.FromCode(response.statusCode, templates.receivedErrorStatus({
+                statusCode: response.statusCode
+              })))
             } else {
               resolve(responseBody)
             }

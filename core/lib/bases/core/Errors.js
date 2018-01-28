@@ -30,12 +30,12 @@ const Errors = function () {
     },
     TimeOut: {
       name: 'Time Out', // Timed out
-      toCode: 408,
-      fromCode: 408
+      toCode: 408
     },
     ClienTimeOut: {
       name: 'Client Time Out', // Client request timed out
-      toCode: 408
+      toCode: 408,
+      fromCode: 408
     },
     Forbidden: {
       name: 'Forbidden', // Authorization failed
@@ -44,7 +44,8 @@ const Errors = function () {
     },
     Unauthorized: {
       name: 'Unauthorized', // Authentication failed
-      toCode: 401
+      toCode: 401,
+      fromCode: 401
     },
     NotFound: {
       name: 'Not Found', // Not found in database, etc..
@@ -63,7 +64,8 @@ const Errors = function () {
     },
     MethodNotAllowed: {
       name: 'Method Not Allowed', // Wrong HTTP method on client request
-      toCode: 405
+      toCode: 405,
+      fromCode: 405
     }
   }
 
@@ -90,8 +92,16 @@ const Errors = function () {
     return constructors
   }
 
-  const fromCode = function (code) {
-    // TODO, return error constructor depending of the code.
+  const byType = createConstructors()
+
+  const FromCode = function (code, message) {
+    let constructorName
+    _.each(errors, (properties, errorName) => {
+      if (code === properties.fromCode) {
+        constructorName = errorName
+      }
+    })
+    return (constructorName && new byType[constructorName](message)) || new Error(message)
   }
 
   const toHTML = function (error) {
@@ -103,11 +113,9 @@ const Errors = function () {
     return !!error.isDomapic
   }
 
-  const byType = createConstructors()
-
   return _.extend(byType, {
     isControlled: isControlled,
-    fromCode: fromCode,
+    FromCode: FromCode,
     toHTML: toHTML
   })
 }

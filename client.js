@@ -15,7 +15,7 @@ new core.Service()
       .then((response) => {
         console.log('get!')
         console.log(response)
-        return client.patch('/id', {
+        return client.delete('/id', {
           name: 'testing'
         })
           .then(() => {
