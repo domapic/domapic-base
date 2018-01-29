@@ -10,14 +10,30 @@
         "type": "object",
         "properties": {
           "name": {
-            "description": "Name of the service",
+            "description": "Name of the service instance",
+            "type": "string"
+          },
+          "type": {
+            "description": "Service type",
+            "type": "string",
+            "enum": ["controller", "plugin", "service"]
+          },
+          "package": {
+            "description": "Package name",
+            "type": "string"
+          },
+          "version": {
+            "description": "Package version",
             "type": "string"
           }
         },
         "required": ["name"],
         "additionalProperties": false,
         "example": {
-          "name": "domapic-controller"
+          "name": "foo-instance-name",
+          "type": "service",
+          "package": "foo-package-name",
+          "version": "1.0.0"
         }
       }
     }
@@ -40,99 +56,7 @@
               }
             }
           }
-        },
-        "security": [{
-          "jwt": []
-        }, {
-          "apiKey": []
-        }]
-      },
-      "patch": {
-        "summary": "Modify id",
-        "description": "Returns a map of status codes to quantities",
-        "operationId": "patchId",
-        "tags": ["id"],
-        "requestBody": {
-          "description": "Id properties to be modified",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Id"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "Sucess"
-          }
-        },
-        "security": [{
-          "jwt": []
-        }, {
-          "apiKey": []
-        }]
-      },
-      "post": {
-        "summary": "New id",
-        "description": "Add an id",
-        "operationId": "postId",
-        "tags": ["id"],
-        "requestBody": {
-          "description": "Id properties to be modified",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Id"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Sucess",
-            "headers": {
-              "Content-Location": {
-                "$ref": "#/components/headers/ContentLocation"
-              }
-            }
-          }
-        },
-        "security": [{
-          "jwt": []
-        }]
-      }
-    },
-    "/id/{name}": {
-      "get": {
-        "responses": {
-          "200": {
-            "description": "Id response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Id"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Returns unique and constant data of the service",
-        "description": "Returns a map with unique and constant data that allows to identify the service",
-        "operationId": "getIdName",
-        "tags": ["id"],
-        "parameters": [{
-          "name": "name",
-          "in": "path",
-          "description": "service name",
-          "required": true,
-          "example": "service-name-example",
-          "schema": {
-            "type": "number"
-          }
-        }]
+        }
       }
     }
   }
