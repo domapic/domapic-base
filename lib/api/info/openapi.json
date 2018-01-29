@@ -1,12 +1,12 @@
 {
   "tags": [{
-    "name": "id",
-    "description": "Domapic service identifier"
+    "name": "info",
+    "description": "Domapic service info"
   }],
   "components": {
     "schemas": {
-      "Id": {
-        "description": "Unique identifier of the service",
+      "Info": {
+        "description": "Info about domapic service instance",
         "type": "object",
         "properties": {
           "name": {
@@ -39,19 +39,19 @@
     }
   },
   "paths": {
-    "/id": {
+    "/info": {
       "get": {
-        "tags": ["id"],
-        "summary": "Returns unique and constant data of the service",
-        "description": "Returns a map with unique and constant data that allows to identify the service",
-        "operationId": "getId",
+        "tags": ["info"],
+        "summary": "Returns info of the service",
+        "description": "Returns a map with info that allows to identify the service",
+        "operationId": "getInfo",
         "responses": {
           "200": {
-            "description": "Id response",
+            "description": "Info response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Id"
+                  "$ref": "#/components/schemas/Info"
                 }
               }
             }
