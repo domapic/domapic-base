@@ -12,6 +12,7 @@ test.describe('Bases -> Core', () => {
   const fooStorage = {fooProp3: 'fooValue3'}
   const fooConfig = {fooProp4: 'fooValue4'}
   const fooTracer = {fooProp5: 'fooValue5'}
+  const fooInfo = {fooProp6: 'fooValue6'}
   const fooProcessName = 'testing'
   let core
 
@@ -21,6 +22,7 @@ test.describe('Bases -> Core', () => {
     test.sinon.stub(coreLib, 'Storage').returns(fooStorage)
     test.sinon.stub(coreLib, 'Config').returns(fooConfig)
     test.sinon.stub(coreLib, 'Tracer').returns(fooTracer)
+    test.sinon.stub(coreLib, 'Info').returns(fooInfo)
     core = new Core(mocks.arguments.getResult, fooProcessName)
   })
 
@@ -30,6 +32,7 @@ test.describe('Bases -> Core', () => {
     coreLib.Storage.restore()
     coreLib.Config.restore()
     coreLib.Tracer.restore()
+    coreLib.Info.restore()
   })
 
   test.it('should create a new Errors instance', () => {

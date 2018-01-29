@@ -59,7 +59,10 @@
     "node": "8.9.1",
     "npm": "5.5.1"
   },
-  "author": "Javier Brea",
+  "author": {
+    "name": "Javier Brea",
+    "url": "http://javierbrea.com"
+  },
   "license": "MIT",
   "repository": "https://registry.npmjs.org/"
 }
