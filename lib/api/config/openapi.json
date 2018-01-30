@@ -1,0 +1,87 @@
+{
+  "tags": [{
+    "name": "configuration",
+    "description": "Domapic service configuration"
+  }],
+  "components": {
+    "schemas": {
+      "Config": {
+        "description": "Microservice configuration properties",
+        "type": "object",
+        "properties": {
+          "path": {
+            "description": "Path used as Domapic home path (.domapic/serviceName folder is created inside)",
+            "type": "string"
+          },
+          "logLevel": {
+            "description": "Log level",
+            "type": "string",
+            "enum": ["log", "trace", "debug", "info", "warn", "error"]
+          },
+          "port": {
+            "description": "Port number used by the server",
+            "type": "number"
+          },
+          "authDisabled": {
+            "description": "Array of IPs or CIDR IP ranges with authentication disabled",
+            "type": "array",
+            "items": {
+              "description": "Ip or CIDR IP range",
+              "type": "string"
+            }
+          },
+          "color": {
+            "description": "Use colors in logs",
+            "type": "boolean"
+          },
+          "hostName": {
+            "description": "Host name used by the server",
+            "type": "string"
+          },
+          "sslCert": {
+            "description": "SSL certificate path",
+            "type": "string"
+          },
+          "sslKey": {
+            "description": "SSL key path",
+            "type": "string"
+          }
+        },
+        "required": ["logLevel", "port", "hostName", "authDisabled"],
+        "additionalProperties": false,
+        "example": {
+            "logLevel": "debug",
+            "port": 8090,
+            "authDisabled": [
+              "127.0.0.1",
+              "::1/128"
+            ],
+            "color": true,
+            "hostName": "0.0.0.0"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/config": {
+      "get": {
+        "tags": ["configuration"],
+        "summary": "Returns current configuration",
+        "description": "Returns all current configuration properties",
+        "operationId": "getConfig",
+        "responses": {
+          "200": {
+            "description": "Config response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
