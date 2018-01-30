@@ -1,11 +1,11 @@
 {
   "tags": [{
-    "name": "info",
+    "name": "about",
     "description": "Domapic service info"
   }],
   "components": {
     "schemas": {
-      "Info": {
+      "About": {
         "description": "Info about domapic service instance",
         "type": "object",
         "properties": {
@@ -16,7 +16,7 @@
           "type": {
             "description": "Service type",
             "type": "string",
-            "enum": ["controller", "plugin", "service"]
+            "enum": ["controller", "plugin", "service", "unrecognized"]
           },
           "package": {
             "description": "Package name",
@@ -25,33 +25,52 @@
           "version": {
             "description": "Package version",
             "type": "string"
+          },
+          "description": {
+            "description": "Package description",
+            "type": "string"
+          },
+          "author": {
+            "description": "Package author name",
+            "type": "string"
+          },
+          "license": {
+            "description": "Package license",
+            "type": "string"
+          },
+          "homePage": {
+            "description": "Package website",
+            "type": "string"
           }
         },
-        "required": ["name"],
+        "required": ["name", "type", "package", "version", "description"],
         "additionalProperties": false,
         "example": {
           "name": "foo-instance-name",
           "type": "service",
           "package": "foo-package-name",
-          "version": "1.0.0"
+          "version": "1.0.0",
+          "description": "Foo microservice package",
+          "author": "John Doe",
+          "license": "MIT"
         }
       }
     }
   },
   "paths": {
-    "/info": {
+    "/about": {
       "get": {
-        "tags": ["info"],
-        "summary": "Returns info of the service",
-        "description": "Returns a map with info that allows to identify the service",
-        "operationId": "getInfo",
+        "tags": ["about"],
+        "summary": "Returns service info",
+        "description": "Returns a map with info about the service",
+        "operationId": "getAbout",
         "responses": {
           "200": {
-            "description": "Info response",
+            "description": "About response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Info"
+                  "$ref": "#/components/schemas/About"
                 }
               }
             }
