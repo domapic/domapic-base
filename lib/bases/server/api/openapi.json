@@ -25,6 +25,14 @@
           }
         }
       },
+      "ForbiddenError": {
+        "description": "User is authenticated, but has no permission to perform the operation",
+        "headers": {
+          "WWW-Authenticate": {
+            "$ref": "#/components/headers/WWWAuthenticate"
+          }
+        }
+      },
       "OptionsSuccess" : {
         "description": "Openapi descriptions for all resource methods",
         "headers": {
