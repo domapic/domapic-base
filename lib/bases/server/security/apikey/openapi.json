@@ -40,16 +40,18 @@
           "200": {
             "description": "Api key created",
             "content": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "apiKey": {
-                    "type": "string"
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "apiKey": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["apiKey"],
+                  "example": {
+                    "apiKey": "fooApiKey"
                   }
-                },
-                "required": ["apiKey"],
-                "example": {
-                  "apiKey": "fooApiKey"
                 }
               }
             }
