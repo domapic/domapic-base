@@ -192,6 +192,8 @@ You can change the passwords for *service* and *plugin* roles with the commands:
 domapic rolemod SERVERNAME --role=ROLENAME -p=PASSWORD
 ```
 
+// SUGGESTED ROLES: 'admin', 'operator', 'guest'
+
 > NOTE: This command will only apply to *service* or *plugin* roles, which share passwords for all related users.
 
 ## Install services or plugins
