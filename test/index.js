@@ -4,6 +4,7 @@ const chai = require('chai')
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const dirtyChai = require('dirty-chai')
+const standard = require('mocha-standard')
 
 chai.use(sinonChai)
 chai.use(dirtyChai)
@@ -16,5 +17,6 @@ module.exports = {
   describe: describe,
   it: it,
   expect: chai.expect,
-  sinon: sinon
+  sinon: sinon,
+  standard: standard
 }
