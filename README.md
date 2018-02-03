@@ -72,7 +72,7 @@ It provides:
 
 ---
 
-## Service
+## Server
 
 ```js
 //server.js file
@@ -120,6 +120,42 @@ option | type | description | default
 Setting options from command line example:
 ```shell
 node ./server.js --name=fooName --authDisabled=192.168.1.1 172.0.0.1 --logLevel=debug --color=false
+```
+
+Get configuration:
+
+```js
+new domapic.Service({
+  packagePath: path.resolve(__dirname)
+}).then((service) => {
+	return service.config.get()
+		.then((configuration) => {
+			console.log(configuration)
+		})
+})
+```
+You can add your own custom configuration options. They will be seteable from command line execution, displayed in help and validated as the rest of options. Use `customConfig` parameter to define them. [Yargs](https://www.npmjs.com/package/yargs) is used as underlayer to manage options, so you can read its documentation for more details about how to define them:
+
+```js
+new domapic.Service({
+  packagePath: path.resolve(__dirname),
+  customConfig: {
+  	fooOption: {
+      type: 'boolean',
+      alias: ['foo-option'],
+      describe: 'Testing a custom configuration option',
+      default: true
+    }
+  }
+}).then((service) => {
+	return service.config.get()
+		.then((configuration) => {
+			console.log(configuration)
+		})
+})
+```
+```shell
+node ./server.js --name=fooName --fooOption=false
 ```
 
 ---
