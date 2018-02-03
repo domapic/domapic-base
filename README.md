@@ -13,7 +13,8 @@
 
 ## Introduction
 
-This package is used as a base for domapic-controller, domapic-service and domapic-plugin packages.
+This package is used as a base for __domapic-controller__, __domapic-service__ and __domapic-plugin__ packages.
+
 Maybe you´ll better want to read documentation about that pieces and learn how use them directly, because this is an internal dependency. Anyway, if you think it can be useful for you separately...
 
 It provides:
