@@ -41,7 +41,7 @@ It provides:
 	* Fully extensible with your own options.
 	* Storable. Next executions will remember options if --saveConfig is specified in one execution.
 * __Traces__
-	* Six log levels.
+	* Six different log levels.
 	* Ansi colored, at your choice.
 	* Daily file, last ten stored.
 * __Errors__
@@ -87,7 +87,7 @@ new domapic.Service({
 })
 ```
 
-The `packagePath` option must be the path where your package.json file is, in order to automatically create the `/api/about` api resource that can provide useful information about the package to other microservices.
+The `packagePath` parameter must be the path where your package.json file is, in order to automatically create the `/api/about` api resource that can provide useful information about the package to other microservices.
 
 ```shell
 # Start server
@@ -161,6 +161,8 @@ new domapic.Service({
 node ./server.js --name=fooName --fooOption=false
 ```
 
+Default options values (or saved values if the `--saveConfig` option is used) is saved to a file at `~/.domapic/<serviceName>/config/service.json`. This file can be edited manually, and the new values will be applied next time the service is started.
+
 ---
 
 ## Adding API resources
@@ -225,7 +227,7 @@ Each operation can have properties:
 
 ## Client
 
-Make requests to other Domapic Microservices-based packages. Automatic authentication and error handling is provided.
+Make requests to other Domapic Microservices-based services. Automatic authentication and error handling is provided.
 
 ```js
 new domapic.Service({
@@ -253,6 +255,56 @@ new domapic.Service({
 	return client.get('/about').then((response) => {
 		console.log(response)
 	})
+})
+```
+
+---
+
+## Traces
+
+There are six different levels of traces, defined for the method used to trace. Depending of the choiced log level when started the service, the trace will be printed to the console and written to the daily file or not.
+
+All traces in a day are saved to a file, into `~/.domapic/<serviceName>/logs/<serviceName>.<date>.log`. Trace files older than ten days are automatically deleted.
+
+When the service is started at background using the built-in CLI, logs are also saved to a file at `~/.domapic/<serviceName>/logs/<serviceName>.pm2.log`. It is recommended to install [PM2 log rotation](https://github.com/keymetrics/pm2-logrotate) to avoid this file growing too much.
+
+Sorted tracer levels are: 'log', 'trace', 'debug', 'info', 'warn' and 'error'.
+
+Use the tracer:
+
+```js
+new domapic.Service({
+	packagePath: path.resolve(__dirname),
+}).then((service) => {
+	return service.tracer.debug('testing').then(() => {
+		return service.tracer.log('testing log')
+	}).then(() => {
+		return service.tracer.warn('This is a warning')
+	}).then(() => {
+		return service.tracer.error(new Error('This will print the error stack'))
+	}).then(() => {
+		return service.tracer.error('Printed with error style, but no stack')
+	})
+})
+```
+
+Tracer methods can receive arrays as well. There is an extra method called `group`, that allows to invoque different levels of tracers at a time:
+
+```js
+new domapic.Service({
+	packagePath: path.resolve(__dirname),
+}).then((service) => {
+	return service.tracer.group([
+		{
+			log: 'This is a log'
+		},
+		{
+			trace: 'This is a trace'
+		},
+		{
+			warn: 'This is a warn'
+		}
+	])
 })
 ```
 
