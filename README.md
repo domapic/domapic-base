@@ -60,22 +60,19 @@ It provides:
 
 ## Table of Contents
 
-* [Usage](#usage)
-	* [Server](#server)
-	* [Options](#options)
-	* [Adding API resources](#add-api-resources)
-	* [Authentication](#authentication)
-	* [Client](#client)
-	* [Traces](#traces)
-	* [Errors](#errors)
-	* [Storage](#storage)
+* [Server](#server)
+* [Options](#options)
+* [Adding API resources](#add-api-resources)
+* [Authentication](#authentication)
+* [Client](#client)
+* [Traces](#traces)
+* [Errors](#errors)
+* [Storage](#storage)
 * [CLI](#command-line-interface)
 
 ---
 
-## Usage
-
-### Server
+## Service
 
 ```js
 //server.js file
@@ -89,20 +86,41 @@ new domapic.Service({
 })
 ```
 
-The `packagePath` option must be the path where your package.json file is, in order to automatically create the `/api/about` api resource that provides information about the package to other microservices.
+The `packagePath` option must be the path where your package.json file is, in order to automatically create the `/api/about` api resource that can provide useful information about the package to other microservices.
 
 ```shell
+#Start server
 node ./server.js --name=fooName --port=8030
 ```
 
 Browse to http://localhost:8030 to open Swagger interface and inspect API.
 
+---
+
 ### Options
 
+```shell
+#Display help with detailed information about all options
+node ./server.js --help
+```
+
 option | type | description | default
---- | --- | --- | ---: 
-name | String | Service instance name | -
-port | Number | Http port used | 8090
+--- | --- | --- | ---
+`name` | String | Service instance name | -
+`port` | Number | Http port used | 8090
+`hostName` | String | Hostname for the server | 0.0.0.0
+`sslCert` | String | Path to an ssl certificate | -
+`sslKey` | String | Path to an ssl key | - 
+`authDisabled` | Array | Array of IPs or CIDR IP ranges with authentication disabled | ['127.0.0.1', '::1/128']
+`color` | Boolean | Use ANSI colors in traces | true
+`logLevel` | String | Tracing level. Choices are 'log', 'trace', 'debug', 'info', 'warn' and 'error' | info
+`path` | String | Path to be used as home path, instead of user´s default (.domapic folder will be created inside) | ~
+`saveConfig` | Boolean | Save current options for next execution (except `name` and `path`) | false
+
+Setting options from command line example:
+```shell
+node ./server.js --name=fooName --authDisabled=192.168.1.1 172.0.0.1 --logLevel=debug --color=false
+```
 
 ---
 
