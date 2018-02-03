@@ -28,6 +28,7 @@ It provides:
 	* Customizable authorization level for each API resource.
 	* Add API resources using OpenApi 3.0 definitions.
 	* Http OPTIONS method created for each API resource, auto describing it.
+	* Automatic api parameters and body validation using the openapi schemas.
 	* API operations as Promises.
 	* Automatic error handling mapped to HTTP errors.
 	* Openapi.json auto generated and served.
@@ -97,7 +98,7 @@ Browse to http://localhost:8030 to open Swagger interface and inspect API.
 
 ---
 
-### Options
+## Options
 
 ```shell
 # Display help with detailed information about all options
@@ -162,7 +163,7 @@ node ./server.js --name=fooName --fooOption=false
 
 ---
 
-### Adding API resources
+## Adding API resources
 
 You can add your own API resources. They will be automatically added to the openapi.json definition, and will be available under the `/api` path of the server.
 
@@ -219,6 +220,41 @@ Each operation can have properties:
 	* Returns: 
 		* Promise.resolve, or `true` to validate the user.
 		* Any other returned value will result in a Forbidden response.
+
+---
+
+## Client
+
+Make requests to other Domapic Microservices-based packages. Automatic authentication and error handling is provided.
+
+```js
+new domapic.Service({
+  packagePath: path.resolve(__dirname),
+}).then((service) => {
+	const client = new service.client.Connection('http://localhost:8090')
+	return client.get('/about').then((response) => {
+		console.log(response)
+	})
+})
+```
+
+```js
+// Client with two authentication methods example
+new domapic.Service({
+  packagePath: path.resolve(__dirname),
+}).then((service) => {
+	const client = new service.client.Connection('http://localhost:8090',{
+    apiKey: 'thisIsaFooApiKey',
+    jwt: {
+      userName: 'fooUserName',
+      password: 'fooPassword'
+    }
+  })
+	return client.get('/about').then((response) => {
+		console.log(response)
+	})
+})
+```
 
 ---
 
