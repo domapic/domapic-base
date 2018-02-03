@@ -1,8 +1,8 @@
 # Domapic Microservices Base
 
 [![Build status][circleci-image]][circleci-url]
-[![js-standard-style][standard-image]][standard-url]
 [![Quality Gate][quality-gate-image]][quality-gate-url]
+[![js-standard-style][standard-image]][standard-url]
 
 [![Node version][node-version-image]][node-version-url]
 [![NPM version][npm-image]][npm-url]
@@ -10,6 +10,8 @@
 
 [![NPM downloads][npm-downloads-image]][npm-downloads-url]
 [![Website][website-image]][website-url]
+
+---
 
 ## Introduction
 
@@ -54,25 +56,61 @@ It provides:
 	* CLI commands to stop or display logs.
 	* Extensible with your own commands.
 
+---
+
 ## Table of Contents
-___
 
 * [Usage](#usage)
-* [Options](#options)
+	* [Server](#server)
+	* [Options](#options)
+	* [Adding API resources](#add-api-resources)
+	* [Authentication](#authentication)
+	* [Client](#client)
+	* [Traces](#traces)
+	* [Errors](#errors)
+	* [Storage](#storage)
 * [CLI](#command-line-interface)
 
-## Usage
-___
+---
 
-## Options
-___
+## Usage
+
+### Server
+
+```js
+//server.js file
+const path = require('path')
+const domapic = require('domapic-microservice')
+
+new domapic.Service({
+  packagePath: path.resolve(__dirname)
+}).then((service) => {
+	return service.server.start()
+})
+```
+
+The `packagePath` option must be the path where your package.json file is, in order to automatically create the `/api/about` api resource that provides information about the package to other microservices.
+
+```shell
+node ./server.js --name=fooName --port=8030
+```
+
+Browse to http://localhost:8030 to open Swagger interface and inspect API.
+
+### Options
+
+option | type | description | default
+--- | --- | --- | ---: 
+name | String | Service instance name | -
+port | Number | Http port used | 8090
+
+---
 
 ## Command Line Interface
-___
 
+---
 
-
-[circleci-image]: https://circleci.com/bb/domapic/domapic-microservice/tree/master.svg?style=svg&circle-token=acc2b3d5b9cc7ef2dad5c89d487a4bca9ef6d754
+[circleci-image]: https://circleci.com/bb/domapic/domapic-microservice/tree/master.svg?style=shield&circle-token=acc2b3d5b9cc7ef2dad5c89d487a4bca9ef6d754
 [circleci-url]: https://circleci.com/bb/domapic/domapic-microservice
 [license-image]: https://img.shields.io/npm/l/domapic-microservice.svg
 [license-url]: https://github.com/javierbrea/domapic-microservice/blob/master/LICENSE
