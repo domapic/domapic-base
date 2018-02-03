@@ -1,11 +1,11 @@
 'use strict'
 
-const Cli = require('./lib/Cli')
+const cli = require('./lib/Cli')
 const Service = require('./lib/Service')
 const utils = require('./lib/utils')
 
 module.exports = {
-  Cli: Cli,
+  cli: cli,
   Service: Service,
   utils: utils
 }

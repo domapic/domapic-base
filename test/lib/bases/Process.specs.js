@@ -255,7 +255,7 @@ test.describe('Bases -> Process', () => {
     test.it('should create a spawn process of pm2 logs, passing to it the name of the process', (done) => {
       pm2Process.logs()
         .then(() => {
-          test.expect(childProcess.spawn.getCall(0).args[0]).to.equal(path.resolve(__dirname, '..', '..', '..', '..', 'node_modules', '.bin', 'pm2'))
+          test.expect(childProcess.spawn.getCall(0).args[0]).to.equal(path.resolve(__dirname, '..', '..', '..', 'node_modules', '.bin', 'pm2'))
           test.expect(childProcess.spawn.getCall(0).args[1][0]).to.equal('logs')
           test.expect(childProcess.spawn.getCall(0).args[1][1]).to.equal(mocks.arguments.options.name)
           done()
