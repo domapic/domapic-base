@@ -19,39 +19,39 @@ Maybe you´ll better want to read documentation about that pieces and learn how 
 It provides:
 
 * __Server__ with an extensible API:
-  * Optional ssl protocol, just provide ssl certificate and key paths.
-  * Jwt and/or apiKey customizable authentication to api resources of choice.
-  * Authentication can be disabled in a range of IPs of choice.
-  * Customizable authorization level for each API resource.
-  * Add API resources using OpenApi 3.0 definitions.
-  * Http OPTIONS method created for each API resource, auto describing it.
-  * API operations as Promises.
-  * Automatic error handling mapped to HTTP errors.
-  * Openapi.json auto generated and served.
-  * Swagger web interface.
+	* Optional ssl protocol, just provide ssl certificate and key paths.
+	* Jwt and/or apiKey customizable authentication to api resources of choice.
+	* Authentication can be disabled in a range of IPs of choice.
+	* Customizable authorization level for each API resource.
+	* Add API resources using OpenApi 3.0 definitions.
+	* Http OPTIONS method created for each API resource, auto describing it.
+	* API operations as Promises.
+	* Automatic error handling mapped to HTTP errors.
+	* Openapi.json auto generated and served.
+	* Swagger web interface.
 * __Client__ to other Domapic microservices:
-  * Automatic authentication if API resource requires it.
-  * Requests as Promises.
+	* Automatic authentication if API resource requires it.
+	* Requests as Promises.
 * __Configuration__
-  * Built-in service command line options. (port, host, etc...).
-  * Fully extensible with your own options.
-  * Storable. Next executions will remember options if --saveConfig is specified in one execution.
+	* Built-in service command line options. (port, host, etc...).
+	* Fully extensible with your own options.
+	* Storable. Next executions will remember options if --saveConfig is specified in one execution.
 * __Traces__
-  * Six log levels.
-  * Ansi colored, at your choice.
-  * Daily file, last ten stored.
+	* Six log levels.
+	* Ansi colored, at your choice.
+	* Daily file, last ten stored.
 * __Errors__
-  * Custom errors for easy error handling.
-  * Mapping to HTTP errors.
+	* Custom errors for easy error handling.
+	* Mapping to HTTP errors.
 * __Storage__
-  * Javascript objects to JSON at file system and viceversa.
-  * File system access scoped to service instance folder.
+	* Javascript objects to JSON at file system and viceversa.
+	* File system access scoped to service instance folder.
 
 * __CLI__. Easy implementable in your own package, it provides:
-  * Start the service using CLI, and the process will be delegated to PM2.
-  * Multi-instanciable. Start many services instances providing different names.
-  * CLI commands to stop or display logs.
-  * Extensible with your own commands.
+	* Start the service using CLI, and the process will be delegated to PM2.
+	* Multi-instanciable. Start many services instances providing different names.
+	* CLI commands to stop or display logs.
+	* Extensible with your own commands.
 
 ## Table of Contents
 ___
