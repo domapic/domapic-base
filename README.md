@@ -81,7 +81,7 @@ const path = require('path')
 const domapic = require('domapic-microservice')
 
 new domapic.Service({
-  packagePath: path.resolve(__dirname)
+	packagePath: path.resolve(__dirname)
 }).then((service) => {
 	return service.server.start()
 })
@@ -127,7 +127,7 @@ Get configuration:
 
 ```js
 new domapic.Service({
-  packagePath: path.resolve(__dirname)
+	packagePath: path.resolve(__dirname)
 }).then((service) => {
 	return service.config.get()
 }).then((configuration) => {
@@ -142,15 +142,15 @@ You can add your own custom configuration options. They will be seteable from co
 ```js
 // Usage of customConfig parameter
 new domapic.Service({
-  packagePath: path.resolve(__dirname),
-  customConfig: {
-  	fooOption: {
-      type: 'boolean',
-      alias: ['foo-option'],
-      describe: 'Testing a custom configuration option',
-      default: true
-    }
-  }
+	packagePath: path.resolve(__dirname),
+	customConfig: {
+		fooOption: {
+			type: 'boolean',
+			alias: ['foo-option'],
+			describe: 'Testing a custom configuration option',
+			default: true
+		}
+	}
 }).then((service) => {
 	return service.config.get()
 }).then((configuration) => {
@@ -180,7 +180,7 @@ const domapic = require('domapic-microservice')
 const myOpenApi = require('./api/myOpenApi.json')
 
 new domapic.Service({
-  packagePath: path.resolve(__dirname),
+	packagePath: path.resolve(__dirname),
 }).then((service) => {
 	return Promise.all([
 		service.server.extendOpenApi(myOpenApi),
@@ -229,7 +229,7 @@ Make requests to other Domapic Microservices-based packages. Automatic authentic
 
 ```js
 new domapic.Service({
-  packagePath: path.resolve(__dirname),
+	packagePath: path.resolve(__dirname),
 }).then((service) => {
 	const client = new service.client.Connection('http://localhost:8090')
 	return client.get('/about').then((response) => {
@@ -241,15 +241,15 @@ new domapic.Service({
 ```js
 // Client with two authentication methods example
 new domapic.Service({
-  packagePath: path.resolve(__dirname),
+	packagePath: path.resolve(__dirname),
 }).then((service) => {
 	const client = new service.client.Connection('http://localhost:8090',{
-    apiKey: 'thisIsaFooApiKey',
-    jwt: {
-      userName: 'fooUserName',
-      password: 'fooPassword'
-    }
-  })
+		apiKey: 'thisIsaFooApiKey',
+		jwt: {
+			userName: 'fooUserName',
+			password: 'fooPassword'
+		}
+	})
 	return client.get('/about').then((response) => {
 		console.log(response)
 	})
