@@ -262,7 +262,7 @@ new domapic.Service({
 
 ## Traces
 
-There are six different levels of traces, defined for the method used to trace. Depending of the choiced log level when started the service, the trace will be printed to the console and written to the daily file or not.
+There are six different levels of traces. Depending of the choiced log level when started the service, the trace will be printed to the console and written to the daily file or not.
 
 All traces in a day are saved to a file, into `~/.domapic/<serviceName>/logs/<serviceName>.<date>.log`. Trace files older than ten days are automatically deleted.
 
