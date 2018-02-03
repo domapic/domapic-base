@@ -38,6 +38,9 @@ const Stub = function () {
       templates: {
         compile: test.sinon.stub().callsFake(utils.templates.compile),
         compiled: utils.templates.compiled
+      },
+      process: {
+        getUsedCommand: test.sinon.stub().callsFake(utils.process.getUsedCommand)
       }
     },
     errors: {
