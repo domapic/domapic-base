@@ -63,11 +63,11 @@ It provides:
 * [Server](#server)
 * [Options](#options)
 * [Adding API resources](#add-api-resources)
-* [Authentication](#authentication)
 * [Client](#client)
 * [Traces](#traces)
 * [Errors](#errors)
 * [Storage](#storage)
+* [Authentication](#authentication)
 * [CLI](#command-line-interface)
 
 ---
@@ -75,7 +75,7 @@ It provides:
 ## Server
 
 ```js
-//server.js file
+// server.js file
 const path = require('path')
 const domapic = require('domapic-microservice')
 
@@ -89,7 +89,7 @@ new domapic.Service({
 The `packagePath` option must be the path where your package.json file is, in order to automatically create the `/api/about` api resource that can provide useful information about the package to other microservices.
 
 ```shell
-#Start server
+# Start server
 node ./server.js --name=fooName --port=8030
 ```
 
@@ -100,7 +100,7 @@ Browse to http://localhost:8030 to open Swagger interface and inspect API.
 ### Options
 
 ```shell
-#Display help with detailed information about all options
+# Display help with detailed information about all options
 node ./server.js --help
 ```
 
@@ -129,14 +129,17 @@ new domapic.Service({
   packagePath: path.resolve(__dirname)
 }).then((service) => {
 	return service.config.get()
-		.then((configuration) => {
-			console.log(configuration)
-		})
+}).then((configuration) => {
+	console.log(configuration)
 })
 ```
-You can add your own custom configuration options. They will be seteable from command line execution, displayed in help and validated as the rest of options. Use `customConfig` parameter to define them. [Yargs](https://www.npmjs.com/package/yargs) is used as underlayer to manage options, so you can read its documentation for more details about how to define them:
+
+You can add your own custom configuration options. They will be seteable from command line execution, displayed in help and validated as the rest of options. Use `customConfig` parameter to define them.
+
+[Yargs](https://www.npmjs.com/package/yargs) is used as underlayer to manage options, so you can read its documentation for more details about how to define them:
 
 ```js
+// Usage of customConfig parameter
 new domapic.Service({
   packagePath: path.resolve(__dirname),
   customConfig: {
@@ -149,14 +152,73 @@ new domapic.Service({
   }
 }).then((service) => {
 	return service.config.get()
-		.then((configuration) => {
-			console.log(configuration)
-		})
+}).then((configuration) => {
+	console.log(configuration)
 })
 ```
 ```shell
 node ./server.js --name=fooName --fooOption=false
 ```
+
+---
+
+### Adding API resources
+
+You can add your own API resources. They will be automatically added to the openapi.json definition, and will be available under the `/api` path of the server.
+
+Openapi 3.0 spec is used to define new API paths. Read more about how to define paths in [Swagger specification docs](https://swagger.io/specification/). You can even use the [Swagger editor](https://swagger.io/specification/) to define and design yor API, and after it, load the .json files in domapic microservice.
+
+You can add as many openApi definitions as you want, and for each one you can define "components", "tags", or "paths". The resultant `openapi.json` will be the result of extending all of them, after adding all needed base properties.
+
+
+```js
+// server.js file
+const path = require('path')
+const domapic = require('domapic-microservice')
+
+const myOpenApi = require('./api/myOpenApi.json')
+
+new domapic.Service({
+  packagePath: path.resolve(__dirname),
+}).then((service) => {
+	return Promise.all([
+		service.server.extendOpenApi(myOpenApi),
+		service.server.addOperations({
+			myApiOperation: {
+				handler: (params, body, res) => {
+					return Promise.resolve({
+						hello: 'world'
+					})
+				}
+			}
+		})
+	]).then((service) => {
+		return service.server.start()
+	})
+})
+```
+
+See here an [openApi definition example](#lib/api/about/openapi.json), which is used internally to create the built-in `/about` api resource.
+
+Each openApi path should contain a property called `operationId`. This value define which operation will be executed when the api resource is requested. Use the `addOperations` server method to add the operations. The operation key should match with the openApi `operationId` property.
+
+Each operation can have properties:
+
+* `handler` - The function that will be executed when the api resource is requested. Mandatory.
+	* Arguments:
+		* params - Request parameters. `params.path` and `params.query`.
+		* body - Request body
+		* res - Allows to set custom headers and statusCode to response. Examples: `res.status(201)`, 'res.header('location', '/api/books/new-book')'
+	* Returns:
+		* Can return a Promise. If rejected, the error will be mapped to a correspondant html error. If resolved, the resolved value will be returned as response body.
+		* If returns a value, the value will be returned as response body.
+		* If throws an error, the error will be mapped to a correspondant html error.
+* `auth` - If authentication is enabled for the api resource, this method will be executed to check if the user have enough permissions. Can be a function, or a string that defines which authentication role function has to be executed. Read [Authentication](#authentication) for further info.
+	* Arguments:
+		* userData - The decoded data about the user that is making the request. Usually should contain user name, or even user role (Depending of the authentication method and implementation).
+	* Returns: 
+		* Promise.resolve, or `true` to validate the user.
+		* Any other returned value will result in a Forbidden response.
 
 ---
 
