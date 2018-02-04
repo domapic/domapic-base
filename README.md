@@ -52,10 +52,13 @@ It provides:
 	* File system access scoped to service instance folder.
 
 * __CLI__. Easy implementable in your own package, it provides:
-	* Start the service using CLI, and the process will be delegated to PM2.
+	* If the service is started using the CLI, the process will be executed in background, and managed using PM2.
 	* Multi-instanciable. Start many services instances providing different names.
 	* CLI commands to stop or display logs.
 	* Extensible with your own commands.
+
+* __Unit Testing__ stubs and mocks.
+	* A set of mocks ans stubs is exposed in order to make easier to develop unit tests in packages that are using this one.
 
 ---
 
@@ -70,6 +73,7 @@ It provides:
 * [Storage](#storage)
 * [Authentication](#authentication)
 * [CLI](#command-line-interface)
+* [Unit testing](#unit-testing)
 
 ---
 
@@ -123,7 +127,7 @@ Setting options from command line example:
 node ./server.js --name=fooName --authDisabled=192.168.1.1 172.0.0.1 --logLevel=debug --color=false
 ```
 
-Get configuration:
+### Get options
 
 ```js
 new domapic.Service({
@@ -134,6 +138,8 @@ new domapic.Service({
 	console.log(configuration)
 })
 ```
+
+### Custom options
 
 You can add your own custom configuration options. They will be seteable from command line execution, displayed in help and validated as the rest of options. Use `customConfig` parameter to define them.
 
@@ -169,11 +175,6 @@ Default options values (or saved values if the `--saveConfig` option is used) is
 
 You can add your own API resources. They will be automatically added to the openapi.json definition, and will be available under the `/api` path of the server.
 
-Openapi 3.0 spec is used to define new API paths. Read more about how to define paths in [Swagger specification docs](https://swagger.io/specification/). You can even use the [Swagger editor](https://swagger.io/specification/) to define and design yor API, and after it, load the .json files in domapic microservice.
-
-You can add as many openApi definitions as you want, and for each one you can define "components", "tags", or "paths". The resultant `openapi.json` will be the result of extending all of them, after adding all needed base properties.
-
-
 ```js
 // server.js file
 const path = require('path')
@@ -201,9 +202,21 @@ new domapic.Service({
 })
 ```
 
+### Open API definitions
+
+Openapi 3.0 spec is used to define new API paths. Read more about how to define paths in [Swagger specification docs](https://swagger.io/specification/). You can even use the [Swagger editor](https://swagger.io/specification/) to define and design yor API, and after it, load the .json files in domapic microservice.
+
+You can add as many openApi definitions as you want, and for each one you can define "components", "tags", or "paths". The resultant `openapi.json` will be the result of extending all of them, after adding all needed base properties.
+
+Use the `addOperations` server method to add the operations. The operation key should match with the openApi `operationId` property.
+
 See here an [openApi definition example](#lib/api/about/openapi.json), which is used internally to create the built-in `/about` api resource.
 
-Each openApi path should contain a property called `operationId`. This value define which operation will be executed when the api resource is requested. Use the `addOperations` server method to add the operations. The operation key should match with the openApi `operationId` property.
+### Operations
+
+Each openApi path should contain a property called `operationId`. This value define which operation will be executed when the api resource is requested.
+
+Use the `addOperations` server method to add the operations. The operation key should match with the openApi `operationId` property.
 
 Each operation can have properties:
 
@@ -270,7 +283,7 @@ When the service is started at background using the built-in CLI, logs are also 
 
 Sorted tracer levels are: 'log', 'trace', 'debug', 'info', 'warn' and 'error'.
 
-Use the tracer:
+Tracer usage:
 
 ```js
 new domapic.Service({
@@ -279,7 +292,7 @@ new domapic.Service({
 	return service.tracer.debug('testing').then(() => {
 		return service.tracer.log('testing log')
 	}).then(() => {
-		return service.tracer.warn('This is a warning')
+		return service.tracer.warn('This is a warning', 'This is part of the same warning')
 	}).then(() => {
 		return service.tracer.error(new Error('This will print the error stack'))
 	}).then(() => {
@@ -288,7 +301,7 @@ new domapic.Service({
 })
 ```
 
-Tracer methods can receive arrays as well. There is an extra method called `group`, that allows to invoque different levels of tracers at a time:
+There is an extra method called `group`, that allows to invoque different levels of tracers at a time:
 
 ```js
 new domapic.Service({
@@ -306,6 +319,58 @@ new domapic.Service({
 		}
 	])
 })
+```
+
+---
+
+## Errors
+
+Custom errors contructors are provided through the `service.errors` object.
+
+Custom errors usage:
+
+```js
+new domapic.Service({
+	packagePath: path.resolve(__dirname),
+}).then((service) => {
+	return Promise.reject(new service.errors.BadData('Received bad data'))
+}).catch(service.errors.BadData, () => {
+	console.log('Bad data error caught');
+	throw new service.errors.BadImplementation()
+})
+```
+
+In addition to error constructors, three methods are provided in the `errors` object. This methods are used internally by domapic-microservice in order to map the returned errors to HTML errors and viceversa:
+
+* `isControlled` - Allows to know if error has been created with a custom error constructor
+
+```js
+let error = new service.errors.Conflict()
+console.log(service.errors.isControlled(error))
+// true
+
+error = new Error()
+console.log(service.errors.isControlled(error))
+// false
+```
+
+* `FromCode` - Return an error, using a constructor correspondant to the provided html error status code:
+
+```js
+return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
+	.catch(service.errors.Forbidden, (err) => {
+		console.log('Forbidden error caught');
+		console.log(err.message);
+		// Custom message
+	})
+```
+
+* `toHTML` - Returns a [Boomified](https://www.npmjs.com/package/boom) error correspondant to the used error constructor. Each error constructor is mapped to an specific status code, ready to be returned by the API.
+
+```js
+const error = new service.errors.Forbidden()
+console.log( service.errors.toHTML(error).payload.statusCode )
+// 403
 ```
 
 ---
