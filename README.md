@@ -335,10 +335,12 @@ new domapic.Service({
 }).then((service) => {
 	return Promise.reject(new service.errors.BadData('Received bad data'))
 }).catch(service.errors.BadData, () => {
-	console.log('Bad data error caught');
+	console.log('Bad data error caught')
 	throw new service.errors.BadImplementation()
 })
 ```
+
+Consult [all available error constructors](lib/bases/core/Errors.js) and its correspondences with html errors.
 
 In addition to error constructors, three methods are provided in the `errors` object. This methods are used internally by domapic-microservice in order to map the returned errors to HTML errors and viceversa:
 
@@ -354,18 +356,18 @@ console.log(service.errors.isControlled(error))
 // false
 ```
 
-* `FromCode` - Return an error, using a constructor correspondant to the provided html error status code:
+* `FromCode` - Return an error created with the constructor correspondant to the provided html error status code:
 
 ```js
 return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
 	.catch(service.errors.Forbidden, (err) => {
-		console.log('Forbidden error caught');
-		console.log(err.message);
+		console.log('Forbidden error caught')
+		console.log(err.message)
 		// Custom message
 	})
 ```
 
-* `toHTML` - Returns a [Boomified](https://www.npmjs.com/package/boom) error correspondant to the used error constructor. Each error constructor is mapped to an specific status code, ready to be returned by the API.
+* `toHTML` - Returns a [Boomified](https://www.npmjs.com/package/boom) error correspondant to the used error constructor. Each error constructor is mapped to an specific status code, ready to be returned by the API:
 
 ```js
 const error = new service.errors.Forbidden()
