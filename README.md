@@ -451,7 +451,7 @@ To require an authentication method in your API operations, you must define the 
 }
 ```
 
-Use the server `addAuthentication` method to define your authentication implementations. The parameter must be an object containing keys `jwt` and/or `apiKey`, which will contain the specific configuration for each method.
+Use the server `addAuthentication` method to define your authentication implementations. The parameter must be an object containing keys `jwt` and/or `apiKey`, which will contain the specific configuration for each method:
 
 ### Api key
 
@@ -514,7 +514,7 @@ About authorization, each operation defined in the API can have its own `auth` m
 
 The authorization method is agnostic in relation with the used authentication method, because it only receives the user data, no matter the method used to store or recover this data from the request.
 
-An operation `auth` method can be defined as a function, or as a string that defines which "authorization role" function has to be executed. This "authorization roles" must to be defined in the server:
+An operation `auth` method can be defined as a function, or as a string that defines which "authorization role" function has to be executed. This "authorization roles" must to be defined in the server, using the `addAuthorization` method:
 
 ```js
 service.server.addAuthorization('fooRoleName', (userData) => {
