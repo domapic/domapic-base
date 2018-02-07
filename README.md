@@ -50,13 +50,11 @@ It provides:
 * __Storage__
 	* Javascript objects to JSON at file system and viceversa.
 	* File system access scoped to service instance folder.
-
 * __CLI__. Easy implementable in your own package, it provides:
 	* If the service is started using the CLI, the process will be executed in background, and managed using PM2.
 	* Multi-instanciable. Start many services instances providing different names.
 	* CLI commands to stop or display logs.
 	* Extensible with your own commands.
-
 * __Unit Testing__ stubs and mocks.
 	* A set of mocks ans stubs is exposed in order to make easier to develop unit tests in packages that are using this one.
 
@@ -356,7 +354,7 @@ console.log(service.errors.isControlled(error))
 // false
 ```
 
-* `FromCode` - Return an error created with the constructor correspondant to the provided html error status code:
+* `FromCode` - Returns an error created with the constructor correspondant to the provided html error status code:
 
 ```js
 return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
@@ -376,6 +374,40 @@ console.log( service.errors.toHTML(error).payload.statusCode )
 ```
 
 ---
+
+## Storage
+
+Storage methods read and save json data from a file stored as `~/.domapic/<serviceName>/storage/service.json`.
+
+```js
+return service.storage.set('fooProperty', {test: 'testing'}))
+	.then(() => {
+		return service.storage.get('fooProperty')
+	})
+	.then((data) => {
+		console.log(data)
+		// {test: 'testing'}
+		return service.storage.remove('fooProperty')
+	})
+```
+
+Methods
+
+* `get` - Get data from file
+	* Arguments:
+		* key - Optional, key of the object to get. If no provided, entire data is returned.
+	* Returns: 
+		* A promise, resolved with the correspondant data.
+* `set` - Save data into the storage object.
+	* Arguments:
+		* key - Optional. Key of the object to set. If no provided, entire data is overwritten by the given value.
+		* value - Data to be saved.
+* `remove` - Removes a property from the stored object.
+	* Arguments:
+		* key - Key of the object to remove.
+
+---
+
 
 ## Command Line Interface
 
