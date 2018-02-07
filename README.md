@@ -434,7 +434,24 @@ The server supports two types of authentication with built-in api "login" urls a
 
 Each authentication strategy need some different methods to be provided in order to be activated. This externally provided methods have the responsibility of checking the user data, and then delegate the rest of the flow into the built-in security modules. In the case of Json Web Token, as the rest of the process is "token-based", this methods will be only invoqued at "login" or "refresh token" points.
 
-Use the server `addAuthentication` method to define your authentication implementations. The parameter must be an object containing keys `jwt` and/or `apiKey`, which will contain the specific configuration for each method:
+To require an authentication method in your API operations, you must define the openapi `security` property in the correspondant API path:
+
+```json
+"paths": {
+	"/fooOperationPath": {
+		"post": {
+			...
+			"security": [{
+				"jwt": []
+			}, {
+				"apiKey": []
+			}]
+		}
+	}
+}
+```
+
+Use the server `addAuthentication` method to define your authentication implementations. The parameter must be an object containing keys `jwt` and/or `apiKey`, which will contain the specific configuration for each method.
 
 ### Api key
 
@@ -454,6 +471,8 @@ Must contain properties:
 	* auth - Authorization method for the `/api/auth/apikey` DELETE api resource.
 	* handler - Operation handler for the `/api/auth/apikey` DELETE api resource.
 		* Any returned value will be ignored, and not exposed to the api response.
+
+Implementation example:
 
 ```js
 service.server.addAuthentication({
