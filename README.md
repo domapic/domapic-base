@@ -1,4 +1,4 @@
-# Domapic Microservices Base
+# Domapic Microservice Base
 
 [![Build status][circleci-image]][circleci-url]
 [![Quality Gate][quality-gate-image]][quality-gate-url]
@@ -202,7 +202,7 @@ new domapic.Service({
 
 ### Open API definitions
 
-Openapi 3.0 spec is used to define new API paths. Read more about how to define paths in [Swagger specification docs](https://swagger.io/specification/). You can even use the [Swagger editor](https://swagger.io/specification/) to define and design yor API, and after it, load the .json files in domapic microservice.
+Openapi 3.0 spec is used to define new API paths. Read more about how to define paths in [Swagger specification docs](https://swagger.io/specification/). You can even use the [Swagger editor](https://swagger.io/specification/) to define and design your API, and afterwards, load the resultant .json files in domapic microservice.
 
 You can add as many openApi definitions as you want, and for each one you can define "components", "tags", or "paths". The resultant `openapi.json` will be the result of extending all of them, after adding all needed base properties.
 
@@ -227,12 +227,32 @@ Each operation can have properties:
 		* Can return a Promise. If rejected, the error will be mapped to a correspondant html error. If resolved, the resolved value will be returned as response body.
 		* If returns a value, the value will be returned as response body.
 		* If throws an error, the error will be mapped to a correspondant html error.
-* `auth` - If authentication is enabled for the api resource, this method will be executed to check if the user have enough permissions. Can be a function, or a string that defines which authentication role function has to be executed. Read [Authentication](#authentication) for further info.
+* `auth` - If authentication is enabled for the api resource, this method will be executed to check if the user have enough permissions. Can be a function, or a string that defines which authorization role function has to be executed. Read [Authentication](#authentication) for further info.
 	* Arguments:
 		* userData - The decoded data about the user that is making the request. Usually should contain user name, or even user role (Depending of the authentication method and implementation).
 	* Returns: 
 		* Promise.resolve, or `true` to validate the user.
 		* Any other returned value will result in a Forbidden response.
+
+```js
+service.server.addOperations({
+	myApiOperation: {
+		auth: (userData) => {
+			if (userIsAllowed(userData)) {
+				return Promise.resolve()
+			}
+			return Promise.reject()
+		},
+		handler: (params, body, res) => {
+			res.status(201)
+			res.header('location', '/api/books/new-book')
+			return Promise.resolve({
+				hello: 'world'
+			})
+		}
+	}
+})
+```
 
 ---
 
@@ -380,7 +400,7 @@ console.log( service.errors.toHTML(error).payload.statusCode )
 Storage methods read and save json data from a file stored as `~/.domapic/<serviceName>/storage/service.json`.
 
 ```js
-return service.storage.set('fooProperty', {test: 'testing'}))
+service.storage.set('fooProperty', {test: 'testing'}))
 	.then(() => {
 		return service.storage.get('fooProperty')
 	})
@@ -408,8 +428,104 @@ Methods
 
 ---
 
+## Authentication
+
+The server supports two types of authentication with built-in api "login" urls and token validations.
+
+Each authentication strategy need some different methods to be provided in order to be activated. This externally provided methods have the responsibility of checking the user data, and then delegate the rest of the flow into the built-in security modules. In the case of Json Web Token, as the rest of the process is "token-based", this methods will be only invoqued at "login" or "refresh token" points.
+
+Use the server `addAuthentication` method to define your authentication implementations. The parameter must be an object containing keys `jwt` and/or `apiKey`, which will contain the specific configuration for each method:
+
+### Api key
+
+Must contain properties:
+
+* verify - Checks if the received api key is still allowed to be used.
+	* Arguments:
+		* apiKey - Received api key in the request header.
+	* Returns:
+		* Promise.resolve(userData) -> Allowed, pass the user data to authorization methods.
+		* Rejected promise -> Unauthorized.
+* authenticate - API operation for requesting a new api key. This api point needs authentication as well, so, if your system  authentication is only api key based, you have to define an initial api key that could be used to request more in case it´s needed.
+	* auth - Authorization method for the `/api/auth/apikey` POST api resource.
+	* handler - Operation handler for the `/api/auth/apikey` POST api resource.
+		* Should return a new api key.
+* revoke - API operation for removing an api key. This api resource needs authentication as well.
+	* auth - Authorization method for the `/api/auth/apikey` DELETE api resource.
+	* handler - Operation handler for the `/api/auth/apikey` DELETE api resource.
+		* Any returned value will be ignored, and not exposed to the api response.
+
+```js
+service.server.addAuthentication({
+	apiKey: {
+		verify: (apiKey) => {
+			// Check if apiKey is allowed, and return correspondant user data, or reject.
+			return getUserDataFromApiKey(apiKey)
+		},
+		authenticate: {
+			auth: (userData) => {
+				// Check if user is allowed to create a new api key, resolve or reject
+				return checkUserPermissionToManageApiKeys(userData)
+			},
+			handler: () => {
+				// Returns a new api key
+				return getNewApiKey()
+			}
+		},
+		revoke: {
+			auth: (userData) => {
+				// Check if user is allowed to remove an existant api key, resolve or reject
+				return checkUserPermissionToManageApiKeys(userData)
+			},
+			handler: () => {
+				// Remove existant api key
+				return removeApiKey()
+			}
+		}
+	}
+})
+```
+
+### JWT
+
+
+### Authorization
+
+About authorization, each operation defined in the API can have its own `auth` method, that will receive the decoded user data as argument for each request, allowing to reject or allow an specific request based on your own security policy implementation.
+
+The authorization method is agnostic in relation with the used authentication method, because it only receives the user data, no matter the method used to store or recover this data from the request.
+
+An operation `auth` method can be defined as a function, or as a string that defines which "authorization role" function has to be executed. This "authorization roles" must to be defined in the server:
+
+```js
+service.server.addAuthorization('fooRoleName', (userData) => {
+	if (roleIsAllowed(userData.role)) {
+		return Promise.resolve()
+		// Execute the operation handler
+	}
+	return Promise.reject()
+	// Forbidden response
+}).then(() => {
+	return service.addOperations({
+		fooOperation: {
+			auth: 'fooRoleName',
+			handler: () => {
+				return {}
+			}
+		}
+	})
+})
+```
+
+Read more about how to define and use the `auth` methods in the [operations chapter](#operations).
+
+---
 
 ## Command Line Interface
+
+---
+
+## Unit testing
 
 ---
 
