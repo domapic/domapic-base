@@ -206,7 +206,7 @@ const domapic = require('domapic-microservice')
 const myOpenApi = require('./api/myOpenApi.json')
 
 new domapic.Service({
-	packagePath: path.resolve(__dirname),
+	packagePath: path.resolve(__dirname)
 }).then((service) => {
 	return Promise.all([
 		service.server.extendOpenApi(myOpenApi),
@@ -219,7 +219,7 @@ new domapic.Service({
 				}
 			}
 		})
-	]).then((service) => {
+	]).then(() => {
 		return service.server.start()
 	})
 })
@@ -247,7 +247,7 @@ Each operation can have properties:
 	* Arguments:
 		* params - Request parameters. `params.path` and `params.query`.
 		* body - Request body
-		* res - Allows to set custom headers and statusCode to response. Examples: `res.status(201)`, `res.header('location', '/api/books/new-book')
+		* res - Allows to set custom headers and statusCode to response. Examples: `res.status(201)`, `res.header('location', '/api/books/new-book')`
 	* Returns:
 		* Can return a Promise. If rejected, the error will be mapped to a correspondant html error. If resolved, the resolved value will be returned as response body.
 		* If returns a value, the value will be returned as response body.
@@ -288,9 +288,7 @@ service.server.addOperations({
 Make requests to other _Domapic Microservices_ based services. Automatic authentication and error handling is provided.
 
 ```js
-new domapic.Service({
-	packagePath: path.resolve(__dirname),
-}).then((service) => {
+new domapic.Service().then((service) => {
 	const client = new service.client.Connection('http://localhost:8090')
 	return client.get('/about').then((response) => {
 		console.log(response)
@@ -300,9 +298,7 @@ new domapic.Service({
 
 ```js
 // Client with two authentication methods example
-new domapic.Service({
-	packagePath: path.resolve(__dirname),
-}).then((service) => {
+new domapic.Service().then((service) => {
 	const client = new service.client.Connection('http://localhost:8090',{
 		apiKey: 'thisIsaFooApiKey',
 		jwt: {
@@ -333,9 +329,7 @@ Sorted tracer levels are: 'log', 'trace', 'debug', 'info', 'warn' and 'error'.
 Tracer usage:
 
 ```js
-new domapic.Service({
-	packagePath: path.resolve(__dirname),
-}).then((service) => {
+new domapic.Service().then((service) => {
 	return service.tracer.debug('testing').then(() => {
 		return service.tracer.log('testing log')
 	}).then(() => {
@@ -351,9 +345,7 @@ new domapic.Service({
 There is an extra method called `group`, that allows to invoque different levels of tracers at a time:
 
 ```js
-new domapic.Service({
-	packagePath: path.resolve(__dirname),
-}).then((service) => {
+new domapic.Service().then((service) => {
 	return service.tracer.group([
 		{
 			log: 'This is a log'
@@ -379,13 +371,14 @@ Custom errors constructors are provided through the `service.errors` object.
 Custom errors usage:
 
 ```js
-new domapic.Service({
-	packagePath: path.resolve(__dirname),
-}).then((service) => {
+const Promise = require('bluebird')
+
+new domapic.Service().then((service) => {
 	return Promise.reject(new service.errors.BadData('Received bad data'))
-}).catch(service.errors.BadData, () => {
-	console.log('Bad data error caught')
-	throw new service.errors.BadImplementation()
+		.catch(service.errors.BadData, () => {
+			console.log('Bad data error caught')
+			throw new service.errors.BadImplementation()
+		})
 })
 ```
 
@@ -395,34 +388,34 @@ In addition to error constructors, three methods are provided in the `errors` ob
 
 * `isControlled` - Allows to know if error has been created with a custom error constructor
 	
-	```js
-	let error = new service.errors.Conflict()
-	console.log(service.errors.isControlled(error))
-	// true
+```js
+const error = new service.errors.Conflict()
+console.log(service.errors.isControlled(error))
+// true
 
-	error = new Error()
-	console.log(service.errors.isControlled(error))
-	// false
-	```
+error = new Error()
+console.log(service.errors.isControlled(error))
+// false
+```
 
 * `FromCode` - Returns an error created with the constructor correspondent to the provided html error status code:
 	
-	```js
-	return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
-		.catch(service.errors.Forbidden, (err) => {
-			console.log('Forbidden error caught')
-			console.log(err.message)
-			// Custom message
-		})
-	```
+```js
+return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
+	.catch(service.errors.Forbidden, (err) => {
+		console.log('Forbidden error caught')
+		console.log(err.message)
+		// Custom message
+	})
+```
 
 * `toHTML` - Returns a [_Boomified_](https://www.npmjs.com/package/boom) error correspondent to the used error constructor. Each error constructor is mapped to an specific status code, ready to be returned by the API:
 
-	```js
-	const error = new service.errors.Forbidden()
-	console.log( service.errors.toHTML(error).payload.statusCode )
-	// 403
-	```
+```js
+const error = new service.errors.Forbidden()
+console.log( service.errors.toHTML(error).output.payload.statusCode )
+// 403
+```
 
 [back to top](#table-of-contents)
 
@@ -433,7 +426,7 @@ In addition to error constructors, three methods are provided in the `errors` ob
 Storage methods read and save json data from a file stored as `~/.domapic/<serviceName>/storage/service.json`.
 
 ```js
-service.storage.set('fooProperty', {test: 'testing'}))
+service.storage.set('fooProperty', {test: 'testing'})
 	.then(() => {
 		return service.storage.get('fooProperty')
 	})
@@ -469,15 +462,15 @@ Set of utilities:
 
 * `templates`
 	* `compile` - Received an object containing a set of `key:'string'`, will use [_Handlebars_](http://handlebarsjs.com/) to compile each string, and return an object with same keys, but containing the compiled templates.
-	```js
-	const templates = service.utils.templates.compile({
-		myTemplate1: 'Value is: {{value}}'
-	})
-	console.log(templates.myTemplate1({
-		value: 123
-	}))
-	// Value is: 123
-	```
+```js
+const templates = service.utils.templates.compile({
+	myTemplate1: 'Value is: {{value}}'
+})
+console.log(templates.myTemplate1({
+	value: 123
+}))
+// Value is: 123
+```
 	* `compiled` - Set of precompiled templates, used internally.
 * `process`
 	* `getUsedCommand` - Used internally by CLI. Returns the command used to invoque it.
@@ -593,7 +586,7 @@ service.server.addAuthentication({
 		authenticate: {
 			handler: (userCredentials) => {
 				// Check if user has right credentials, or refresh token. Returns user data (with new refresh token if not provided)
-				if(userCredentials.refreshToken) {
+				if (userCredentials.refreshToken) {
 					return getUserDataFromRefreshToken(userCredentials.refreshToken)
 				} else {
 					return checkUserData({
@@ -641,7 +634,7 @@ service.server.addAuthorization('fooRoleName', (userData) => {
 		return Promise.resolve()
 		// Execute the operation handler
 	}
-	return Promise.reject()
+	return false
 	// Forbidden response
 }).then(() => {
 	return service.addOperations({
