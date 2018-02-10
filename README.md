@@ -677,14 +677,12 @@ require('../cli/index')
 * Add a `bin` property to your `package.json`, and add an npm script to allow using the CLI through npm alternatively:
 
 ```json
-{
 	"bin": {
 		"your-cli-name": "./bin/your-cli-name"
 	},
 	"scripts": {
 		"your-cli-name": "./bin/your-cli-name"
 	}
-}
 ```
 
 * Create a `/cli/index.js` file in your package. It must contains the CLI initialization:
