@@ -54,7 +54,7 @@ It provides:
 	* API operations as Promises.
 	* Automatic error handling mapped to HTTP errors.
 	* Openapi.json auto generated and served.
-	* Swagger web interface.
+	* _Swagger_ web interface.
 * __Client__ to other Domapic microservices:
 	* Automatic authentication if API resource requires it.
 	* Requests as Promises.
@@ -73,7 +73,7 @@ It provides:
 	* Javascript objects to JSON at file system and viceversa.
 	* File system access scoped to service instance folder.
 * __CLI__. Easy implementable in your own package, it provides:
-	* If the service is started using the CLI, the process will be executed in background, and managed using [PM2][pm2-url].
+	* If the service is started using the CLI, the process will be executed in background, and managed using [_PM2_][pm2-url].
 	* Multi-instanciable. Start many services instances providing different names.
 	* CLI commands to stop or display logs.
 	* Extensible with your own commands.
@@ -101,7 +101,7 @@ The `packagePath` parameter must be the path where your package.json file is, in
 node ./server.js --name=fooName --port=8030
 ```
 
-Browse to http://localhost:8030 to open Swagger interface and inspect API.
+Browse to http://localhost:8030 to open _Swagger_ interface and inspect API.
 
 [back to top](#table-of-contents)
 
@@ -148,7 +148,7 @@ new domapic.Service({
 
 You can add your own custom configuration options. They will be seteable from command line execution, displayed in help and validated as the rest of options. Use `customConfig` parameter to define them.
 
-[Yargs][yargs-url] is used as underlayer to manage options, so you can read its documentation for more details about how to define them:
+[_Yargs_][yargs-url] is used as underlayer to manage options, so you can read its documentation for more details about how to define them:
 
 ```js
 // Usage of customConfig parameter
@@ -174,7 +174,7 @@ node ./server.js --name=fooName --fooOption=false
 
 Custom options defined for a service should be defined in CLI implementation too, to make them available from command line interface. Read the [CLI custom options and commands](#custom-options-and-commands) chapter for further info.
 
-Default options values (or saved values if the `--saveConfig` option is used) is saved to a file at `~/.domapic/<serviceName>/config/service.json`. This file can be edited manually, and the new values will be applied next time the service is started.
+Default options values (or saved values if the `--saveConfig` option is used) are saved into a file at `~/.domapic/<serviceName>/config/service.json`. This file can be edited manually, and the new values will be applied next time the service is started.
 
 [back to top](#table-of-contents)
 
@@ -227,7 +227,7 @@ new domapic.Service({
 
 ### Open API definitions
 
-Openapi 3.0 spec is used to define new API paths. Read more about how to define paths in [Swagger specification docs](https://swagger.io/specification/). You can even use the [Swagger editor](https://swagger.io/swagger-editor/) to define and design your API, and afterwards, load the resultant .json files in domapic microservice.
+Openapi 3.0 spec is used to define new API paths. Read more about how to define paths in [_Swagger_ specification docs](https://swagger.io/specification/). You can even use the [_Swagger_ editor](https://swagger.io/swagger-editor/) to define and design your API, and afterwards, load the resultant .json files in _domapic microservice_.
 
 You can add as many openApi definitions as you want, and for each one you can define "components", "tags", or "paths". The resultant `openapi.json` will be the result of extending all of them, after adding all needed base properties.
 
@@ -237,7 +237,7 @@ See here an [openApi definition example](lib/api/about/openapi.json), which is u
 
 ### Operations
 
-Each openApi path should contain a property called `operationId`. This value define which operation will be executed when the api resource is requested.
+Each openApi path should contain a property called `operationId`. This value defines which operation will be executed when the api resource is requested.
 
 Use the `addOperations` server method to add the operations. The operation key should match with the openApi `operationId` property.
 
@@ -247,17 +247,17 @@ Each operation can have properties:
 	* Arguments:
 		* params - Request parameters. `params.path` and `params.query`.
 		* body - Request body
-		* res - Allows to set custom headers and statusCode to response. Examples: `res.status(201)`, 'res.header('location', '/api/books/new-book')'
+		* res - Allows to set custom headers and statusCode to response. Examples: `res.status(201)`, `res.header('location', '/api/books/new-book')
 	* Returns:
 		* Can return a Promise. If rejected, the error will be mapped to a correspondant html error. If resolved, the resolved value will be returned as response body.
 		* If returns a value, the value will be returned as response body.
 		* If throws an error, the error will be mapped to a correspondant html error.
-* `auth` - If authentication is enabled for the api resource, this method will be executed to check if the user have enough permissions. Can be a function, or a string that defines which authorization role function has to be executed. Read [Authentication](#authentication) for further info.
+* `auth` - If authentication is enabled for the api resource, this method will be executed to check if the user has enough permissions. Can be a function, or a string that defines which authorization role function has to be executed. Read [Authentication](#authentication) for further info.
 	* Arguments:
 		* userData - The decoded data about the user that is making the request. Usually should contain user name, or even user role (Depending of the authentication method and implementation).
 	* Returns: 
 		* Promise.resolve, or `true` to validate the user.
-		* Any other returned value will result in a Forbidden response.
+		* Any other returned value will result in a "Forbidden" response.
 
 ```js
 service.server.addOperations({
@@ -285,7 +285,7 @@ service.server.addOperations({
 
 ## Client
 
-Make requests to other Domapic Microservices-based services. Automatic authentication and error handling is provided.
+Make requests to other _Domapic Microservices_ based services. Automatic authentication and error handling is provided.
 
 ```js
 new domapic.Service({
@@ -326,7 +326,7 @@ There are six different levels of traces. Depending of the choiced log level whe
 
 All traces in a day are saved to a file, into `~/.domapic/<serviceName>/logs/<serviceName>.<date>.log`. Trace files older than ten days are automatically deleted.
 
-When the service is started at background using the built-in CLI, logs are also saved to a file at `~/.domapic/<serviceName>/logs/<serviceName>.pm2.log`. It is recommended to install [PM2 log rotate](https://github.com/keymetrics/pm2-logrotate) to avoid this file growing too much.
+When the service is started at background using the built-in CLI, logs are also saved to a file at `~/.domapic/<serviceName>/logs/<serviceName>.pm2.log`. It is recommended to install [_PM2 log rotate_](https://github.com/keymetrics/pm2-logrotate) to avoid this file growing too much.
 
 Sorted tracer levels are: 'log', 'trace', 'debug', 'info', 'warn' and 'error'.
 
@@ -391,7 +391,7 @@ new domapic.Service({
 
 Consult [all available error constructors](lib/bases/core/Errors.js) and its correspondences with html errors.
 
-In addition to error constructors, three methods are provided in the `errors` object. This methods are used internally by domapic-microservice in order to map the returned errors to HTML errors and viceversa:
+In addition to error constructors, three methods are provided in the `errors` object. These methods are used internally by _domapic-microservice_ in order to map the returned errors to HTML errors and viceversa:
 
 * `isControlled` - Allows to know if error has been created with a custom error constructor
 	
@@ -416,7 +416,7 @@ In addition to error constructors, three methods are provided in the `errors` ob
 		})
 	```
 
-* `toHTML` - Returns a [Boomified](https://www.npmjs.com/package/boom) error correspondent to the used error constructor. Each error constructor is mapped to an specific status code, ready to be returned by the API:
+* `toHTML` - Returns a [_Boomified_](https://www.npmjs.com/package/boom) error correspondent to the used error constructor. Each error constructor is mapped to an specific status code, ready to be returned by the API:
 
 	```js
 	const error = new service.errors.Forbidden()
@@ -468,7 +468,7 @@ Methods
 Set of utilities:
 
 * `templates`
-	* `compile` - Received an object containing a set of key:'string', will use [Handlebars](http://handlebarsjs.com/) to compile each string, and return an object with same keys, but containing the compiled templates.
+	* `compile` - Received an object containing a set of `key:'string'`, will use [_Handlebars_](http://handlebarsjs.com/) to compile each string, and return an object with same keys, but containing the compiled templates.
 	```js
 	const templates = service.utils.templates.compile({
 		myTemplate1: 'Value is: {{value}}'
@@ -521,13 +521,13 @@ Must contain properties:
 	* Returns:
 		* Promise.resolve(userData) -> Allowed, pass the user data to authorization methods.
 		* Rejected promise -> Unauthorized.
-* `authenticate` - API operation for requesting a new api key. This api point needs authentication as well, so, if your system  authentication is only api key based, you have to define an initial api key that could be used to request more in case it´s needed. This method supports `jwt` authentication as well, if it is implemented.
-	* `auth` - Authorization method for the `/api/auth/apikey` POST api resource.
-	* `handler` - Operation handler for the `/api/auth/apikey` POST api resource.
+* `authenticate` - API operation for requesting a new api key. This api point needs authentication as well, so, if your system  authentication is only api key based, you have to define an initial api key that could be used to request more in case it´s needed. This method supports _Json Web Token_ authentication as well, if it is implemented.
+	* `auth` - Authorization method for the `/api/auth/apikey` _POST_ api resource.
+	* `handler` - Operation handler for the `/api/auth/apikey` _POST_ api resource.
 		* Should return a new api key.
 * `revoke` - API operation for removing an api key. This api resource needs authentication as well.
-	* `auth` - Authorization method for the `/api/auth/apikey` DELETE api resource.
-	* `handler` - Operation handler for the `/api/auth/apikey` DELETE api resource.
+	* `auth` - Authorization method for the `/api/auth/apikey` _DELETE_ api resource.
+	* `handler` - Operation handler for the `/api/auth/apikey` _DELETE_ api resource.
 		* Arguments:
 			* `apiKey` - Api key to be removed.
 		* Any returned value will be ignored, and not exposed to the api response.
@@ -571,14 +571,14 @@ Properties:
 
 * `secret` - Optional. String used to generate tokens. If not provided, a random secret is used.
 * `expiresIn` - Number. Time of tokens expiration time in miliseconds. By default, 300 will be used if this option is not provided. It is not recommended to use a high value for this option. Tokens should expire in short time, and then, refresh tokens should be used to request a new token again.
-* `authenticate` - API operation for requesting a new token. Will receive `userName` and `password`, or `refreshToken`. Your implementation should be able to identify the user, and then return the correspondant data that will be stored in the json web token. Afterwards, the API will use that data in each request to apply the correspondant authorization policy for each api resource. Refresh Token is used to renew the user credentials without providing the user data again when the token expires.
-	* `handler` - Operation handler for the `/api/auth/jwt` POST api resource.
+* `authenticate` - API operation for requesting a new token. Will receive `userName` and `password`, or `refreshToken`. Your implementation should be able to identify the user, and then return the correspondant data that will be stored in the _Json Web Token_. Afterwards, the API will use that data in each request to apply the correspondant authorization policy for each api resource. _Refresh Token_ is used to renew the user credentials without providing the user data again when the token expires.
+	* `handler` - Operation handler for the `/api/auth/jwt` _POST_ api resource.
 		* Arguments:
 			* `userData` - An object containing `userName` and `password`, or `refreshToken`.
 		* Should return an object containing `userData` (an object with all user data that will be passed as argument to the API resources authorization handlers), and `refreshToken` if the request has not received it.
 * `revoke` - API operation for removing a refresh token. This api resource needs authentication as well, and it only supports the `jwt` authentication method.
-	* `auth` - Authorization method for the `/api/auth/jwt` DELETE api resource.
-	* `handler` - Operation handler for the `/api/auth/jwt` DELETE api resource.
+	* `auth` - Authorization method for the `/api/auth/jwt` _DELETE_ api resource.
+	* `handler` - Operation handler for the `/api/auth/jwt` _DELETE_ api resource.
 		* Arguments:
 			* `refreshToken` - Refresh token to be removed.
 		* Any returned value will be ignored, and not exposed to the api response.
@@ -661,7 +661,7 @@ service.server.addAuthorization('fooRoleName', (userData) => {
 
 ## Command Line Interface
 
-A built-in CLI is provided, but it needs some steps in your package in order to expose it. Once it is implemented, it allows to start the service in background, managed using [PM2][pm2-url]. It also provides logs displaying, and a command to stop the service.
+A built-in CLI is provided, but it needs some steps in your package in order to expose it. Once it is implemented, it allows to start the service in background, managed using [_PM2_][pm2-url]. It also provides logs displaying, and a command to stop the service.
 Also an API is at your disposal for defining new commands.
 
 ### Implementation
@@ -685,7 +685,7 @@ require('../cli/index')
 }
 ```
 
-* Create a `/cli/index.js` file in your package. It must contain the CLI initialization:
+* Create a `/cli/index.js` file in your package. It must contains the CLI initialization:
 ```js
 const path = require('path')
 const domapic = require('domapic-microservice')
@@ -766,10 +766,10 @@ Default available commands are:
 * Custom commands
 	A `customCommands` property can be defined in initialization object in order to extend the CLI features. It must be an object, whose keys will be the names of the custom commands. Each command must have properties:
 
-	* `processName` - String. A reference name for the core in order to save the command default configuration, etc... As examples: `service`, `logs`, etc...
+	* `processName` - _String_. A reference name for the core in order to save the command default configuration, etc... As examples: `service`, `logs`, etc...
 	* `describe` - Description for the command. Used when displaying help.
-	* `cli` - Command name and arguments expression. [Yargs][yargs-url] is used as underlayer to manage commands, so you can read its documentation for more details about how to define them.
-	* `options` - Available options for the command. All commands will inherit the options `name`, `color`, `logLevel`, `path` and `saveConfig`. Read [Yargs][yargs-url] documentation for further info about defining your own options.
+	* `cli` - Command name and arguments expression. [_Yargs_][yargs-url] is used as underlayer to manage commands, so you can read its documentation for more details about how to define them.
+	* `options` - Available options for the command. All commands will inherit the options `name`, `color`, `logLevel`, `path` and `saveConfig`. Read [_Yargs_][yargs-url] documentation for further info about defining your own options.
 	* `command` - Handler function that will be executed when command is invoqued.
 		* Arguments:
 			* `config` - An object containing default config, extended with stored config and extended with explicitly defined options in the command execution.
@@ -778,7 +778,7 @@ Default available commands are:
 				* `errors` - An `errors` object, as [described here](#errors).
 				* `config` - A `config` object, as [described here](#get-options).
 				* `utils` - An `utils` object, as [described here](#utils).
-				* `process` - An object that allows to manage the related `script` property pm2 process instance related to provided mandatory option `--name`. It has methods:
+				* `process` - An object that allows to manage the related `script` property _pm2_ process instance related to provided mandatory option `--name`. It has methods:
 					* `start` - Starts the process.
 					* `stop` - Stops the process.
 					* `logs` - Displays out logs while are being received.
