@@ -23,6 +23,7 @@
 * [Traces](#traces)
 * [Errors](#errors)
 * [Storage](#storage)
+* [Utils](#utils)
 * [Authentication](#authentication)
 	* [Api Key](#api-key)
 	* [Jwt](#jwt)
@@ -31,7 +32,6 @@
 	* [Implementation](#implementation)
 	* [Usage](#usage)
 	* [Custom options and commands](#custom-options-and-commands)
-* [Unit testing](#unit-testing)
 
 ---
 
@@ -77,8 +77,6 @@ It provides:
 	* Multi-instanciable. Start many services instances providing different names.
 	* CLI commands to stop or display logs.
 	* Extensible with your own commands.
-* __Unit Testing__ stubs and mocks.
-	* A set of mocks ans stubs is exposed in order to make easier to develop unit tests in packages that are using this one.
 
 ---
 
@@ -384,35 +382,35 @@ Consult [all available error constructors](lib/bases/core/Errors.js) and its cor
 In addition to error constructors, three methods are provided in the `errors` object. This methods are used internally by domapic-microservice in order to map the returned errors to HTML errors and viceversa:
 
 * `isControlled` - Allows to know if error has been created with a custom error constructor
+	
+	```js
+	let error = new service.errors.Conflict()
+	console.log(service.errors.isControlled(error))
+	// true
 
-```js
-let error = new service.errors.Conflict()
-console.log(service.errors.isControlled(error))
-// true
-
-error = new Error()
-console.log(service.errors.isControlled(error))
-// false
-```
+	error = new Error()
+	console.log(service.errors.isControlled(error))
+	// false
+	```
 
 * `FromCode` - Returns an error created with the constructor correspondant to the provided html error status code:
-
-```js
-return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
-	.catch(service.errors.Forbidden, (err) => {
-		console.log('Forbidden error caught')
-		console.log(err.message)
-		// Custom message
-	})
-```
+	
+	```js
+	return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
+		.catch(service.errors.Forbidden, (err) => {
+			console.log('Forbidden error caught')
+			console.log(err.message)
+			// Custom message
+		})
+	```
 
 * `toHTML` - Returns a [Boomified](https://www.npmjs.com/package/boom) error correspondant to the used error constructor. Each error constructor is mapped to an specific status code, ready to be returned by the API:
 
-```js
-const error = new service.errors.Forbidden()
-console.log( service.errors.toHTML(error).payload.statusCode )
-// 403
-```
+	```js
+	const error = new service.errors.Forbidden()
+	console.log( service.errors.toHTML(error).payload.statusCode )
+	// 403
+	```
 
 ---
 
@@ -446,6 +444,27 @@ Methods
 * `remove` - Removes a property from the stored object.
 	* Arguments:
 		* key - Key of the object to remove.
+
+---
+
+## Utils
+
+Set of utilities:
+
+* `templates`
+	* `compile` - Received an object containing a set of key:'string', will use [Handlebars](http://handlebarsjs.com/) to compile each string, and return an object with same keys, but contaiting the handlebars compiled templates.
+	```js
+	const templates = service.utils.templates.compile({
+		myTemplate1: 'Value is: {{value}}'
+	})
+	console.log(templates.myTemplate1({
+		value: 123
+	}))
+	// Value is: 123
+	```
+	* `compiled` - Set of precompiled templates, used internally.
+* `process`
+	* `getUsedCommand` - Used internally by CLI. Returns the command used to invoque it.
 
 ---
 
@@ -659,7 +678,9 @@ The `script` parameter must be the path to the file where you have your service 
 
 ### Usage
 
-Once you have installed globally your package, you´ll have the CLI available from command line. Default available commands are:
+Once you have installed globally your package, you´ll have the CLI available from command line. If not installed globally, all available commands can be executed as well using npm scripts, or executing directly the `/bin/your-cli-name` file. Next, the `start` example include the different invocation methods examples.
+
+Default available commands are:
 
 * `help`
 
@@ -674,7 +695,16 @@ Once you have installed globally your package, you´ll have the CLI available fr
 * `start` - Starts the service process in background. A name for the process instance must be provided as first argument, or using the `--name` option.
 
 	```shell
-	your-cli-name start foo-name
+	// global cli
+	your-cli-name start foo-name --logLevel=debug
+	```
+	```shell
+	// npm script
+	npm run your-cli-name start foo-name -- --logLevel=debug
+	```
+	```shell
+	// bin execution
+	./bin/your-cli-name start foo-name --logLevel=debug
 	```
 
 	All available options for the `start` command are described in the [options chapter](#options) of this documentation.
@@ -770,10 +800,6 @@ Once you have installed globally your package, you´ll have the CLI available fr
 
 ---
 
-## Unit testing
-
----
-
 [circleci-image]: https://circleci.com/bb/domapic/domapic-microservice/tree/master.svg?style=shield&circle-token=acc2b3d5b9cc7ef2dad5c89d487a4bca9ef6d754
 [circleci-url]: https://circleci.com/bb/domapic/domapic-microservice
 [license-image]: https://img.shields.io/npm/l/domapic-microservice.svg
@@ -792,7 +818,3 @@ Once you have installed globally your package, you´ll have the CLI available fr
 [website-url]: http://domapic.com/
 [pm2-url]: http://pm2.keymetrics.io/
 [yargs-url]: https://www.npmjs.com/package/yargs
-
-
-
-
