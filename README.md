@@ -16,7 +16,7 @@
 	* [Get options](#get-options)
 	* [Custom options](#custom-options)
 * [Server](#server)
-* [Adding API resources](#add-api-resources)
+* [Adding API resources](#adding-api-resources)
 	* [Open API definitions](#open-api-definitions)
 	* [Operations](#operations)
 * [Client](#client)
@@ -61,7 +61,7 @@ It provides:
 * __Configuration__
 	* Built-in service command line options. (port, host, etc...).
 	* Fully extensible with your own options.
-	* Storable. Next executions will remember options if --saveConfig is specified in one execution.
+	* Storable. Next executions will remember options if `--saveConfig` is specified in one execution.
 * __Traces__
 	* Six different log levels.
 	* Ansi colored, at your choice.
@@ -103,6 +103,8 @@ node ./server.js --name=fooName --port=8030
 
 Browse to http://localhost:8030 to open Swagger interface and inspect API.
 
+[back to top](#table-of-contents)
+
 ---
 
 ## Options
@@ -125,7 +127,7 @@ option | type | description | default
 `path` | String | Path to be used as home path, instead of user´s default (.domapic folder will be created inside) | ~
 `saveConfig` | Boolean | Save current options for next execution (except `name` and `path`) | false
 
-Setting options from command line example:
+Example of setting options from command line:
 ```shell
 node ./server.js --name=fooName --authDisabled=192.168.1.1 172.0.0.1 --logLevel=debug --color=false
 ```
@@ -174,6 +176,8 @@ Custom options defined for a service should be defined in CLI implementation too
 
 Default options values (or saved values if the `--saveConfig` option is used) is saved to a file at `~/.domapic/<serviceName>/config/service.json`. This file can be edited manually, and the new values will be applied next time the service is started.
 
+[back to top](#table-of-contents)
+
 ---
 
 ## Server
@@ -185,6 +189,8 @@ The `server` object returned in the service contains methods:
 * `addOperations` - Add operations related to api paths. Read [Adding API resources](#adding-api-resources)).
 * `addAuthentication` - Add authentication implementations. Read [Authentication](#authentication).
 * `addAuthorization` - Add authorization roles. Read [Authentication](#authentication).
+
+[back to top](#table-of-contents)
 
 ---
 
@@ -273,6 +279,8 @@ service.server.addOperations({
 })
 ```
 
+[back to top](#table-of-contents)
+
 ---
 
 ## Client
@@ -308,6 +316,8 @@ new domapic.Service({
 })
 ```
 
+[back to top](#table-of-contents)
+
 ---
 
 ## Traces
@@ -316,7 +326,7 @@ There are six different levels of traces. Depending of the choiced log level whe
 
 All traces in a day are saved to a file, into `~/.domapic/<serviceName>/logs/<serviceName>.<date>.log`. Trace files older than ten days are automatically deleted.
 
-When the service is started at background using the built-in CLI, logs are also saved to a file at `~/.domapic/<serviceName>/logs/<serviceName>.pm2.log`. It is recommended to install [PM2 log rotation](https://github.com/keymetrics/pm2-logrotate) to avoid this file growing too much.
+When the service is started at background using the built-in CLI, logs are also saved to a file at `~/.domapic/<serviceName>/logs/<serviceName>.pm2.log`. It is recommended to install [PM2 log rotate](https://github.com/keymetrics/pm2-logrotate) to avoid this file growing too much.
 
 Sorted tracer levels are: 'log', 'trace', 'debug', 'info', 'warn' and 'error'.
 
@@ -358,11 +368,13 @@ new domapic.Service({
 })
 ```
 
+[back to top](#table-of-contents)
+
 ---
 
 ## Errors
 
-Custom errors contructors are provided through the `service.errors` object.
+Custom errors constructors are provided through the `service.errors` object.
 
 Custom errors usage:
 
@@ -393,7 +405,7 @@ In addition to error constructors, three methods are provided in the `errors` ob
 	// false
 	```
 
-* `FromCode` - Returns an error created with the constructor correspondant to the provided html error status code:
+* `FromCode` - Returns an error created with the constructor correspondent to the provided html error status code:
 	
 	```js
 	return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
@@ -404,13 +416,15 @@ In addition to error constructors, three methods are provided in the `errors` ob
 		})
 	```
 
-* `toHTML` - Returns a [Boomified](https://www.npmjs.com/package/boom) error correspondant to the used error constructor. Each error constructor is mapped to an specific status code, ready to be returned by the API:
+* `toHTML` - Returns a [Boomified](https://www.npmjs.com/package/boom) error correspondent to the used error constructor. Each error constructor is mapped to an specific status code, ready to be returned by the API:
 
 	```js
 	const error = new service.errors.Forbidden()
 	console.log( service.errors.toHTML(error).payload.statusCode )
 	// 403
 	```
+
+[back to top](#table-of-contents)
 
 ---
 
@@ -445,6 +459,8 @@ Methods
 	* Arguments:
 		* key - Key of the object to remove.
 
+[back to top](#table-of-contents)
+
 ---
 
 ## Utils
@@ -452,7 +468,7 @@ Methods
 Set of utilities:
 
 * `templates`
-	* `compile` - Received an object containing a set of key:'string', will use [Handlebars](http://handlebarsjs.com/) to compile each string, and return an object with same keys, but contaiting the handlebars compiled templates.
+	* `compile` - Received an object containing a set of key:'string', will use [Handlebars](http://handlebarsjs.com/) to compile each string, and return an object with same keys, but containing the compiled templates.
 	```js
 	const templates = service.utils.templates.compile({
 		myTemplate1: 'Value is: {{value}}'
@@ -465,6 +481,8 @@ Set of utilities:
 	* `compiled` - Set of precompiled templates, used internally.
 * `process`
 	* `getUsedCommand` - Used internally by CLI. Returns the command used to invoque it.
+
+[back to top](#table-of-contents)
 
 ---
 
@@ -499,7 +517,7 @@ Must contain properties:
 
 * `verify`- Checks if the received api key is still allowed to be used.
 	* Arguments:
-		* apiKey - Received api key in the request header.
+		* apiKey -  Api key received in the request header.
 	* Returns:
 		* Promise.resolve(userData) -> Allowed, pass the user data to authorization methods.
 		* Rejected promise -> Unauthorized.
@@ -637,6 +655,8 @@ service.server.addAuthorization('fooRoleName', (userData) => {
 })
 ```
 
+[back to top](#table-of-contents)
+
 ---
 
 ## Command Line Interface
@@ -715,7 +735,7 @@ Default available commands are:
 	your-cli-name stop foo-name
 	```
 
-* `logs` - Display logs of a background service instance:
+* `logs` - Displays logs of a background service instance:
 
 	```shell
 	your-cli-name logs foo-name
@@ -744,7 +764,7 @@ Default available commands are:
 	Read more about how to define them in the [Custom options chapter](#custom-options)
 
 * Custom commands
-	A `customCommands` property can be defined in initialization object in order to extend the CLI features. It must be an object, which keys will be the names of the custom commands. Each command must have properties:
+	A `customCommands` property can be defined in initialization object in order to extend the CLI features. It must be an object, whose keys will be the names of the custom commands. Each command must have properties:
 
 	* `processName` - String. A reference name for the core in order to save the command default configuration, etc... As examples: `service`, `logs`, etc...
 	* `describe` - Description for the command. Used when displaying help.
@@ -761,7 +781,7 @@ Default available commands are:
 				* `process` - An object that allows to manage the related `script` property pm2 process instance related to provided mandatory option `--name`. It has methods:
 					* `start` - Starts the process.
 					* `stop` - Stops the process.
-					* `logs` - Console out logs while are being received.
+					* `logs` - Displays out logs while are being received.
 
 	Example of custom command definition:
 	```js
@@ -798,7 +818,7 @@ Default available commands are:
 	# Will display configuration for the custom command, and then stop the process of script "server.js" with name "testing"
 	```
 
----
+[back to top](#table-of-contents)
 
 [circleci-image]: https://circleci.com/bb/domapic/domapic-microservice/tree/master.svg?style=shield&circle-token=acc2b3d5b9cc7ef2dad5c89d487a4bca9ef6d754
 [circleci-url]: https://circleci.com/bb/domapic/domapic-microservice
