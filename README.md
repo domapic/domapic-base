@@ -13,14 +13,24 @@
 * [Introduction](#introduction)
 * [Quick Start](#quick-start)
 * [Options](#options)
+	* [Get options](#get-options)
+	* [Custom options](#custom-options)
 * [Server](#server)
 * [Adding API resources](#add-api-resources)
+	* [Open API definitions](#open-api-definitions)
+	* [Operations](#operations)
 * [Client](#client)
 * [Traces](#traces)
 * [Errors](#errors)
 * [Storage](#storage)
 * [Authentication](#authentication)
+	* [Api Key](#api-key)
+	* [Jwt](#jwt)
+	* [Authorization](#authorization)
 * [CLI](#command-line-interface)
+	* [Implementation](#implementation)
+	* [Usage](#usage)
+	* [Custom options and commands](#custom-options-and-commands)
 * [Unit testing](#unit-testing)
 
 ---
@@ -63,7 +73,7 @@ It provides:
 	* Javascript objects to JSON at file system and viceversa.
 	* File system access scoped to service instance folder.
 * __CLI__. Easy implementable in your own package, it provides:
-	* If the service is started using the CLI, the process will be executed in background, and managed using PM2.
+	* If the service is started using the CLI, the process will be executed in background, and managed using [PM2][pm2-url].
 	* Multi-instanciable. Start many services instances providing different names.
 	* CLI commands to stop or display logs.
 	* Extensible with your own commands.
@@ -138,7 +148,7 @@ new domapic.Service({
 
 You can add your own custom configuration options. They will be seteable from command line execution, displayed in help and validated as the rest of options. Use `customConfig` parameter to define them.
 
-[Yargs](https://www.npmjs.com/package/yargs) is used as underlayer to manage options, so you can read its documentation for more details about how to define them:
+[Yargs][yargs-url] is used as underlayer to manage options, so you can read its documentation for more details about how to define them:
 
 ```js
 // Usage of customConfig parameter
@@ -162,6 +172,8 @@ new domapic.Service({
 node ./server.js --name=fooName --fooOption=false
 ```
 
+Custom options defined for a service should be defined in CLI implementation too, to make them available from command line interface. Read the [CLI custom options and commands](#custom-options-and-commands) chapter for further info.
+
 Default options values (or saved values if the `--saveConfig` option is used) is saved to a file at `~/.domapic/<serviceName>/config/service.json`. This file can be edited manually, and the new values will be applied next time the service is started.
 
 ---
@@ -171,8 +183,8 @@ Default options values (or saved values if the `--saveConfig` option is used) is
 The `server` object returned in the service contains methods:
 
 * `start` - Starts the server. Returns a promise, resolved when the server is running. Once the server is started, it is not possible to add more open api definitions, operations, or authentication implementations.
-* `extendOpenApi` - Add open api definitions to the server. Read the [Adding API resources](#add-api-resources) chapter for further info.
-* `addOperations` - Add operations related to api paths. Read [Adding API resources](#add-api-resources)).
+* `extendOpenApi` - Add open api definitions to the server. Read the [Adding API resources](#adding-api-resources) chapter for further info.
+* `addOperations` - Add operations related to api paths. Read [Adding API resources](#adding-api-resources)).
 * `addAuthentication` - Add authentication implementations. Read [Authentication](#authentication).
 * `addAuthorization` - Add authorization roles. Read [Authentication](#authentication).
 
@@ -211,13 +223,13 @@ new domapic.Service({
 
 ### Open API definitions
 
-Openapi 3.0 spec is used to define new API paths. Read more about how to define paths in [Swagger specification docs](https://swagger.io/specification/). You can even use the [Swagger editor](https://swagger.io/specification/) to define and design your API, and afterwards, load the resultant .json files in domapic microservice.
+Openapi 3.0 spec is used to define new API paths. Read more about how to define paths in [Swagger specification docs](https://swagger.io/specification/). You can even use the [Swagger editor](https://swagger.io/swagger-editor/) to define and design your API, and afterwards, load the resultant .json files in domapic microservice.
 
 You can add as many openApi definitions as you want, and for each one you can define "components", "tags", or "paths". The resultant `openapi.json` will be the result of extending all of them, after adding all needed base properties.
 
 Use the `addOperations` server method to add the operations. The operation key should match with the openApi `operationId` property.
 
-See here an [openApi definition example](#lib/api/about/openapi.json), which is used internally to create the built-in `/about` api resource.
+See here an [openApi definition example](lib/api/about/openapi.json), which is used internally to create the built-in `/about` api resource.
 
 ### Operations
 
@@ -610,6 +622,152 @@ service.server.addAuthorization('fooRoleName', (userData) => {
 
 ## Command Line Interface
 
+A built-in CLI is provided, but it needs some steps in your package in order to expose it. Once it is implemented, it allows to start the service in background, managed using [PM2][pm2-url]. It also provides logs displaying, and a command to stop the service.
+Also an API is at your disposal for defining new commands.
+
+### Implementation
+
+Follow these steps to implement the built-in CLI in your package:
+
+* Create a `/bin/<your-cli-name>` file in your package. The name of the file should be equal to the command name that you want to use for your CLI. The content of this file must be:
+```shell
+#!/usr/bin/env node
+require('../cli/index')
+```
+
+* Add a `bin` property to your `package.json`, and add an npm script to allow using the CLI through npm alternatively:
+
+```json
+"bin": {
+	"your-cli-name": "./bin/your-cli-name"
+},
+"scripts": {
+	"your-cli-name": "./bin/your-cli-name"
+}
+```
+
+* Create a `/cli/index.js` file in your package. It must contain the CLI initialization:
+```js
+const path = require('path')
+const domapic = require('domapic-microservice')
+
+domapic.cli({
+	script: path.resolve(__dirname, '..', 'server.js')
+})
+```
+The `script` parameter must be the path to the file where you have your service initialization. This will be the process that will be started in background.
+
+### Usage
+
+Once you have installed globally your package, you´ll have the CLI available from command line. Default available commands are:
+
+* `help`
+
+	```shell
+	your-cli-name help
+	# Displays help
+
+	your-cli-name start --help
+	# Displays help for start command
+	```
+
+* `start` - Starts the service process in background. A name for the process instance must be provided as first argument, or using the `--name` option.
+
+	```shell
+	your-cli-name start foo-name
+	```
+
+	All available options for the `start` command are described in the [options chapter](#options) of this documentation.
+
+* `stop` - Stops a background service instance:
+
+	```shell
+	your-cli-name stop foo-name
+	```
+
+* `logs` - Display logs of a background service instance:
+
+	```shell
+	your-cli-name logs foo-name
+	# Displays logs
+
+	your-cli-name logs foo-name --lines=300
+	# Displays 300 last lines of logs (30 by default, if option is not provided)
+	```
+
+### Custom options and commands
+
+* Custom configuration
+	A `customConfig` property can be defined in initialization object in order to define the custom options of your service:
+
+	```js
+	const path = require('path')
+	const domapic = require('domapic-microservice')
+	const customConfig = require('./customConfig')
+
+	domapic.cli({
+		script: path.resolve(__dirname, '..', 'server.js'),
+		customConfig: customConfig
+	})
+	```
+
+	Read more about how to define them in the [Custom options chapter](#custom-options)
+
+* Custom commands
+	A `customCommands` property can be defined in initialization object in order to extend the CLI features. It must be an object, which keys will be the names of the custom commands. Each command must have properties:
+
+	* `processName` - String. A reference name for the core in order to save the command default configuration, etc... As examples: `service`, `logs`, etc...
+	* `describe` - Description for the command. Used when displaying help.
+	* `cli` - Command name and arguments expression. [Yargs][yargs-url] is used as underlayer to manage commands, so you can read its documentation for more details about how to define them.
+	* `options` - Available options for the command. All commands will inherit the options `name`, `color`, `logLevel`, `path` and `saveConfig`. Read [Yargs][yargs-url] documentation for further info about defining your own options.
+	* `command` - Handler function that will be executed when command is invoqued.
+		* Arguments:
+			* `config` - An object containing default config, extended with stored config and extended with explicitly defined options in the command execution.
+			* `cliUtils` - A set of methods:
+				* `tracer` - A `tracer` object, as [described here](#traces).
+				* `errors` - An `errors` object, as [described here](#errors).
+				* `config` - A `config` object, as [described here](#get-options).
+				* `utils` - An `utils` object, as [described here](#utils).
+				* `process` - An object that allows to manage the related `script` property pm2 process instance related to provided mandatory option `--name`. It has methods:
+					* `start` - Starts the process.
+					* `stop` - Stops the process.
+					* `logs` - Console out logs while are being received.
+
+	Example of custom command definition:
+	```js
+	const path = require('path')
+	const domapic = require('domapic-microservice')
+
+	domapic.cli({
+		script: path.resolve(packagePath, 'server.js'),
+		customCommands: {
+			restart: {
+				processName: 'stopCustom',
+				describe: 'Example of a custom command',
+				cli: 'stopCustom <fooOption1>',
+				options: {
+					fooOption2: {
+						type: 'boolean',
+						describe: 'Foo option for command example',
+						default: true
+					}
+				},
+				command: (config, cliUtils) => {
+					return cliUtils.tracer.info(JSON.stringify(config))
+						.then(() => {
+							cliUtils.process.stop()
+						})
+				}
+			}
+		}
+	})
+	```
+	Example of custom command usage:
+	```shell
+	your-cli-name stopCustom value1 --fooOption2=false --name=testing
+	# Will display configuration for the custom command, and then stop the process of script "server.js" with name "testing"
+	```
+
 ---
 
 ## Unit testing
@@ -632,6 +790,8 @@ service.server.addAuthorization('fooRoleName', (userData) => {
 [standard-url]: http://standardjs.com/
 [website-image]: https://img.shields.io/website-up-down-green-red/http/domapic.com.svg?label=domapic.com
 [website-url]: http://domapic.com/
+[pm2-url]: http://pm2.keymetrics.io/
+[yargs-url]: https://www.npmjs.com/package/yargs
 
 
 
