@@ -1,15 +1,27 @@
 # Domapic Microservice Base
 
-[![Build status][circleci-image]][circleci-url]
-[![Quality Gate][quality-gate-image]][quality-gate-url]
-[![js-standard-style][standard-image]][standard-url]
+[![Build status][circleci-image]][circleci-url] [![Quality Gate][quality-gate-image]][quality-gate-url] [![js-standard-style][standard-image]][standard-url]
 
-[![Node version][node-version-image]][node-version-url]
-[![NPM version][npm-image]][npm-url]
-[![License][license-image]][license-url]
+[![Node version][node-version-image]][node-version-url] [![NPM version][npm-image]][npm-url] [![License][license-image]][license-url]
 
-[![NPM downloads][npm-downloads-image]][npm-downloads-url]
-[![Website][website-image]][website-url]
+[![NPM downloads][npm-downloads-image]][npm-downloads-url] [![Website][website-image]][website-url]
+
+---
+
+## Table of Contents
+
+* [Introduction](#introduction)
+* [Quick Start](#quick-start)
+* [Options](#options)
+* [Server](#server)
+* [Adding API resources](#add-api-resources)
+* [Client](#client)
+* [Traces](#traces)
+* [Errors](#errors)
+* [Storage](#storage)
+* [Authentication](#authentication)
+* [CLI](#command-line-interface)
+* [Unit testing](#unit-testing)
 
 ---
 
@@ -60,22 +72,7 @@ It provides:
 
 ---
 
-## Table of Contents
-
-* [Server](#server)
-* [Options](#options)
-* [Adding API resources](#add-api-resources)
-* [Client](#client)
-* [Traces](#traces)
-* [Errors](#errors)
-* [Storage](#storage)
-* [Authentication](#authentication)
-* [CLI](#command-line-interface)
-* [Unit testing](#unit-testing)
-
----
-
-## Server
+## Quick start
 
 ```js
 // server.js file
@@ -166,6 +163,18 @@ node ./server.js --name=fooName --fooOption=false
 ```
 
 Default options values (or saved values if the `--saveConfig` option is used) is saved to a file at `~/.domapic/<serviceName>/config/service.json`. This file can be edited manually, and the new values will be applied next time the service is started.
+
+---
+
+## Server
+
+The `server` object returned in the service contains methods:
+
+* `start` - Starts the server. Returns a promise, resolved when the server is running. Once the server is started, it is not possible to add more open api definitions, operations, or authentication implementations.
+* `extendOpenApi` - Add open api definitions to the server. Read the [Adding API resources](#add-api-resources) chapter for further info.
+* `addOperations` - Add operations related to api paths. Read [Adding API resources](#add-api-resources)).
+* `addAuthentication` - Add authentication implementations. Read [Authentication](#authentication).
+* `addAuthorization` - Add authorization roles. Read [Authentication](#authentication).
 
 ---
 
@@ -457,19 +466,21 @@ Use the server `addAuthentication` method to define your authentication implemen
 
 Must contain properties:
 
-* verify - Checks if the received api key is still allowed to be used.
+* `verify`- Checks if the received api key is still allowed to be used.
 	* Arguments:
 		* apiKey - Received api key in the request header.
 	* Returns:
 		* Promise.resolve(userData) -> Allowed, pass the user data to authorization methods.
 		* Rejected promise -> Unauthorized.
-* authenticate - API operation for requesting a new api key. This api point needs authentication as well, so, if your system  authentication is only api key based, you have to define an initial api key that could be used to request more in case it´s needed.
-	* auth - Authorization method for the `/api/auth/apikey` POST api resource.
-	* handler - Operation handler for the `/api/auth/apikey` POST api resource.
+* `authenticate` - API operation for requesting a new api key. This api point needs authentication as well, so, if your system  authentication is only api key based, you have to define an initial api key that could be used to request more in case it´s needed. This method supports `jwt` authentication as well, if it is implemented.
+	* `auth` - Authorization method for the `/api/auth/apikey` POST api resource.
+	* `handler` - Operation handler for the `/api/auth/apikey` POST api resource.
 		* Should return a new api key.
-* revoke - API operation for removing an api key. This api resource needs authentication as well.
-	* auth - Authorization method for the `/api/auth/apikey` DELETE api resource.
-	* handler - Operation handler for the `/api/auth/apikey` DELETE api resource.
+* `revoke` - API operation for removing an api key. This api resource needs authentication as well.
+	* `auth` - Authorization method for the `/api/auth/apikey` DELETE api resource.
+	* `handler` - Operation handler for the `/api/auth/apikey` DELETE api resource.
+		* Arguments:
+			* `apiKey` - Api key to be removed.
 		* Any returned value will be ignored, and not exposed to the api response.
 
 Implementation example:
@@ -496,9 +507,9 @@ service.server.addAuthentication({
 				// Check if user is allowed to remove an existant api key, resolve or reject
 				return checkUserPermissionToManageApiKeys(userData)
 			},
-			handler: () => {
+			handler: (apiKey) => {
 				// Remove existant api key
-				return removeApiKey()
+				return removeApiKey(apiKey)
 			}
 		}
 	}
@@ -507,12 +518,71 @@ service.server.addAuthentication({
 
 ### JWT
 
+Properties:
+
+* `secret` - Optional. String used to generate tokens. If not provided, a random secret is used.
+* `expiresIn` - Number. Time of tokens expiration time in miliseconds. By default, 300 will be used if this option is not provided. It is not recommended to use a high value for this option. Tokens should expire in short time, and then, refresh tokens should be used to request a new token again.
+* `authenticate` - API operation for requesting a new token. Will receive `userName` and `password`, or `refreshToken`. Your implementation should be able to identify the user, and then return the correspondant data that will be stored in the json web token. Afterwards, the API will use that data in each request to apply the correspondant authorization policy for each api resource. Refresh Token is used to renew the user credentials without providing the user data again when the token expires.
+	* `handler` - Operation handler for the `/api/auth/jwt` POST api resource.
+		* Arguments:
+			* `userData` - An object containing `userName` and `password`, or `refreshToken`.
+		* Should return an object containing `userData` (an object with all user data that will be passed as argument to the API resources authorization handlers), and `refreshToken` if the request has not received it.
+* `revoke` - API operation for removing a refresh token. This api resource needs authentication as well, and it only supports the `jwt` authentication method.
+	* `auth` - Authorization method for the `/api/auth/jwt` DELETE api resource.
+	* `handler` - Operation handler for the `/api/auth/jwt` DELETE api resource.
+		* Arguments:
+			* `refreshToken` - Refresh token to be removed.
+		* Any returned value will be ignored, and not exposed to the api response.
+
+Implementation example:
+
+```js
+service.server.addAuthentication({
+	jwt: {
+		secret: 'thisIsNotaRealTokenSecretPleaseReplaceIt',
+		expiresIn: 180,
+		authenticate: {
+			handler: (userCredentials) => {
+				// Check if user has right credentials, or refresh token. Returns user data (with new refresh token if not provided)
+				if(userCredentials.refreshToken) {
+					return getUserDataFromRefreshToken(userCredentials.refreshToken)
+				} else {
+					return checkUserData({
+						name: userCredentials.userName,
+						password: userCredentials.password
+					}).then((userData) => {
+						return createNewRefreshToken(userData)
+							.then((refreshToken) => {
+								return Promise.resolve({
+									userData: userData,
+									refreshToken: refreshToken
+								})
+							})
+					})
+				}
+			}
+		},
+		revoke: {
+			auth: (userData) => {
+				// Check if user is allowed to remove an existant refresh token
+				return checkUserPermissionToManageApiKeys(userData)
+			},
+			handler: (refreshToken) => {
+				// Remove existant refresh token
+				return removeRefreshToken(refreshToken)
+			}
+		}
+	}
+})
+```
 
 ### Authorization
 
 About authorization, each operation defined in the API can have its own `auth` method, that will receive the decoded user data as argument for each request, allowing to reject or allow an specific request based on your own security policy implementation.
 
 The authorization method is agnostic in relation with the used authentication method, because it only receives the user data, no matter the method used to store or recover this data from the request.
+
+Read more about how to define and use the `auth` methods in the [operations chapter](#operations).
 
 An operation `auth` method can be defined as a function, or as a string that defines which "authorization role" function has to be executed. This "authorization roles" must to be defined in the server, using the `addAuthorization` method:
 
@@ -535,8 +605,6 @@ service.server.addAuthorization('fooRoleName', (userData) => {
 	})
 })
 ```
-
-Read more about how to define and use the `auth` methods in the [operations chapter](#operations).
 
 ---
 

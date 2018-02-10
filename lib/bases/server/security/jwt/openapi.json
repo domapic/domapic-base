@@ -96,14 +96,14 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "refresh_token": {
-                    "description": "User name",
+                  "refreshToken": {
+                    "description": "Refresh token",
                     "type": "string"
                   }
                 },
-                "required": ["refresh_token"],
+                "required": ["refreshToken"],
                 "example": {
-                  "refresh_token": "fooRefreshToken"
+                  "refreshToken": "fooRefreshToken"
                 }
               }
             }
