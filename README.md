@@ -637,7 +637,7 @@ service.server.addAuthorization('fooRoleName', (userData) => {
 	return false
 	// Forbidden response
 }).then(() => {
-	return service.addOperations({
+	return service.server.addOperations({
 		fooOperation: {
 			auth: 'fooRoleName',
 			handler: () => {
@@ -711,17 +711,17 @@ your-cli-name start --help
 
 ```shell
 // global cli
-your-cli-name start foo-name --logLevel=debug
+your-cli-name start fooName --logLevel=debug
 ```
 
 ```shell
 // npm script
-npm run your-cli-name start foo-name -- --logLevel=debug
+npm run your-cli-name start fooName -- --logLevel=debug
 ```
 
 ```shell
 // bin execution
-./bin/your-cli-name start foo-name --logLevel=debug
+./bin/your-cli-name start fooName --logLevel=debug
 ```
 
 All available options for the `start` command are described in the [options chapter](#options) of this documentation.
@@ -729,16 +729,16 @@ All available options for the `start` command are described in the [options chap
 * `stop` - Stops a background service instance:
 
 ```shell
-your-cli-name stop foo-name
+your-cli-name stop fooName
 ```
 
 * `logs` - Displays logs of a background service instance:
 
 ```shell
-your-cli-name logs foo-name
+your-cli-name logs fooName
 # Displays logs
 
-your-cli-name logs foo-name --lines=300
+your-cli-name logs fooName --lines=300
 # Displays 300 last lines of logs (30 by default, if option is not provided)
 ```
 
@@ -787,7 +787,7 @@ const path = require('path')
 const domapic = require('domapic-microservice')
 
 domapic.cli({
-	script: path.resolve(packagePath, 'server.js'),
+	script: path.resolve(__dirname, '..', 'server.js'),
 	customCommands: {
 		restart: {
 			processName: 'stopCustom',
