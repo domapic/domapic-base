@@ -677,15 +677,18 @@ require('../cli/index')
 * Add a `bin` property to your `package.json`, and add an npm script to allow using the CLI through npm alternatively:
 
 ```json
-"bin": {
-	"your-cli-name": "./bin/your-cli-name"
-},
-"scripts": {
-	"your-cli-name": "./bin/your-cli-name"
+{
+	"bin": {
+		"your-cli-name": "./bin/your-cli-name"
+	},
+	"scripts": {
+		"your-cli-name": "./bin/your-cli-name"
+	}
 }
 ```
 
 * Create a `/cli/index.js` file in your package. It must contains the CLI initialization:
+
 ```js
 const path = require('path')
 const domapic = require('domapic-microservice')
@@ -704,62 +707,64 @@ Default available commands are:
 
 * `help`
 
-	```shell
-	your-cli-name help
-	# Displays help
+```shell
+your-cli-name help
+# Displays help
 
-	your-cli-name start --help
-	# Displays help for start command
-	```
+your-cli-name start --help
+# Displays help for start command
+```
 
 * `start` - Starts the service process in background. A name for the process instance must be provided as first argument, or using the `--name` option.
 
-	```shell
-	// global cli
-	your-cli-name start foo-name --logLevel=debug
-	```
-	```shell
-	// npm script
-	npm run your-cli-name start foo-name -- --logLevel=debug
-	```
-	```shell
-	// bin execution
-	./bin/your-cli-name start foo-name --logLevel=debug
-	```
+```shell
+// global cli
+your-cli-name start foo-name --logLevel=debug
+```
+
+```shell
+// npm script
+npm run your-cli-name start foo-name -- --logLevel=debug
+```
+
+```shell
+// bin execution
+./bin/your-cli-name start foo-name --logLevel=debug
+```
 
 	All available options for the `start` command are described in the [options chapter](#options) of this documentation.
 
 * `stop` - Stops a background service instance:
 
-	```shell
-	your-cli-name stop foo-name
-	```
+```shell
+your-cli-name stop foo-name
+```
 
 * `logs` - Displays logs of a background service instance:
 
-	```shell
-	your-cli-name logs foo-name
-	# Displays logs
+```shell
+your-cli-name logs foo-name
+# Displays logs
 
-	your-cli-name logs foo-name --lines=300
-	# Displays 300 last lines of logs (30 by default, if option is not provided)
-	```
+your-cli-name logs foo-name --lines=300
+# Displays 300 last lines of logs (30 by default, if option is not provided)
+```
 
 ### Custom options and commands
 
 * Custom configuration
 	A `customConfig` property can be defined in initialization object in order to define the custom options of your service:
 
-	```js
-	const path = require('path')
-	const domapic = require('domapic-microservice')
-	const customConfig = require('./customConfig')
+```js
+const path = require('path')
+const domapic = require('domapic-microservice')
+const customConfig = require('./customConfig')
 
-	domapic.cli({
-		script: path.resolve(__dirname, '..', 'server.js'),
-		customConfig: customConfig
-	})
-	```
+domapic.cli({
+	script: path.resolve(__dirname, '..', 'server.js'),
+	customConfig: customConfig
+})
+```
 
 	Read more about how to define them in the [Custom options chapter](#custom-options)
 
@@ -784,39 +789,42 @@ Default available commands are:
 					* `logs` - Displays out logs while are being received.
 
 	Example of custom command definition:
-	```js
-	const path = require('path')
-	const domapic = require('domapic-microservice')
 
-	domapic.cli({
-		script: path.resolve(packagePath, 'server.js'),
-		customCommands: {
-			restart: {
-				processName: 'stopCustom',
-				describe: 'Example of a custom command',
-				cli: 'stopCustom <fooOption1>',
-				options: {
-					fooOption2: {
-						type: 'boolean',
-						describe: 'Foo option for command example',
-						default: true
-					}
-				},
-				command: (config, cliUtils) => {
-					return cliUtils.tracer.info(JSON.stringify(config))
-						.then(() => {
-							cliUtils.process.stop()
-						})
+```js
+const path = require('path')
+const domapic = require('domapic-microservice')
+
+domapic.cli({
+	script: path.resolve(packagePath, 'server.js'),
+	customCommands: {
+		restart: {
+			processName: 'stopCustom',
+			describe: 'Example of a custom command',
+			cli: 'stopCustom <fooOption1>',
+			options: {
+				fooOption2: {
+					type: 'boolean',
+					describe: 'Foo option for command example',
+					default: true
 				}
+			},
+			command: (config, cliUtils) => {
+				return cliUtils.tracer.info(JSON.stringify(config))
+					.then(() => {
+						cliUtils.process.stop()
+					})
 			}
 		}
-	})
-	```
+	}
+})
+```
+
 	Example of custom command usage:
-	```shell
-	your-cli-name stopCustom value1 --fooOption2=false --name=testing
-	# Will display configuration for the custom command, and then stop the process of script "server.js" with name "testing"
-	```
+
+```shell
+your-cli-name stopCustom value1 --fooOption2=false --name=testing
+# Will display configuration for the custom command, and then stop the process of script "server.js" with name "testing"
+```
 
 [back to top](#table-of-contents)
 
