@@ -669,6 +669,7 @@ Also an API is at your disposal for defining new commands.
 Follow these steps to implement the built-in CLI in your package:
 
 * Create a `/bin/<your-cli-name>` file in your package. The name of the file should be equal to the command name that you want to use for your CLI. The content of this file must be:
+
 ```shell
 #!/usr/bin/env node
 require('../cli/index')
