@@ -732,7 +732,7 @@ npm run your-cli-name start foo-name -- --logLevel=debug
 ./bin/your-cli-name start foo-name --logLevel=debug
 ```
 
-	All available options for the `start` command are described in the [options chapter](#options) of this documentation.
+All available options for the `start` command are described in the [options chapter](#options) of this documentation.
 
 * `stop` - Stops a background service instance:
 
@@ -766,7 +766,7 @@ domapic.cli({
 })
 ```
 
-	Read more about how to define them in the [Custom options chapter](#custom-options)
+Read more about how to define them in the [Custom options chapter](#custom-options)
 
 * Custom commands
 	A `customCommands` property can be defined in initialization object in order to extend the CLI features. It must be an object, whose keys will be the names of the custom commands. Each command must have properties:
@@ -819,7 +819,7 @@ domapic.cli({
 })
 ```
 
-	Example of custom command usage:
+Example of custom command usage:
 
 ```shell
 your-cli-name stopCustom value1 --fooOption2=false --name=testing
