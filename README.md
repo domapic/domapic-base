@@ -1,4 +1,8 @@
-# Domapic Microservice Base
+![Domapic Microservice](lib/bases/server/assets/domapic-microservice.jpg)
+
+# Domapic Microservices Base
+
+Microservices base for Domapic System packages.
 
 [![Build status][circleci-image]][circleci-url] [![Quality Gate][quality-gate-image]][quality-gate-url] [![js-standard-style][standard-image]][standard-url]
 
