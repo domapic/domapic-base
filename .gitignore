@@ -4,5 +4,4 @@ npm-debug.log
 package-lock.json
 .coverage
 .scannerwork
-sonar-project.properties
 

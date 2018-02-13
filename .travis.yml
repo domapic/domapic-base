@@ -8,7 +8,7 @@ addons:
   sonarcloud:
     organization: "domapic" # the key of the org you chose at step #3
     token:
-      secure: SONAR_TOKEN
+      secure: $SONAR_TOKEN
 script:
-  # other script steps might be done before running the actual analysis
+  - npm test
   - sonar-scanner
