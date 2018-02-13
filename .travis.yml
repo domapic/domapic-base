@@ -1,14 +1,19 @@
 language: node_js
+
 node_js:
   - "8"
+
 cache:
   directories:
     - "node_modules"
+    - "$HOME/.sonar/cache"
+
 addons:
   sonarcloud:
-    organization: "domapic" # the key of the org you chose at step #3
+    organization: "domapic"
     token:
-      secure: $SONAR_TOKEN
+      secure: "$SONAR_TOKEN"
+
 script:
   - npm test
   - sonar-scanner
