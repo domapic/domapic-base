@@ -13,6 +13,9 @@ addons:
     organization: "domapic"
     token:
       secure: "$SONAR_TOKEN"
+    branches:
+      - ci-tools-integration
+      - master
 
 script:
   - npm test
