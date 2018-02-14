@@ -6,9 +6,9 @@ WebAPI Microservice base for Domapic System packages.
 
 [![Build status][travisci-image]][travisci-url] [![Quality Gate][quality-gate-image]][quality-gate-url] [![js-standard-style][standard-image]][standard-url]
 
-[![Node version][node-version-image]][node-version-url] [![NPM version][npm-image]][npm-url] [![License][license-image]][license-url]
+[![Node version][node-version-image]][node-version-url] [![NPM version][npm-image]][npm-url] [![NPM dependencies][npm-dependencies-image]][npm-dependencies-url] [![Last commit][last-commit-image]][last-commit-url] [![Last release][release-image]][release-url] 
 
-[![NPM downloads][npm-downloads-image]][npm-downloads-url] [![Website][website-image]][website-url]
+[![NPM downloads][npm-downloads-image]][npm-downloads-url] [![Website][website-image]][website-url] [![License][license-image]][license-url]
 
 ---
 
@@ -825,6 +825,8 @@ your-cli-name stopCustom value1 --fooOption2=false --name=testing
 
 [travisci-image]: https://travis-ci.org/domapic/domapic-microservice.svg?branch=master
 [travisci-url]: https://travis-ci.org/domapic/domapic-microservice
+[last-commit-image]: https://img.shields.io/github/last-commit/domapic/domapic-microservice.svg
+[last-commit-url]: https://github.com/domapic/domapic-microservice/commits
 [license-image]: https://img.shields.io/npm/l/domapic-microservice.svg
 [license-url]: https://github.com/domapic/domapic-microservice/blob/master/LICENSE
 [node-version-image]: https://img.shields.io/node/v/domapic-microservice.svg
@@ -833,8 +835,12 @@ your-cli-name stopCustom value1 --fooOption2=false --name=testing
 [npm-url]: https://www.npmjs.com/package/domapic-microservice
 [npm-downloads-image]: https://img.shields.io/npm/dm/domapic-microservice.svg
 [npm-downloads-url]: https://www.npmjs.com/package/domapic-microservice
+[npm-dependencies-image]: https://david-dm.org/domapic/domapic-microservice.svg
+[npm-dependencies-url]: https://david-dm.org/domapic/domapic-microservice
 [quality-gate-image]: https://sonarcloud.io/api/badges/gate?key=domapic-microservice
 [quality-gate-url]: https://sonarcloud.io/dashboard/index/domapic-microservice
+[release-image]: https://img.shields.io/github/release-date/domapic/domapic-microservice.svg
+[release-url]: https://github.com/domapic/domapic-microservice/releases
 [standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
 [standard-url]: http://standardjs.com/
 [website-image]: https://img.shields.io/website-up-down-green-red/http/domapic.com.svg?label=domapic.com
