@@ -2,7 +2,7 @@
 
 # Domapic Microservice
 
-WebAPI Microservice base for Domapic System packages.
+WebAPI Microservice base for Domapic Node.js packages.
 
 [![Build status][travisci-image]][travisci-url] [![Quality Gate][quality-gate-image]][quality-gate-url] [![js-standard-style][standard-image]][standard-url]
 
