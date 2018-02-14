@@ -1,25 +1,26 @@
 {
   "name": "domapic-microservice",
   "version": "0.1.0",
-  "description": "Microservice base for nodejs Domapic packages",
+  "description": "WebAPI Microservice base for Domapic Node.js packages",
   "main": "index.js",
   "keywords": [
     "microservice",
-    "process management",
     "api",
     "openapi",
     "service",
-    "cli",
-    "client",
     "ssl",
     "server",
-    "auth",
+    "authentication",
     "jwt",
     "apiKey",
-    "tracer"
+    "client",
+    "tracer",
+    "cli",
+    "process manager"
   ],
   "scripts": {
-    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test"
+    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test",
+    "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "dependencies": {
     "bluebird": "3.5.1",
@@ -56,13 +57,13 @@
     "standard": "10.0.3"
   },
   "engines": {
-    "node": "8.9.1",
+    "node": "8.9.4",
     "npm": "5.6.0"
   },
   "author": {
     "name": "Javier Brea",
-    "url": "http://javierbrea.com"
+    "url": "http://domapic.com"
   },
   "license": "MIT",
-  "repository": "https://registry.npmjs.org/"
+  "repository": "https://github.com/domapic/domapic-microservice"
 }
