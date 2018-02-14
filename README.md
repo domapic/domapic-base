@@ -1,6 +1,6 @@
 ![Domapic Microservice](lib/bases/server/assets/domapic-microservice.jpg)
 
-# Domapic Microservices Base
+# Domapic Microservice
 
 WebAPI Microservice base for Domapic System packages.
 
