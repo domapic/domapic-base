@@ -57,13 +57,13 @@
     "standard": "10.0.3"
   },
   "engines": {
-    "node": "8.9.1",
+    "node": "8.9.4",
     "npm": "5.6.0"
   },
   "author": {
     "name": "Javier Brea",
-    "url": "http://javierbrea.com"
+    "url": "http://domapic.com"
   },
   "license": "MIT",
-  "repository": "https://registry.npmjs.org/"
+  "repository": "https://github.com/domapic/domapic-microservice"
 }

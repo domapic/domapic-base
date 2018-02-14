@@ -2,9 +2,9 @@
 
 # Domapic Microservices Base
 
-Microservices base for Domapic System packages.
+WebAPI Microservice base for Domapic System packages.
 
-[![Build status][circleci-image]][circleci-url] [![Quality Gate][quality-gate-image]][quality-gate-url] [![js-standard-style][standard-image]][standard-url]
+[![Build status][travisci-image]][travisci-url] [![Quality Gate][quality-gate-image]][quality-gate-url] [![js-standard-style][standard-image]][standard-url]
 
 [![Node version][node-version-image]][node-version-url] [![NPM version][npm-image]][npm-url] [![License][license-image]][license-url]
 
@@ -495,7 +495,6 @@ To require an authentication method in your API operations, you must define the 
 "paths": {
 	"/fooOperationPath": {
 		"post": {
-			...
 			"security": [{
 				"jwt": []
 			}, {
@@ -824,12 +823,12 @@ your-cli-name stopCustom value1 --fooOption2=false --name=testing
 
 [back to top](#table-of-contents)
 
-[circleci-image]: https://circleci.com/bb/domapic/domapic-microservice/tree/master.svg?style=shield&circle-token=acc2b3d5b9cc7ef2dad5c89d487a4bca9ef6d754
-[circleci-url]: https://circleci.com/bb/domapic/domapic-microservice
+[travisci-image]: https://travis-ci.org/domapic/domapic-microservice.svg?branch=master
+[travisci-url]: https://travis-ci.org/domapic/domapic-microservice
 [license-image]: https://img.shields.io/npm/l/domapic-microservice.svg
-[license-url]: https://github.com/javierbrea/domapic-microservice/blob/master/LICENSE
+[license-url]: https://github.com/domapic/domapic-microservice/blob/master/LICENSE
 [node-version-image]: https://img.shields.io/node/v/domapic-microservice.svg
-[node-version-url]: https://github.com/javierbrea/domapic-microservice/blob/master/package.json
+[node-version-url]: https://github.com/domapic/domapic-microservice/blob/master/package.json
 [npm-image]: https://img.shields.io/npm/v/domapic-microservice.svg
 [npm-url]: https://www.npmjs.com/package/domapic-microservice
 [npm-downloads-image]: https://img.shields.io/npm/dm/domapic-microservice.svg
