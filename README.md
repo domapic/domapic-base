@@ -835,7 +835,7 @@ your-cli-name stopCustom value1 --fooOption2=false --name=testing
 [npm-url]: https://www.npmjs.com/package/domapic-microservice
 [npm-downloads-image]: https://img.shields.io/npm/dm/domapic-microservice.svg
 [npm-downloads-url]: https://www.npmjs.com/package/domapic-microservice
-[npm-dependencies-image]: https://david-dm.org/domapic/domapic-microservice.svg
+[npm-dependencies-image]: https://img.shields.io/david/domapic/domapic-microservice.svg
 [npm-dependencies-url]: https://david-dm.org/domapic/domapic-microservice
 [quality-gate-image]: https://sonarcloud.io/api/badges/gate?key=domapic-microservice
 [quality-gate-url]: https://sonarcloud.io/dashboard/index/domapic-microservice
@@ -845,5 +845,6 @@ your-cli-name stopCustom value1 --fooOption2=false --name=testing
 [standard-url]: http://standardjs.com/
 [website-image]: https://img.shields.io/website-up-down-green-red/http/domapic.com.svg?label=domapic.com
 [website-url]: http://domapic.com/
+
 [pm2-url]: http://pm2.keymetrics.io/
 [yargs-url]: https://www.npmjs.com/package/yargs
