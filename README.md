@@ -4,7 +4,7 @@
 
 WebAPI Microservice base for Domapic Node.js packages.
 
-[![Build status][travisci-image]][travisci-url] [![Quality Gate][quality-gate-image]][quality-gate-url] [![js-standard-style][standard-image]][standard-url]
+[![Build status][travisci-image]][travisci-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Quality Gate][quality-gate-image]][quality-gate-url] [![js-standard-style][standard-image]][standard-url]
 
 [![Node version][node-version-image]][node-version-url] [![NPM version][npm-image]][npm-url] [![NPM dependencies][npm-dependencies-image]][npm-dependencies-url] [![Last commit][last-commit-image]][last-commit-url] [![Last release][release-image]][release-url] 
 
@@ -823,6 +823,8 @@ your-cli-name stopCustom value1 --fooOption2=false --name=testing
 
 [back to top](#table-of-contents)
 
+[coveralls-image]: https://coveralls.io/repos/github/domapic/domapic-microservice/badge.svg
+[coveralls-url]: https://coveralls.io/github/domapic/domapic-microservice
 [travisci-image]: https://travis-ci.org/domapic/domapic-microservice.svg?branch=master
 [travisci-url]: https://travis-ci.org/domapic/domapic-microservice
 [last-commit-image]: https://img.shields.io/github/last-commit/domapic/domapic-microservice.svg
