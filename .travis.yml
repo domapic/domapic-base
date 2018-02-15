@@ -15,6 +15,7 @@ addons:
       secure: "$SONAR_TOKEN"
     branches:
       - master
+      - fix-quality-tools
 
 script:
   - npm test
