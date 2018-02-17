@@ -75,37 +75,6 @@ test.describe('Utils -> templates', () => {
       expectedResult: 'FOO PHRASE'
     })
 
-   /* test.describe('toJSON', () => {
-      test.it('should return the received object converted to JSON stringified string', () => {
-        const fooTemplates = templates.compile({template: '{{toJSON fooVar}}'})
-        const templateResult = fooTemplates.template()
-
-        test.expect(templateResult.replace(/\s/gmi, '')).to.equal('{"fooKey":"fooValue"}')
-      })
-    })
-
-    test.describe('capitalize', () => {
-      test.it('should return the string capitalized', () => {
-        const fooTemplates = templates.compile({template: '{{capitalize fooVar}}'})
-        const templateResult = fooTemplates.template({
-          fooVar: 'foo Phrase'
-        })
-
-        test.expect(templateResult).to.equal('Foo phrase')
-      })
-    })
-
-    test.describe('upperCase', () => {
-      test.it('should return the string converted to upperCase', () => {
-        const fooTemplates = templates.compile({template: '{{upperCase fooVar}}'})
-        const templateResult = fooTemplates.template({
-          fooVar: 'foo Phrase'
-        })
-
-        test.expect(templateResult).to.equal('FOO PHRASE')
-      })
-    }) */
-
     test.describe('startCase', () => {
       test.it('should return the string converted to startCase', () => {
         const fooTemplates = templates.compile({template: '{{startCase fooVar}}'})

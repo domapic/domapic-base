@@ -85,6 +85,13 @@ test.describe('Bases -> Core -> Info', () => {
   })
 
   test.describe('type', () => {
+    const testPackageType = function (options) {
+      test.it(options.description, () => {
+        readStub.returns(_.extend({}, basePackageInfo, options.customInfo))
+        info = new Info(packagePath, errors)
+        test.expect(info.type).to.equal(options.expectedResult)
+      })
+    }
     let readStub
 
     test.beforeEach(() => {
@@ -92,34 +99,34 @@ test.describe('Bases -> Core -> Info', () => {
       readStub = test.sinon.stub(fsExtra, 'readJsonSync')
     })
 
-    test.it('should be "service" if package name matchs with the services regex', () => {
-      readStub.returns(basePackageInfo)
-      info = new Info(packagePath, errors)
-      test.expect(info.type).to.equal('service')
+    testPackageType({
+      description: 'should be "service" if package name matchs with the services regex',
+      customInfo: {},
+      expectedResult: 'service'
     })
 
-    test.it('should be "controller" if package name matchs with the controller regex', () => {
-      readStub.returns(_.extend({}, basePackageInfo, {
+    testPackageType({
+      description: 'should be "controller" if package name matchs with the controller regex',
+      customInfo: {
         name: 'foo-controller'
-      }))
-      info = new Info(packagePath, errors)
-      test.expect(info.type).to.equal('controller')
+      },
+      expectedResult: 'controller'
     })
 
-    test.it('should be "plugin" if package name matchs with the controller regex', () => {
-      readStub.returns(_.extend({}, basePackageInfo, {
+    testPackageType({
+      description: 'should be "plugin" if package name matchs with the controller regex',
+      customInfo: {
         name: 'foo-plugin'
-      }))
-      info = new Info(packagePath, errors)
-      test.expect(info.type).to.equal('plugin')
+      },
+      expectedResult: 'plugin'
     })
 
-    test.it('should be "unrecognized" if package name doesn´t matchs any recognized type', () => {
-      readStub.returns(_.extend({}, basePackageInfo, {
+    testPackageType({
+      description: 'should be "unrecognized" if package name doesn´t matchs any recognized type',
+      customInfo: {
         name: 'foo'
-      }))
-      info = new Info(packagePath, errors)
-      test.expect(info.type).to.equal('unrecognized')
+      },
+      expectedResult: 'unrecognized'
     })
   })
 
