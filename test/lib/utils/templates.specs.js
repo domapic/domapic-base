@@ -32,14 +32,53 @@ test.describe('Utils -> templates', () => {
   })
 
   test.describe('helpers', () => {
-    test.describe('toJSON', () => {
+    const testHelperMethod = function (options) {
+      test.describe(options.name, () => {
+        test.it(options.description, () => {
+          const fooTemplates = templates.compile({template: options.template})
+          const templateResult = fooTemplates.template(options.templateData)
+          test.expect(options.removeSpaces ? templateResult.replace(/\s/gmi, '') : templateResult).to.equal(options.expectedResult)
+        })
+      })
+    }
+
+    testHelperMethod({
+      name: 'toJSON',
+      description: 'should return the received object converted to JSON stringified string',
+      template: '{{toJSON fooVar}}',
+      templateData: {
+        fooVar: {
+          fooKey: 'fooValue'
+        }
+      },
+      removeSpaces: true,
+      expectedResult: '{"fooKey":"fooValue"}'
+    })
+
+    testHelperMethod({
+      name: 'capitalize',
+      description: 'should return the string capitalized',
+      template: '{{capitalize fooVar}}',
+      templateData: {
+        fooVar: 'foo Phrase'
+      },
+      expectedResult: 'Foo phrase'
+    })
+
+    testHelperMethod({
+      name: 'upperCase',
+      description: 'should return the string converted to upperCase',
+      template: '{{upperCase fooVar}}',
+      templateData: {
+        fooVar: 'foo Phrase'
+      },
+      expectedResult: 'FOO PHRASE'
+    })
+
+   /* test.describe('toJSON', () => {
       test.it('should return the received object converted to JSON stringified string', () => {
         const fooTemplates = templates.compile({template: '{{toJSON fooVar}}'})
-        const templateResult = fooTemplates.template({
-          fooVar: {
-            fooKey: 'fooValue'
-          }
-        })
+        const templateResult = fooTemplates.template()
 
         test.expect(templateResult.replace(/\s/gmi, '')).to.equal('{"fooKey":"fooValue"}')
       })
@@ -65,7 +104,7 @@ test.describe('Utils -> templates', () => {
 
         test.expect(templateResult).to.equal('FOO PHRASE')
       })
-    })
+    }) */
 
     test.describe('startCase', () => {
       test.it('should return the string converted to startCase', () => {
