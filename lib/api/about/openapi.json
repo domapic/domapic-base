@@ -38,7 +38,7 @@
             "description": "Package license",
             "type": "string"
           },
-          "homePage": {
+          "homepage": {
             "description": "Package website",
             "type": "string"
           }

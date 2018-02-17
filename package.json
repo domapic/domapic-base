@@ -62,8 +62,9 @@
   },
   "author": {
     "name": "Javier Brea",
-    "url": "http://domapic.com"
+    "url": "http://javierbrea.com"
   },
+  "homepage": "http://domapic.com",
   "license": "MIT",
   "repository": "https://github.com/domapic/domapic-microservice"
 }

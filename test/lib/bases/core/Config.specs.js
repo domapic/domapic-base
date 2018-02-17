@@ -9,14 +9,17 @@ const Config = require('../../../../lib/bases/core/Config')
 const Storage = require('../../../../lib/bases/core/Storage')
 const Errors = require('../../../../lib/bases/core/Errors')
 
+const UNSTORABLE_CONFIG = ['name', 'saveConfig']
+
 test.describe('Bases -> Core -> Config', () => {
   const errors = new Errors()
-  const storage = new Storage(mocks.storage.options.fileName, {}, errors)
+  let storage
   let storageGet
   let storageSet
   let config
 
   test.beforeEach(() => {
+    storage = new Storage(mocks.storage.options.fileName, {}, errors)
     storageGet = test.sinon.stub(storage, 'get').usingPromise(Promise).resolves(mocks.arguments.getResult.defaults)
     storageSet = test.sinon.stub(storage, 'set').usingPromise(Promise).resolves(mocks.arguments.getResult.defaults)
     config = new Config(storage, mocks.arguments.getResult, errors)
@@ -64,14 +67,49 @@ test.describe('Bases -> Core -> Config', () => {
         })
     })
 
+    test.it('should not store the "unstorable" keys', (done) => {
+      let customArguments = JSON.parse(JSON.stringify(mocks.arguments.getResult))
+      customArguments.explicit.saveConfig = true
+      config = new Config(storage, customArguments, errors)
+      config.get()
+        .then(() => {
+          _.each(UNSTORABLE_CONFIG, (unstorableKey) => {
+            test.expect(storageSet.getCall(0).args[0][unstorableKey]).to.be.undefined()
+          })
+          done()
+        })
+    })
+
+    test.it('should store all current configuration if "saveConfig" option is received', (done) => {
+      let customArguments = JSON.parse(JSON.stringify(mocks.arguments.getResult))
+      customArguments.explicit.saveConfig = true
+
+      config = new Config(storage, customArguments, errors)
+      config.get()
+        .then(() => {
+          test.expect(storageSet.getCall(0).args[0]).to.deep.equal(_.omit(_.extend({},
+            mocks.arguments.getResult.defaults,
+            mocks.arguments.getResult.explicit
+          ), UNSTORABLE_CONFIG))
+          done()
+        })
+    })
+
     test.it('should return the stored config, extended with the explicit received options', (done) => {
-      storageGet.resolves({})
       config.get()
         .then((configuration) => {
-          test.expect(configuration).to.deep.equal(_.extend(
+          test.expect(configuration).to.deep.equal(_.extend({},
             mocks.arguments.getResult.defaults,
             mocks.arguments.getResult.explicit
           ))
+          done()
+        })
+    })
+
+    test.it('should return only the key received as parameter', (done) => {
+      config.get('port')
+        .then((port) => {
+          test.expect(port).to.equal(mocks.arguments.getResult.defaults.port)
           done()
         })
     })
