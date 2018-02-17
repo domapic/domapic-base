@@ -2,6 +2,7 @@
 const _ = require('lodash')
 const Promise = require('bluebird')
 const tracer = require('tracer')
+const chalk = require('chalk')
 
 const test = require('../../../index')
 const mocks = require('../../../mocks')
@@ -30,7 +31,7 @@ test.describe('Bases -> Core -> Tracer', () => {
       tracerLogsSpies[methodName] = test.sinon.spy((toTrace) => {
         preprocessData = {
           title: methodName,
-          args: [toTrace]
+          args: _.isArray(toTrace) ? toTrace : [toTrace]
         }
         preprocess(preprocessData)
       })
@@ -140,6 +141,21 @@ test.describe('Bases -> Core -> Tracer', () => {
           })
       })
 
+      test.it('should add bold style to first trace if is received more than one', (done) => {
+        const fooTrace = ['fooTrace', 'fooTrace2']
+        const fooTrace2 = _.clone(fooTrace)
+        coreTracer[methodName](fooTrace)
+          .then(() => {
+            test.expect(preprocessData.args[0]).to.equal(fooTrace[0])
+            if (chalk.supportsColor) {
+              test.expect(preprocessData.args[0]).to.not.equal(fooTrace2[0])
+            } else {
+              test.expect(preprocessData.args[0]).to.equal(fooTrace2[0])
+            }
+            done()
+          })
+      })
+
       if (methodName === 'error') {
         test.it('should add the error stack to the data to be traced', (done) => {
           let error = new Error('fooError')
@@ -161,6 +177,11 @@ test.describe('Bases -> Core -> Tracer', () => {
       {trace: 'foo-trace'},
       {error: 'foo-error'},
       {warn: 'foo-warn'}
+    ]
+    const fooLogsArrayGroup = [
+      {log: ['foo-log', 'foo-log-2']},
+      {debug: ['foo-debug-1', 'foo-debug-2']},
+      {error: ['foo-error']}
     ]
 
     test.beforeEach(() => {
@@ -190,6 +211,19 @@ test.describe('Bases -> Core -> Tracer', () => {
             const logMethod = _.keys(logData)[0]
             const logText = logData[logMethod]
             test.expect(coreTracer[logMethod]).to.have.been.calledWith(logText)
+          })
+          done()
+        })
+    })
+
+    test.it('should call to correspondant log method for each elements of group', (done) => {
+      coreTracer.group(fooLogsArrayGroup)
+        .then(() => {
+          _.each(fooLogsArrayGroup, (logData) => {
+            const logMethod = _.keys(logData)[0]
+            _.each(coreTracer[logMethod].getCalls(), (coreCall, index) => {
+              test.expect(coreTracer[logMethod].getCall(index).args).to.deep.equal(logData[logMethod])
+            })
           })
           done()
         })
