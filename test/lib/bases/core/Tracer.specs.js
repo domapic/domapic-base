@@ -2,6 +2,7 @@
 const _ = require('lodash')
 const Promise = require('bluebird')
 const tracer = require('tracer')
+const chalk = require('chalk')
 
 const test = require('../../../index')
 const mocks = require('../../../mocks')
@@ -146,7 +147,11 @@ test.describe('Bases -> Core -> Tracer', () => {
         coreTracer[methodName](fooTrace)
           .then(() => {
             test.expect(preprocessData.args[0]).to.equal(fooTrace[0])
-            test.expect(preprocessData.args[0]).to.not.equal(fooTrace2[0])
+            if (chalk.supportsColor) {
+              test.expect(preprocessData.args[0]).to.not.equal(fooTrace2[0])
+            } else {
+              test.expect(preprocessData.args[0]).to.equal(fooTrace2[0])
+            }
             done()
           })
       })
