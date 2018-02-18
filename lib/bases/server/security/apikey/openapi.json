@@ -28,6 +28,15 @@
                 "type": "object",
                 "properties": {
                   "userName": {
+                    "description": "User owner of the new api key",
+                    "type": "string"
+                  },
+                  "role": {
+                    "description": "Authorization role for the new api key",
+                    "type": "string"
+                  },
+                  "reference": {
+                    "description": "Identifier of the new api key, for later reference",
                     "type": "string"
                   }
                 },

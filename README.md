@@ -520,6 +520,8 @@ Must contain properties:
 * `authenticate` - API operation for requesting a new api key. This api point needs authentication as well, so, if your system  authentication is only api key based, you have to define an initial api key that could be used to request more in case it´s needed. This method supports _Json Web Token_ authentication as well, if it is implemented.
 	* `auth` - Authorization method for the `/api/auth/apikey` _POST_ api resource.
 	* `handler` - Operation handler for the `/api/auth/apikey` _POST_ api resource.
+		* Arguments:
+			* `userData` - An object containing `userName`, `role` and `reference`
 		* Should return a new api key.
 * `revoke` - API operation for removing an api key. This api resource needs authentication as well.
 	* `auth` - Authorization method for the `/api/auth/apikey` _DELETE_ api resource.
