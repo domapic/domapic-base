@@ -5,9 +5,12 @@
   "main": "index.js",
   "keywords": [
     "microservice",
+    "domotic",
     "api",
     "openapi",
+    "openapi3",
     "service",
+    "error-handling",
     "ssl",
     "server",
     "authentication",
@@ -16,7 +19,9 @@
     "client",
     "tracer",
     "cli",
-    "process manager"
+    "commandline-interface",
+    "process manager",
+    "swagger-ui"
   ],
   "scripts": {
     "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test",
