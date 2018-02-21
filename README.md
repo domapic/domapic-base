@@ -28,6 +28,7 @@ WebAPI Microservice base for Domapic Node.js packages.
 * [Errors](#errors)
 * [Storage](#storage)
 * [Utils](#utils)
+* [Info](#info)
 * [Authentication](#authentication)
 	* [Api Key](#api-key)
 	* [Jwt](#jwt)
@@ -490,6 +491,27 @@ service.utils.serviceType('example-domapic-controller')
 // controller
 service.utils.serviceType('foo-example')
 // unrecognized
+```
+
+[back to top](#table-of-contents)
+
+---
+
+## Info
+
+Static object containing information about the package, from the `package.json` file.
+
+* `name` - Mandatory. The `package.json` must contain this property.
+* `type` - Domapic category for the package. It is calculated using the package name.
+	* Possible values are: `service`, `controller`, `plugin`, `unrecognized`
+* `version` - Mandatory. The `package.json` must contain this property.
+* `description` - Mandatory. The `package.json` must contain this property.
+* `homepage`
+* `author`
+* `license`
+
+```js
+console.log(service.info)
 ```
 
 [back to top](#table-of-contents)

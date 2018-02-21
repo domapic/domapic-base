@@ -8,12 +8,13 @@ const configMocks = require('./core/Config.mocks')
 const processMocks = require('./Process.mocks')
 
 const Stub = function () {
-  const FooErrorConstructor = function (message, stack) {
+  const FooErrorConstructor = function (message, stack, extraData) {
     this.message = message
     this.name = 'Error'
     this.typeof = 'fooType'
     this.isDomapic = true
     this.stack = stack || (new Error()).stack
+    this.extraData = extraData
   }
 
   FooErrorConstructor.prototype = Object.create(Error.prototype)
@@ -32,7 +33,8 @@ const Stub = function () {
       debug: test.sinon.stub().usingPromise(Promise).resolves(),
       group: test.sinon.stub().usingPromise(Promise).resolves(),
       info: test.sinon.stub().usingPromise(Promise).resolves(),
-      log: test.sinon.stub().usingPromise(Promise).resolves()
+      log: test.sinon.stub().usingPromise(Promise).resolves(),
+      error: test.sinon.stub().usingPromise(Promise).resolves()
     },
     utils: {
       templates: {
