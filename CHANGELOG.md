@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Package info available from service.
 - Improved client errors traces.
-- Add utility "serviceType"
+- Add utility "serviceType".
 
 ### Changed
 - Move utility "utils.process.getUsedCommand" to "utils.usedCommand"
