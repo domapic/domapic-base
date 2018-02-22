@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Move utility "utils.process.getUsedCommand" to "utils.usedCommand"
+- Promesify Service creation errors
 
 ## [0.1.2] - 2017-02-18
 ### Added
