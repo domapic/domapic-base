@@ -29,6 +29,19 @@ test.describe('Bases -> Core -> Errors', () => {
           const error = new Method('fooMessage', customError.stack)
           test.expect(error.stack).to.equal(customError.stack)
         })
+
+        test.it('should have an "isDomapic" property for controlled errors identification', () => {
+          const error = new Method('fooMessage')
+          test.expect(error.isDomapic).to.equal(true)
+        })
+
+        test.it('should return the extra data, if passed', () => {
+          const extraData = {
+            fooProperty: 'fooData'
+          }
+          const error = new Method('fooMessage', null, extraData)
+          test.expect(error.extraData).to.deep.equal(extraData)
+        })
       })
     }
   })
@@ -43,6 +56,20 @@ test.describe('Bases -> Core -> Errors', () => {
       const error = new errors.FromCode(1203, 'fooMessage')
       test.expect(error.isDomapic).to.be.undefined()
       test.expect(error.typeof).to.be.undefined()
+    })
+
+    test.it('should return the received stack, if passed', () => {
+      const customError = new Error('fooError')
+      const error = new errors.FromCode(501, 'fooMessage', customError.stack)
+      test.expect(error.stack).to.equal(customError.stack)
+    })
+
+    test.it('should return the extra data, if passed', () => {
+      const extraData = {
+        fooProperty: 'fooData'
+      }
+      const error = new errors.FromCode(501, 'fooMessage', null, extraData)
+      test.expect(error.extraData).to.deep.equal(extraData)
     })
   })
 

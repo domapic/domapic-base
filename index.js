@@ -1,6 +1,6 @@
 'use strict'
 
-const cli = require('./lib/Cli')
+const cli = require('./lib/cli')
 const Service = require('./lib/Service')
 const utils = require('./lib/utils')
 

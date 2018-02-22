@@ -11,6 +11,7 @@ test.describe('Cli Commands -> stop', () => {
 
   test.beforeEach(() => {
     cliMethods = mocks.core.cliMethodsStub()
+    cliMethods.process.stop.resolves(mocks.process)
   })
 
   test.it('should return a Promise', (done) => {
@@ -33,6 +34,29 @@ test.describe('Cli Commands -> stop', () => {
     stop.command(mocks.config.getResult, cliMethods)
       .then(() => {
         test.expect(cliMethods.process.stop).to.have.been.called()
+        done()
+      })
+  })
+
+  test.it('should trace the error if stopping the process returns a controlled error', (done) => {
+    const errorMessage = 'This is a foo controlled error'
+    const controlledError = new cliMethods.errors.BadData(errorMessage)
+    cliMethods.process.stop.rejects(controlledError)
+    cliMethods.errors.isControlled.returns(true)
+    stop.command(mocks.config.getResult, cliMethods)
+      .then(() => {
+        test.expect(cliMethods.tracer.error).to.have.been.calledWith(errorMessage)
+        done()
+      })
+  })
+
+  test.it('should reject the promise with the received error if stopping the process returns an unexpected error', (done) => {
+    const errorMessage = 'This is a foo controlled error'
+    const unexpectedError = new Error(errorMessage)
+    cliMethods.process.stop.rejects(unexpectedError)
+    stop.command(mocks.config.getResult, cliMethods)
+      .catch((error) => {
+        test.expect(error.message).to.equal(errorMessage)
         done()
       })
   })

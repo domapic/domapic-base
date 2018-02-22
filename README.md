@@ -28,6 +28,7 @@ WebAPI Microservice base for Domapic Node.js packages.
 * [Errors](#errors)
 * [Storage](#storage)
 * [Utils](#utils)
+* [Info](#info)
 * [Authentication](#authentication)
 	* [Api Key](#api-key)
 	* [Jwt](#jwt)
@@ -391,6 +392,7 @@ Consult [all available error constructors](lib/bases/core/Errors.js) and its cor
 In addition to error constructors, three methods are provided in the `errors` object. These methods are used internally by _domapic-microservice_ in order to map the returned errors to HTML errors and viceversa:
 
 * `isControlled` - Allows to know if error has been created with a custom error constructor
+	* `service.errors.isControlled(error)`
 	
 ```js
 const error = new service.errors.Conflict()
@@ -403,6 +405,7 @@ console.log(service.errors.isControlled(error))
 ```
 
 * `FromCode` - Returns an error created with the constructor correspondent to the provided html error status code:
+	* `service.errors.FromCode(code, message, [stack], [extraData])`
 	
 ```js
 return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
@@ -414,6 +417,7 @@ return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
 ```
 
 * `toHTML` - Returns a [_Boomified_](https://www.npmjs.com/package/boom) error correspondent to the used error constructor. Each error constructor is mapped to an specific status code, ready to be returned by the API:
+	* `service.errors.toHTML(error)`
 
 ```js
 const error = new service.errors.Forbidden()
@@ -476,8 +480,39 @@ console.log(templates.myTemplate1({
 // Value is: 123
 ```
 	* `compiled` - Set of precompiled templates, used internally.
-* `process`
-	* `getUsedCommand` - Used internally by CLI. Returns the command used to invoque it.
+* `usedCommand` - Used internally by CLI. Returns the command used to invoque it.
+* `serviceType` - Provided a package name, returns the correspondant domapic service type.
+```js
+service.utils.serviceType('example-domapic-service')
+// service
+service.utils.serviceType('example-domapic-plugin')
+// plugin
+service.utils.serviceType('example-domapic-controller')
+// controller
+service.utils.serviceType('foo-example')
+// unrecognized
+```
+
+[back to top](#table-of-contents)
+
+---
+
+## Info
+
+Static object containing information about the package, from the `package.json` file.
+
+* `name` - Mandatory. The `package.json` must contain this property.
+* `type` - Domapic category for the package. It is calculated using the package name.
+	* Possible values are: `service`, `controller`, `plugin`, `unrecognized`
+* `version` - Mandatory. The `package.json` must contain this property.
+* `description` - Mandatory. The `package.json` must contain this property.
+* `homepage`
+* `author`
+* `license`
+
+```js
+console.log(service.info)
+```
 
 [back to top](#table-of-contents)
 

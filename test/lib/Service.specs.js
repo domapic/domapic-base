@@ -1,4 +1,5 @@
 
+const _ = require('lodash')
 const Promise = require('bluebird')
 
 const test = require('../index')
@@ -6,8 +7,11 @@ const mocks = require('../mocks')
 
 const bases = require('../../lib/bases')
 const Service = require('../../lib/Service')
+const serviceArguments = require('../../lib/arguments/service')
 
 test.describe('Service', () => {
+  const coreExposedProperties = ['config', 'errors', 'info', 'storage', 'tracer', 'utils']
+
   const fooServer = {
     // TODO, add tests for this methods
     extendOpenApi: test.sinon.stub().usingPromise().resolves(),
@@ -18,6 +22,15 @@ test.describe('Service', () => {
     fooClientMethod: 'fooCMethod'
   }
   const coreStub = new mocks.core.Stub()
+  const ensureCoreProperty = function (coreProperty) {
+    test.it('should return the core ' + coreProperty, (done) => {
+      new Service()
+        .then((result) => {
+          test.expect(result[coreProperty]).to.deep.equal(coreStub[coreProperty])
+          done()
+        })
+    })
+  }
   let getArgumentsStub
 
   test.beforeEach(() => {
@@ -37,9 +50,49 @@ test.describe('Service', () => {
     bases.Server.restore()
   })
 
-  // TODO, remove this test, it only returns a promise temporarily, for error handling purposes
   test.it('should return a Promise', () => {
     test.expect(new Service()).to.be.an.instanceof(Promise)
+  })
+
+  test.it('should call Arguments to get arguments correspondant to core and service options', (done) => {
+    new Service()
+      .then((result) => {
+        test.expect(bases.Arguments.getCall(0).args[0]).to.deep.equal(serviceArguments)
+        done()
+      })
+  })
+
+  test.it('should extend the service arguments with received customConfig', (done) => {
+    const customConfig = {
+      fooOption: {}
+    }
+    new Service({customConfig: customConfig})
+      .then((result) => {
+        test.expect(bases.Arguments.getCall(0).args[0]).to.deep.equal(_.extend({}, serviceArguments, customConfig))
+        done()
+      })
+  })
+
+  test.it('should reject the promise if a customConfig property already exists in service arguments', (done) => {
+    const customConfig = {
+      authDisabled: {}
+    }
+    new Service({customConfig: customConfig})
+      .catch((error) => {
+        test.expect(error.message).to.include('authDisabled')
+        done()
+      })
+  })
+
+  test.it('should reject the promise if a customConfig property already exists in core arguments', (done) => {
+    const customConfig = {
+      logLevel: {}
+    }
+    new Service({customConfig: customConfig})
+      .catch((error) => {
+        test.expect(error.message).to.include('logLevel')
+        done()
+      })
   })
 
   test.it('should create a new instance of Core, with name "service"', (done) => {
@@ -47,14 +100,6 @@ test.describe('Service', () => {
       .then((result) => {
         test.expect(bases.Core.getCall(0).args[0]).to.deep.equal(mocks.arguments.getResult)
         test.expect(bases.Core.getCall(0).args[1]).to.equal('service')
-        done()
-      })
-  })
-
-  test.it('should return the core tracer', (done) => {
-    new Service()
-      .then((result) => {
-        test.expect(result.tracer).to.deep.equal(coreStub.tracer)
         done()
       })
   })
@@ -75,5 +120,9 @@ test.describe('Service', () => {
         test.expect(result.client).to.deep.equal(fooClient)
         done()
       })
+  })
+
+  _.each(coreExposedProperties, (coreProperty) => {
+    ensureCoreProperty(coreProperty)
   })
 })
