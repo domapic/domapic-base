@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.0] - 2017-02-24
+### Added
+- Add set method to config.
+- Increased unit tests coverage.
+
+### Fixed
+- Fix async tests pattern in Config, Arguments and Process unit tests.
+
 ## [0.2.1] - 2017-02-22
 ### Fixed
 - Ensure response was received before save status code

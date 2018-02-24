@@ -1,6 +1,6 @@
 {
   "name": "domapic-microservice",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "WebAPI Microservice base for Domapic Node.js packages",
   "main": "index.js",
   "keywords": [
