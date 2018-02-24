@@ -16,29 +16,47 @@ test.describe('Bases -> Core', () => {
   const fooProcessName = 'testing'
   let core
 
-  test.beforeEach(() => {
-    test.sinon.stub(coreLib, 'Errors').returns(fooErrors)
-    test.sinon.stub(coreLib, 'Paths').returns(fooPaths)
-    test.sinon.stub(coreLib, 'Storage').returns(fooStorage)
-    test.sinon.stub(coreLib, 'Config').returns(fooConfig)
-    test.sinon.stub(coreLib, 'Tracer').returns(fooTracer)
-    test.sinon.stub(coreLib, 'Info').returns(fooInfo)
-    core = new Core(mocks.arguments.getResult, fooProcessName)
-  })
-
-  test.afterEach(() => {
+  const restoreStubs = function () {
     coreLib.Errors.restore()
     coreLib.Paths.restore()
     coreLib.Storage.restore()
     coreLib.Config.restore()
     coreLib.Tracer.restore()
     coreLib.Info.restore()
+  }
+
+  const initStubs = function () {
+    test.sinon.stub(coreLib, 'Errors').returns(fooErrors)
+    test.sinon.stub(coreLib, 'Paths').returns(fooPaths)
+    test.sinon.stub(coreLib, 'Storage').returns(fooStorage)
+    test.sinon.stub(coreLib, 'Config').returns(fooConfig)
+    test.sinon.stub(coreLib, 'Tracer').returns(fooTracer)
+    test.sinon.stub(coreLib, 'Info').returns(fooInfo)
+  }
+
+  test.beforeEach(() => {
+    initStubs()
+    core = new Core(mocks.arguments.getResult, fooProcessName)
+  })
+
+  test.afterEach(() => {
+    restoreStubs()
   })
 
   test.it('should create a new Errors instance', () => {
     test.expect(coreLib.Errors).to.have.been.calledWithNew()
     test.expect(coreLib.Errors.getCall(0).args[0]).to.be.undefined()
     test.expect(core.errors).to.deep.equal(fooErrors)
+  })
+
+  test.it('should create a new Info instance if packagePath option is provided, passing packagePath and errors', () => {
+    const fooPath = 'fooPath'
+    restoreStubs()
+    initStubs()
+    core = new Core(mocks.arguments.getResult, fooProcessName, fooPath)
+    test.expect(coreLib.Info).to.have.been.calledWithNew()
+    test.expect(coreLib.Info.getCall(0).args[0]).to.equal(fooPath)
+    test.expect(coreLib.Paths.getCall(0).args[1]).to.deep.equal(fooErrors)
   })
 
   test.it('should create a new Paths instance, passing options and errors', () => {

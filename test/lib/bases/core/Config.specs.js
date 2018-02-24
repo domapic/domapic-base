@@ -31,86 +31,148 @@ test.describe('Bases -> Core -> Config', () => {
   })
 
   test.describe('get', () => {
-    test.it('should return a Promise', (done) => {
-      let response = config.get()
+    test.it('should return a Promise', () => {
+      return test.expect(config.get()).to.be.an.instanceof(Promise)
+    })
+
+    test.it('should read the stored config first time it is called', () => {
+      return config.get()
         .then(() => {
-          test.expect(response).to.be.an.instanceof(Promise)
-          done()
+          return test.expect(storageGet).to.have.been.called()
         })
     })
 
-    test.it('should read the stored config first time it is called', (done) => {
-      config.get()
-        .then(() => {
-          test.expect(storageGet).to.have.been.called()
-          done()
-        })
-    })
-
-    test.it('should not read the stored config more than one time', (done) => {
-      config.get()
-        .then(() => {
-          config.get()
-            .then(() => {
-              test.expect(storageGet).to.have.been.calledOnce()
-              done()
-            })
-        })
-    })
-
-    test.it('should store the received defaults options that were not already saved', (done) => {
-      storageGet.resolves({})
-      config.get()
-        .then(() => {
-          test.expect(storageSet).to.have.been.calledWith(mocks.arguments.getResult.defaultsToStore)
-          done()
-        })
-    })
-
-    test.it('should not store the "unstorable" keys', (done) => {
-      let customArguments = JSON.parse(JSON.stringify(mocks.arguments.getResult))
-      customArguments.explicit.saveConfig = true
-      config = new Config(storage, customArguments, errors)
-      config.get()
-        .then(() => {
-          _.each(UNSTORABLE_CONFIG, (unstorableKey) => {
-            test.expect(storageSet.getCall(0).args[0][unstorableKey]).to.be.undefined()
+    test.it('should not read the stored config more than one time', () => {
+      return Promise.all([
+        config.get(),
+        config.get()
+      ]).then(() => {
+        return config.get()
+          .then(() => {
+            return test.expect(storageGet).to.have.been.calledOnce()
           })
-          done()
+      })
+    })
+
+    test.it('should store the received defaults options that were not already saved', () => {
+      storageGet.resolves({})
+      return config.get()
+        .then(() => {
+          return test.expect(storageSet).to.have.been.calledWith(mocks.arguments.getResult.defaultsToStore)
         })
     })
 
-    test.it('should store all current configuration if "saveConfig" option is received', (done) => {
+    test.it('should not store the "unstorable" keys', () => {
+      let customArguments = JSON.parse(JSON.stringify(mocks.arguments.getResult))
+      customArguments.explicit.saveConfig = true
+      config = new Config(storage, customArguments, errors)
+      return config.get()
+        .then(() => {
+          return Promise.map(UNSTORABLE_CONFIG, (unstorableKey) => {
+            return test.expect(storageSet.getCall(0).args[0][unstorableKey]).to.be.undefined()
+          })
+        })
+    })
+
+    test.it('should store all current configuration if "saveConfig" option is received', () => {
       let customArguments = JSON.parse(JSON.stringify(mocks.arguments.getResult))
       customArguments.explicit.saveConfig = true
 
       config = new Config(storage, customArguments, errors)
-      config.get()
+      return config.get()
         .then(() => {
-          test.expect(storageSet.getCall(0).args[0]).to.deep.equal(_.omit(_.extend({},
+          return test.expect(storageSet.getCall(0).args[0]).to.deep.equal(_.omit(_.extend({},
             mocks.arguments.getResult.defaults,
             mocks.arguments.getResult.explicit
           ), UNSTORABLE_CONFIG))
-          done()
         })
     })
 
-    test.it('should return the stored config, extended with the explicit received options', (done) => {
-      config.get()
+    test.it('should return the stored config, extended with the explicit received options', () => {
+      return config.get()
         .then((configuration) => {
-          test.expect(configuration).to.deep.equal(_.extend({},
+          return test.expect(configuration).to.deep.equal(_.extend({},
             mocks.arguments.getResult.defaults,
             mocks.arguments.getResult.explicit
           ))
-          done()
         })
     })
 
-    test.it('should return only the key received as parameter', (done) => {
-      config.get('port')
+    test.it('should return a clone of the configuration in order to avoid external modifications', () => {
+      return config.get()
+        .then((configuration) => {
+          configuration.fooProperty = 'foo'
+          return config.get()
+        })
+        .then((configuration) => {
+          return test.expect(configuration.fooProperty).to.be.undefined()
+        })
+    })
+
+    test.it('should return only the key received as parameter', () => {
+      return config.get('port')
         .then((port) => {
-          test.expect(port).to.equal(mocks.arguments.getResult.defaults.port)
-          done()
+          return test.expect(port).to.equal(mocks.arguments.getResult.defaults.port)
+        })
+    })
+  })
+
+  test.describe('set', () => {
+    const fooKey = 'fooKey'
+    const fooValue = 'fooValue'
+
+    test.it('should return a Promise', () => {
+      return test.expect(config.set(fooKey, fooValue)).to.be.an.instanceof(Promise)
+    })
+
+    test.it('should build base config if it is not already ready', () => {
+      return config.set(fooKey, fooValue)
+        .then(() => {
+          return test.expect(storageGet).to.have.been.calledOnce()
+        })
+    })
+
+    test.it('should reject the promise if no key is defined to be set', () => {
+      return config.set()
+        .catch((error) => {
+          return test.expect(error).to.be.an.instanceof(errors.BadData)
+        })
+    })
+
+    test.it('should call to store the new value', () => {
+      return config.set(fooKey, fooValue)
+        .then(() => {
+          return Promise.all([
+            test.expect(storageSet.getCall(0).args[0]).to.equal(fooKey),
+            test.expect(storageSet.getCall(0).args[1]).to.equal(fooValue)
+          ])
+        })
+    })
+
+    test.it('should return the new value', () => {
+      return config.set(fooKey, fooValue)
+        .then((value) => {
+          return test.expect(value).to.equal(fooValue)
+        })
+    })
+
+    test.it('should store the new value in memory, to be available for next "get" calls', () => {
+      const fooValue2 = 'fooValue2'
+      return config.set(fooKey, fooValue)
+        .then(() => {
+          return config.get(fooKey)
+            .then((value) => {
+              return config.set(fooKey, fooValue2)
+                .then(() => {
+                  return config.get(fooKey)
+                    .then((value2) => {
+                      return Promise.all([
+                        test.expect(value).to.equal(fooValue),
+                        test.expect(value2).to.equal(fooValue2)
+                      ])
+                    })
+                })
+            })
         })
     })
   })

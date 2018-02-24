@@ -50,77 +50,64 @@ test.describe('Bases -> Process', () => {
   })
 
   const commonTests = function (method) {
-    test.it('should return a Promise', (done) => {
-      let response = pm2Process[method]()
+    test.it('should return a Promise', () => {
+      return test.expect(pm2Process[method]()).to.be.an.instanceof(Promise)
+    })
+
+    test.it('should connect to PM2', () => {
+      return pm2Process[method]()
         .then(() => {
-          test.expect(response).to.be.an.instanceof(Promise)
-          done()
+          return test.expect(pm2.connect).to.have.been.called()
         })
     })
 
-    test.it('should connect to PM2', (done) => {
-      pm2Process[method]()
-        .then(() => {
-          test.expect(pm2.connect).to.have.been.called()
-          done()
-        })
-    })
-
-    test.it('should reject the promise if connect to PM2 fails', (done) => {
+    test.it('should reject the promise if connect to PM2 fails', () => {
       pm2Connect.callsFake(pm2ConnectRejecter)
-      pm2Process[method]()
+      return pm2Process[method]()
         .catch((err) => {
-          test.expect(err).to.be.an.instanceof(Error)
-          done()
+          return test.expect(err).to.be.an.instanceof(Error)
         })
     })
 
-    test.it('should disconnect from PM2', (done) => {
-      pm2Process[method]()
+    test.it('should disconnect from PM2', () => {
+      return pm2Process[method]()
         .then(() => {
-          test.expect(pm2.disconnect).to.have.been.called()
-          done()
+          return test.expect(pm2.disconnect).to.have.been.called()
         })
     })
 
-    test.it('should ensure that logs paths exists', (done) => {
-      pm2Process[method]()
+    test.it('should ensure that logs paths exists', () => {
+      return pm2Process[method]()
         .then(() => {
-          test.expect(stubCore.paths.ensureFile.getCall(0).args[0].indexOf(mocks.arguments.options.name)).to.be.above(-1)
-          done()
+          return test.expect(stubCore.paths.ensureFile.getCall(0).args[0].indexOf(mocks.arguments.options.name)).to.be.above(-1)
         })
     })
 
-    test.it('should not ensure that logs paths exists more than once', (done) => {
-      pm2Process[method]()
+    test.it('should not ensure that logs paths exists more than once', () => {
+      return pm2Process[method]()
         .then(() => {
-          pm2Process[method]()
+          return pm2Process[method]()
             .then(() => {
-              test.expect(stubCore.paths.ensureFile).to.have.been.calledOnce()
-              done()
+              return test.expect(stubCore.paths.ensureFile).to.have.been.calledOnce()
             })
         })
     })
 
-    test.it('should reject the promise if no name was provided for process', (done) => {
+    test.it('should reject the promise if no name was provided for process', () => {
       pm2Process = new Process({}, stubCore)
-      pm2Process[method]()
+      return pm2Process[method]()
         .catch((err) => {
-          // TODO, ensure error type
-          test.expect(err).to.be.an.instanceof(Error)
-          done()
+          return test.expect(err).to.be.an.instanceof(stubCore.errors.BadData)
         })
     })
 
-    test.it('should reject the promise if no script path was provided for process', (done) => {
+    test.it('should reject the promise if no script path was provided for process', () => {
       pm2Process = new Process({
         name: mocks.arguments.options.name
       }, stubCore)
-      pm2Process[method]()
+      return pm2Process[method]()
         .catch((err) => {
-          // TODO, ensure error type
-          test.expect(err).to.be.an.instanceof(Error)
-          done()
+          return test.expect(err).to.be.an.instanceof(stubCore.errors.BadData)
         })
     })
   }
@@ -138,62 +125,59 @@ test.describe('Bases -> Process', () => {
 
     commonTests('start')
 
-    test.it('should add received arguments to default pm2 options', (done) => {
+    test.it('should add received arguments to default pm2 options', () => {
       const fooArguments = ['--testing', '--testing2']
-      pm2Process.start(fooArguments)
+      return pm2Process.start(fooArguments)
         .then(() => {
-          test.expect(pm2Start.getCall(0).args[0].args).to.deep.equal(fooArguments)
-          done()
+          return test.expect(pm2Start.getCall(0).args[0].args).to.deep.equal(fooArguments)
         })
     })
 
-    test.it('should convert string arguments to array', (done) => {
+    test.it('should convert string arguments to array', () => {
       const fooArguments = '--testing'
-      pm2Process.start(fooArguments)
+      return pm2Process.start(fooArguments)
         .then(() => {
-          test.expect(pm2Start.getCall(0).args[0].args).to.deep.equal([fooArguments])
-          done()
+          return test.expect(pm2Start.getCall(0).args[0].args).to.deep.equal([fooArguments])
         })
     })
 
-    test.it('should convert object arguments to array', (done) => {
+    test.it('should convert object arguments to array', () => {
       const fooArguments = {
         testing: true,
         testing2: 'fooValue',
-        testing3: undefined
+        testing3: undefined,
+        testing4: ['foo1', 'foo2'],
+        testing5: []
       }
-      pm2Process.start(fooArguments)
+      return pm2Process.start(fooArguments)
         .then(() => {
-          test.expect(pm2Start.getCall(0).args[0].args).to.deep.equal(['--testing=true', '--testing2=fooValue'])
-          done()
+          return test.expect(pm2Start.getCall(0).args[0].args).to.deep.equal(['--testing=true', '--testing2=fooValue', '--testing4=foo1', '--testing4=foo2', '--testing5'])
         })
     })
 
-    test.it('should start the PM2 process with logs pointing to log file path', (done) => {
+    test.it('should start the PM2 process with logs pointing to log file path', () => {
       stubCore.paths.ensureFile.resolves(fooFilePath)
-      pm2Process.start()
+      return pm2Process.start()
         .then(() => {
-          test.expect(pm2Start.getCall(0).args[0].output).to.equal(fooFilePath)
-          test.expect(pm2Start.getCall(0).args[0].error).to.equal(fooFilePath)
-          done()
+          return Promise.all([
+            test.expect(pm2Start.getCall(0).args[0].output).to.equal(fooFilePath),
+            test.expect(pm2Start.getCall(0).args[0].error).to.equal(fooFilePath)
+          ])
         })
     })
 
-    test.it('should resolve the promise with the PM2 process', (done) => {
-      pm2Process.start()
+    test.it('should resolve the promise with the PM2 process', () => {
+      return pm2Process.start()
         .then((pm2Proc) => {
-          test.expect(pm2Proc).to.deep.equal(mocks.process.pm2Process)
-          done()
+          return test.expect(pm2Proc).to.deep.equal(mocks.process.pm2Process)
         })
     })
 
-    test.it('should reject the promise if starting PM2 process fails', (done) => {
+    test.it('should reject the promise if starting PM2 process fails', () => {
       pm2Start.callsFake(pm2Rejecter)
-      pm2Process.start()
+      return pm2Process.start()
         .catch((err) => {
-          // TODO, ensure error type
-          test.expect(err).to.be.an.instanceof(Error)
-          done()
+          return test.expect(err).to.be.an.instanceof(stubCore.errors.ChildProcess)
         })
     })
   })
@@ -211,29 +195,25 @@ test.describe('Bases -> Process', () => {
 
     commonTests('stop')
 
-    test.it('should call to stop pm2 passing the name of the process', (done) => {
-      pm2Process.stop()
+    test.it('should call to stop pm2 passing the name of the process', () => {
+      return pm2Process.stop()
         .then(() => {
-          test.expect(pm2Stop.getCall(0).args[0]).to.equal(mocks.arguments.options.name)
-          done()
+          return test.expect(pm2Stop.getCall(0).args[0]).to.equal(mocks.arguments.options.name)
         })
     })
 
-    test.it('should resolve the promise with the pm2 process data', (done) => {
-      pm2Process.stop()
+    test.it('should resolve the promise with the pm2 process data', () => {
+      return pm2Process.stop()
         .then((result) => {
-          test.expect(result).to.deep.equal(mocks.process.pm2Process)
-          done()
+          return test.expect(result).to.deep.equal(mocks.process.pm2Process)
         })
     })
 
-    test.it('should reject the promise if pm2 stop fails', (done) => {
+    test.it('should reject the promise if pm2 stop fails', () => {
       pm2Stop.callsFake(pm2Rejecter)
-      pm2Process.stop()
+      return pm2Process.stop()
         .catch((err) => {
-          // TODO, ensure error type
-          test.expect(err).to.be.an.instanceof(Error)
-          done()
+          return test.expect(err).to.be.an.instanceof(stubCore.errors.ChildProcess)
         })
     })
   })
@@ -252,68 +232,66 @@ test.describe('Bases -> Process', () => {
 
     commonTests('logs')
 
-    test.it('should create a spawn process of pm2 logs, passing to it the name of the process', (done) => {
-      pm2Process.logs()
+    test.it('should create a spawn process of pm2 logs, passing to it the name of the process', () => {
+      return pm2Process.logs()
         .then(() => {
-          test.expect(childProcess.spawn.getCall(0).args[0]).to.equal(path.resolve(__dirname, '..', '..', '..', 'node_modules', '.bin', 'pm2'))
-          test.expect(childProcess.spawn.getCall(0).args[1][0]).to.equal('logs')
-          test.expect(childProcess.spawn.getCall(0).args[1][1]).to.equal(mocks.arguments.options.name)
-          done()
+          return Promise.all([
+            test.expect(childProcess.spawn.getCall(0).args[0]).to.equal(path.resolve(__dirname, '..', '..', '..', 'node_modules', '.bin', 'pm2')),
+            test.expect(childProcess.spawn.getCall(0).args[1][0]).to.equal('logs'),
+            test.expect(childProcess.spawn.getCall(0).args[1][1]).to.equal(mocks.arguments.options.name)
+          ])
         })
     })
 
-    test.it('should add the lines options to the spawned process if received', (done) => {
+    test.it('should add the lines options to the spawned process if received', () => {
       const fooLines = 453
-      pm2Process.logs({
+      return pm2Process.logs({
         lines: fooLines
       })
       .then(() => {
-        test.expect(childProcess.spawn.getCall(0).args[1].indexOf('--lines=' + fooLines)).to.be.above(-1)
-        done()
+        return test.expect(childProcess.spawn.getCall(0).args[1].indexOf('--lines=' + fooLines)).to.be.above(-1)
       })
     })
 
-    test.it('should log the spawned process stdout', (done) => {
+    test.it('should log the spawned process stdout', () => {
       const fooLog = 'This is a foo process log'
       spawnStub.callsFake('stdout', fooLog)
       test.sinon.spy(console, 'log')
-      pm2Process.logs()
+      return pm2Process.logs()
         .then(() => {
-          test.expect(console.log).to.have.been.calledWith(fooLog)
+          return test.expect(console.log).to.have.been.calledWith(fooLog)
+        })
+        .finally(() => {
           console.log.restore()
-          done()
         })
     })
 
-    test.it('should not log the spawned process empty stdout', (done) => {
+    test.it('should not log the spawned process empty stdout', () => {
       const fooLog = ''
       spawnStub.callsFake('stdout', fooLog)
       test.sinon.spy(console, 'log')
-      pm2Process.logs()
+      return pm2Process.logs()
         .then(() => {
-          test.expect(console.log).not.to.have.been.called()
+          return test.expect(console.log).not.to.have.been.called()
+        })
+        .finally(() => {
           console.log.restore()
-          done()
         })
     })
 
-    test.it('should reject the promise if the spawned process is closed with error code', (done) => {
+    test.it('should reject the promise if the spawned process is closed with error code', () => {
       spawnStub.callsFake('on', 1)
-      pm2Process.logs()
+      return pm2Process.logs()
         .catch((err) => {
-          // TODO, ensure error type
-          test.expect(err).to.be.an.instanceof(Error)
-          done()
+          return test.expect(err).to.be.an.instanceof(stubCore.errors.ChildProcess)
         })
     })
 
-    test.it('should reject the promise if the spawned process stderr is called', (done) => {
+    test.it('should reject the promise if the spawned process stderr is called', () => {
       spawnStub.callsFake('stderr', 'error')
-      pm2Process.logs()
+      return pm2Process.logs()
         .catch((err) => {
-          // TODO, ensure error type
-          test.expect(err).to.be.an.instanceof(Error)
-          done()
+          return test.expect(err).to.be.an.instanceof(stubCore.errors.ChildProcess)
         })
     })
   })

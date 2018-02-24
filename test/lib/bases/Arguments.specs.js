@@ -48,44 +48,40 @@ test.describe('Bases -> Arguments', () => {
       args = new Arguments(serviceArguments)
     })
 
-    test.it('should return a Promise', (done) => {
-      let response = args.get()
-        .then(() => {
-          test.expect(response).to.be.an.instanceof(Promise)
-          done()
-        })
+    test.it('should return a Promise', () => {
+      return test.expect(args.get()).to.be.an.instanceof(Promise)
     })
 
-    test.it('should initialize yargs, and call it to get the value of the core arguments and those in the "arguments" option', (done) => {
+    test.it('should initialize yargs, and call it to get the value of the core arguments and those in the "arguments" option', () => {
       let allArguments = _.extend({}, coreArguments, serviceArguments)
-
-      args.get()
+      return args.get()
         .then(() => {
-          test.expect(yargs.strict).to.have.been.called()
-          test.expect(yargs.help).to.have.been.called()
-          test.expect(aliasStub).to.have.been.called()
-          test.expect(yargs.parse).to.have.been.called()
-          test.expect(yargs.wrap).to.have.been.calledWith(mocks.arguments.terminalWidth)
+          let asserts = [
+            test.expect(yargs.strict).to.have.been.called(),
+            test.expect(yargs.help).to.have.been.called(),
+            test.expect(aliasStub).to.have.been.called(),
+            test.expect(yargs.parse).to.have.been.called(),
+            test.expect(yargs.wrap).to.have.been.calledWith(mocks.arguments.terminalWidth)
+          ]
           _.each(allArguments, (properties, name) => {
-            test.expect(yargs.option).to.have.been.calledWith(name, properties)
+            asserts.push(test.expect(yargs.option).to.have.been.calledWith(name, properties))
           })
-          done()
+          return Promise.all(asserts)
         })
     })
 
-    test.it('should return only those arguments that were defined in the "arguments" option and in the core', (done) => {
+    test.it('should return only those arguments that were defined in the "arguments" option and in the core', () => {
       let fakeOptionsReturn = _.extend({}, mocks.arguments.getResult.options, {
         fooOption1: 'fooValue'
       })
       yargsParseStub.returns(fakeOptionsReturn)
-      args.get()
+      return args.get()
         .then((result) => {
-          test.expect(result.options).to.deep.equal(mocks.arguments.getResult.options)
-          done()
+          return test.expect(result.options).to.deep.equal(mocks.arguments.getResult.options)
         })
     })
 
-    test.it('should return the default values of all arguments', (done) => {
+    test.it('should return the default values of all arguments', () => {
       let allArguments = _.extend({}, coreArguments, {
         fooArgument1: {
           default: 'fooValue1'
@@ -97,22 +93,50 @@ test.describe('Bases -> Arguments', () => {
 
       args = new Arguments(allArguments)
 
-      args.get()
+      return args.get()
         .then((result) => {
-          test.expect(result.defaults.fooArgument1).to.equal('fooValue1')
-          test.expect(result.defaults.fooArgument2).to.equal('fooValue2')
-          done()
+          return Promise.all([
+            test.expect(result.defaults.fooArgument1).to.equal('fooValue1'),
+            test.expect(result.defaults.fooArgument2).to.equal('fooValue2')
+          ])
         })
     })
 
-    test.it('should return the explicit arguments received, omitting those which value was get from defaults', (done) => {
+    test.it('should return the explicit arguments received, omitting those which value was get from defaults. Even if yargs has not returned it', () => {
       process.argv.push('--p=123')
-      args.get()
+      return args.get()
         .then((result) => {
-          test.expect(result.explicit).to.deep.equal({
+          return test.expect(result.explicit).to.deep.equal({
             port: '123'
           })
-          done()
+        })
+        .finally(() => {
+          process.argv.pop()
+        })
+    })
+
+    test.it('should consider as true a given argument if only argument name is passed', () => {
+      process.argv.push('--p')
+      return args.get()
+        .then((result) => {
+          return test.expect(result.explicit).to.deep.equal({
+            port: true
+          })
+        })
+        .finally(() => {
+          process.argv.pop()
+        })
+    })
+
+    test.it('should return the explicit arguments received, getting the value from yargs result', () => {
+      const fooValue = '123'
+      process.argv.push('--p=' + fooValue)
+      yargsParseStub.returns(_.extend({}, mocks.arguments.getResult.options, {port: fooValue}))
+      return args.get()
+        .then((result) => {
+          return test.expect(result.explicit).to.deep.equal({
+            port: fooValue
+          })
         })
         .finally(() => {
           process.argv.pop()
@@ -155,72 +179,97 @@ test.describe('Bases -> Arguments', () => {
       cliCommandsMethods.get.restore()
     })
 
-    test.it('should return a Promise', (done) => {
-      let response = args.runCommand(commands, cliCommandsMethods.get)
-        .then(() => {
-          test.expect(response).to.be.an.instanceof(Promise)
-          done()
+    test.it('should return a Promise', () => {
+      return test.expect(args.runCommand(commands, cliCommandsMethods.get)).to.be.an.instanceof(Promise)
+    })
+
+    test.it('should throw an error if any command option overrides a core option', () => {
+      const fooCommands = JSON.parse(JSON.stringify(commands))
+      fooCommands.start.options.color = {}
+      return args.runCommand(fooCommands, cliCommandsMethods.get)
+        .catch((error) => {
+          return test.expect(error.message).to.include('color')
         })
     })
 
-    test.it('should call yargs to register all defined commands', (done) => {
-      args.runCommand(commands, cliCommandsMethods.get)
+    test.it('should call yargs to register all defined commands', () => {
+      return args.runCommand(commands, cliCommandsMethods.get)
         .then(() => {
-          _.each(commands, (properties, commandName) => {
-            test.expect(yargs.command).to.have.been.calledWith(properties.cli, properties.describe)
-          })
-          done()
+          return Promise.all(_.map(commands, (properties, commandName) => {
+            return test.expect(yargs.command).to.have.been.calledWith(properties.cli, properties.describe)
+          }))
         })
     })
 
-    test.it('should demmand yargs to run one command at least', (done) => {
-      args.runCommand(commands, cliCommandsMethods.get)
+    test.it('should demmand yargs to run one command at least', () => {
+      return args.runCommand(commands, cliCommandsMethods.get)
         .then(() => {
-          test.expect(yargs.command).to.have.been.called()
-          done()
+          return test.expect(yargs.command).to.have.been.called()
         })
     })
 
     test.describe('when launchs command', () => {
-      test.it('should call get methods for the command, passing the arguments', (done) => {
-        args.runCommand({
+      test.it('should call get methods for the command, passing the arguments', () => {
+        return args.runCommand({
           start: _.extend({}, commands.start, {cli: 'start [testing] [testing2] [testing3] <testing4>'})
         }, cliCommandsMethods.get)
           .then(() => {
-            test.expect(cliCommandsMethods.get.getCall(0).args[0].options).to.deep.equal(mocks.arguments.getResult.options)
-            test.expect(cliCommandsMethods.get.getCall(0).args[0].defaults).to.deep.equal(mocks.arguments.getResult.defaults)
-            done()
+            return Promise.all([
+              test.expect(cliCommandsMethods.get.getCall(0).args[0].options).to.deep.equal(mocks.arguments.getResult.options),
+              test.expect(cliCommandsMethods.get.getCall(0).args[0].defaults).to.deep.equal(mocks.arguments.getResult.defaults)
+            ])
           })
       })
 
-      test.it('should reject the promise if retrieving configuration fails', (done) => {
+      test.it('should pass the explicit arguments to the getCliCommands method, including the defined in the "cli" regex (as [name])', () => {
+        const fooValue1 = 'fooValue1'
+        const fooValue2 = 'fooValue2'
+        process.argv.push(fooValue1)
+        process.argv.push(fooValue2)
+        args = new Arguments()
+        return args.runCommand({
+          start: _.extend({}, commands.start, {cli: 'start [testing] <testing2>'})
+        }, cliCommandsMethods.get)
+        .then(() => {
+          return Promise.all([
+            test.expect(cliCommandsMethods.get.getCall(0).args[0].explicit.testing).to.equal(fooValue1),
+            test.expect(cliCommandsMethods.get.getCall(0).args[0].explicit.testing2).to.equal(fooValue2)
+          ])
+        })
+        .finally(() => {
+          process.argv.pop()
+          process.argv.pop()
+        })
+      })
+
+      test.it('should reject the promise if retrieving configuration fails', () => {
         let cliCommandsMethods = mocks.arguments.cliCommandsMethods()
         cliCommandsMethods.config.get.rejects(new Error())
-        args.runCommand(commands, cliCommandsMethods.get)
-          .catch(() => {
-            done()
+        return args.runCommand(commands, cliCommandsMethods.get)
+          .catch((error) => {
+            return test.expect(error).to.be.an.instanceof(Error)
           })
       })
 
-      test.it('should execute the command, passing to it the config from cli methods, the cli commands methods itself, and the arguments', (done) => {
-        args.runCommand(commands, cliCommandsMethods.get)
+      test.it('should execute the command, passing to it the config from cli methods, the cli commands methods itself, and the arguments', () => {
+        return args.runCommand(commands, cliCommandsMethods.get)
           .then(() => {
-            test.expect(commands.start.command).to.have.been.calledWith(mocks.config.getResult, {
-              config: cliCommandsMethods.config,
-              tracer: cliCommandsMethods.tracer
-            })
-            test.expect(commands.start.command.getCall(0).args[2].options).to.deep.equal(mocks.arguments.getResult.options)
-            test.expect(commands.start.command.getCall(0).args[2].defaults).to.deep.equal(mocks.arguments.getResult.defaults)
-            done()
+            return Promise.all([
+              test.expect(commands.start.command).to.have.been.calledWith(mocks.config.getResult, {
+                config: cliCommandsMethods.config,
+                tracer: cliCommandsMethods.tracer
+              }),
+              test.expect(commands.start.command.getCall(0).args[2].options).to.deep.equal(mocks.arguments.getResult.options),
+              test.expect(commands.start.command.getCall(0).args[2].defaults).to.deep.equal(mocks.arguments.getResult.defaults)
+            ])
           })
       })
 
-      test.it('should reject the promise if the command execution fails', (done) => {
+      test.it('should reject the promise if the command execution fails', () => {
         startCommandStub.rejects(new Error())
-        args.runCommand(commands, cliCommandsMethods.get)
+        return args.runCommand(commands, cliCommandsMethods.get)
           .catch(() => {
-            test.expect(cliCommandsMethods.tracer.error).to.have.been.called()
-            done()
+            return test.expect(cliCommandsMethods.tracer.error).to.have.been.called()
           })
       })
     })
