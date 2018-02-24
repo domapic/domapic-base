@@ -17,8 +17,9 @@ WebAPI Microservice base for Domapic Node.js packages.
 * [Introduction](#introduction)
 * [Quick Start](#quick-start)
 * [Options](#options)
-	* [Get options](#get-options)
-	* [Custom options](#custom-options)
+	* [Get config](#get-config)
+	* [Set config](#set-config)
+	* [Custom config](#custom-config)
 * [Server](#server)
 * [Adding API resources](#adding-api-resources)
 	* [Open API definitions](#open-api-definitions)
@@ -137,7 +138,11 @@ Example of setting options from command line:
 node ./server.js --name=fooName --authDisabled=192.168.1.1 172.0.0.1 --logLevel=debug --color=false
 ```
 
-### Get options
+### Get config
+
+Options defined from command line are available in the `config` object of the service.
+
+`service.config.get([key])`
 
 ```js
 new domapic.Service({
@@ -149,7 +154,25 @@ new domapic.Service({
 })
 ```
 
-### Custom options
+### Set config
+
+It is not recommended, but, it if has sense, `config` properties can be modified programmatically. If you want to store some data, you´ll better want to read about the [storage feature](#storage). 
+
+`service.config.set(key [, value])`
+
+```js
+new domapic.Service({
+	packagePath: path.resolve(__dirname)
+}).then((service) => {
+	return service.config.set('fooKey', 'fooValue')
+		.then((value) => {
+			console.log(value)
+			// fooValue
+		})
+})
+```
+
+### Custom config
 
 You can add your own custom configuration options. They will be seteable from command line execution, displayed in help and validated as the rest of options. Use `customConfig` parameter to define them.
 
@@ -405,7 +428,7 @@ console.log(service.errors.isControlled(error))
 ```
 
 * `FromCode` - Returns an error created with the constructor correspondent to the provided html error status code:
-	* `service.errors.FromCode(code, message, [stack], [extraData])`
+	* `service.errors.FromCode(code, message [, stack] [, extraData])`
 	
 ```js
 return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
