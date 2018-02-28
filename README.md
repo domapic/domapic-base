@@ -104,10 +104,10 @@ The `packagePath` parameter must be the path where your package.json file is, in
 
 ```shell
 # Start server
-node ./server.js --name=fooName --port=8030
+node ./server.js --name=fooName
 ```
 
-Browse to http://localhost:8030 to open _Swagger_ interface and inspect API.
+Browse to http://localhost:3000 to open _Swagger_ interface and inspect API.
 
 [back to top](#table-of-contents)
 
@@ -123,7 +123,7 @@ node ./server.js --help
 option | type | description | default
 --- | --- | --- | ---
 `name` | String | Service instance name | -
-`port` | Number | Http port used | 8090
+`port` | Number | Http port used | 3000
 `hostName` | String | Hostname for the server | 0.0.0.0
 `sslCert` | String | Path to an ssl certificate | -
 `sslKey` | String | Path to an ssl key | - 
@@ -317,7 +317,7 @@ Make requests to other _Domapic Microservices_ based services. Automatic authent
 
 ```js
 new domapic.Service().then((service) => {
-	const client = new service.client.Connection('http://localhost:8090')
+	const client = new service.client.Connection('http://localhost:3000')
 	return client.get('/about').then((response) => {
 		console.log(response)
 	})
@@ -327,7 +327,7 @@ new domapic.Service().then((service) => {
 ```js
 // Client with two authentication methods example
 new domapic.Service().then((service) => {
-	const client = new service.client.Connection('http://localhost:8090',{
+	const client = new service.client.Connection('http://localhost:3000',{
 		apiKey: 'thisIsaFooApiKey',
 		jwt: {
 			userName: 'fooUserName',
@@ -821,7 +821,7 @@ domapic.cli({
 })
 ```
 
-Read more about how to define them in the [Custom options chapter](#custom-options)
+Read more about how to define them in the [Custom options chapter](#custom-config)
 
 * Custom commands
 	A `customCommands` property can be defined in initialization object in order to extend the CLI features. It must be an object, whose keys will be the names of the custom commands. Each command must have properties:
@@ -836,7 +836,7 @@ Read more about how to define them in the [Custom options chapter](#custom-optio
 			* `cliUtils` - A set of methods:
 				* `tracer` - A `tracer` object, as [described here](#traces).
 				* `errors` - An `errors` object, as [described here](#errors).
-				* `config` - A `config` object, as [described here](#get-options).
+				* `config` - A `config` object, as [described here](#get-config).
 				* `utils` - An `utils` object, as [described here](#utils).
 				* `process` - An object that allows to manage the related `script` property _pm2_ process instance related to provided mandatory option `--name`. It has methods:
 					* `start` - Starts the process.
