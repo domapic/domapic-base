@@ -45,15 +45,6 @@ test.describe('Utils -> services', () => {
     })
   })
 
-  test.describe('normalizeName', () => {
-    test.it('should return a kebabCase version of the provided name', () => {
-      const expectedResult = 'foo-bar'
-      test.expect(services.normalizeName('Foo Bar')).to.equal(expectedResult)
-      test.expect(services.normalizeName('fooBar')).to.equal(expectedResult)
-      test.expect(services.normalizeName('__FOO_BAR__')).to.equal(expectedResult)
-    })
-  })
-
   test.describe('commandUrl', () => {
     test.it('should return the url for the provided command name', () => {
       test.expect(services.commandUrl('fooCommand')).to.equal('commands/foo-command')
