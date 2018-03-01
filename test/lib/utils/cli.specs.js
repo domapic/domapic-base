@@ -18,16 +18,19 @@ test.describe('Utils -> cli', () => {
 
     test.describe('when used an npm command to start the process', () => {
       test.it('it should return the used command', () => {
-        test.expect(cli.usedCommand().indexOf('npm run test')).to.equal(0)
+        console.log(cli.usedCommand())
+        test.expect(cli.usedCommand().indexOf('npm')).to.equal(0)
       })
 
       test.it('it should ignore npm arguments info if it is not a valid json', () => {
         process.env['npm_config_argv'] = '{worngJson}'
+         console.log(cli.usedCommand())
         test.expect(cli.usedCommand().indexOf('npm')).to.equal(-1)
       })
 
       test.it('it should ignore npm arguments info if it don´t contains info about the original used command', () => {
         process.env['npm_config_argv'] = '{"a":"b"}'
+        console.log(cli.usedCommand())
         test.expect(cli.usedCommand().indexOf('npm')).to.equal(-1)
       })
     })
