@@ -41,8 +41,12 @@ const Stub = function () {
         compile: test.sinon.stub().callsFake(utils.templates.compile),
         compiled: utils.templates.compiled
       },
-      usedCommand: test.sinon.stub().callsFake(utils.usedCommand),
-      serviceType: test.sinon.stub().callsFake(utils.servicetype)
+      cli: {
+        usedCommand: test.sinon.stub().callsFake(utils.cli.usedCommand)
+      },
+      services: {
+        serviceType: test.sinon.stub().callsFake(utils.services.servicetype)
+      }
     },
     errors: {
       isControlled: test.sinon.stub(),

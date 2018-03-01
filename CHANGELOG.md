@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.0] - 2017-02-29
+### Added
+- Add utilities for services api urls.
+
+### Changed
+- Move utility "usedCommand" to "cli.usedCommand".
+- Add first "/" to all client requests.
+- Changed default port to 3000
+
+### Fixed
+- Fix readme links.
+
 ## [0.3.1] - 2017-02-24
 ### Added
 - Add config.set documentation.

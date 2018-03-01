@@ -104,10 +104,10 @@ The `packagePath` parameter must be the path where your package.json file is, in
 
 ```shell
 # Start server
-node ./server.js --name=fooName --port=8030
+node ./server.js --name=fooName
 ```
 
-Browse to http://localhost:8030 to open _Swagger_ interface and inspect API.
+Browse to http://localhost:3000 to open _Swagger_ interface and inspect API.
 
 [back to top](#table-of-contents)
 
@@ -123,7 +123,7 @@ node ./server.js --help
 option | type | description | default
 --- | --- | --- | ---
 `name` | String | Service instance name | -
-`port` | Number | Http port used | 8090
+`port` | Number | Http port used | 3000
 `hostName` | String | Hostname for the server | 0.0.0.0
 `sslCert` | String | Path to an ssl certificate | -
 `sslKey` | String | Path to an ssl key | - 
@@ -210,7 +210,7 @@ Default options values (or saved values if the `--saveConfig` option is used) ar
 
 ## Server
 
-The `server` object returned in the service contains methods:
+The `service.server` object has methods:
 
 * `start` - Starts the server. Returns a promise, resolved when the server is running. Once the server is started, it is not possible to add more open api definitions, operations, or authentication implementations.
 * `extendOpenApi` - Add open api definitions to the server. Read the [Adding API resources](#adding-api-resources) chapter for further info.
@@ -255,15 +255,17 @@ new domapic.Service({
 
 ### Open API definitions
 
+`service.server.extendOpenApi(openApiDefinition)`
+
 Openapi 3.0 spec is used to define new API paths. Read more about how to define paths in [_Swagger_ specification docs](https://swagger.io/specification/). You can even use the [_Swagger_ editor](https://swagger.io/swagger-editor/) to define and design your API, and afterwards, load the resultant .json files in _domapic microservice_.
 
 You can add as many openApi definitions as you want, and for each one you can define "components", "tags", or "paths". The resultant `openapi.json` will be the result of extending all of them, after adding all needed base properties.
 
-Use the `addOperations` server method to add the operations. The operation key should match with the openApi `operationId` property.
-
 See here an [openApi definition example](lib/api/about/openapi.json), which is used internally to create the built-in `/about` api resource.
 
 ### Operations
+
+`service.server.addOperations(apiOperationsObject)`
 
 Each openApi path should contain a property called `operationId`. This value defines which operation will be executed when the api resource is requested.
 
@@ -317,7 +319,7 @@ Make requests to other _Domapic Microservices_ based services. Automatic authent
 
 ```js
 new domapic.Service().then((service) => {
-	const client = new service.client.Connection('http://localhost:8090')
+	const client = new service.client.Connection('http://localhost:3000')
 	return client.get('/about').then((response) => {
 		console.log(response)
 	})
@@ -327,7 +329,7 @@ new domapic.Service().then((service) => {
 ```js
 // Client with two authentication methods example
 new domapic.Service().then((service) => {
-	const client = new service.client.Connection('http://localhost:8090',{
+	const client = new service.client.Connection('http://localhost:3000',{
 		apiKey: 'thisIsaFooApiKey',
 		jwt: {
 			userName: 'fooUserName',
@@ -471,15 +473,18 @@ service.storage.set('fooProperty', {test: 'testing'})
 Methods
 
 * `get` - Get data from file
+	* `service.storage.get([key])`
 	* Arguments:
 		* key - Optional, key of the object to get. If no provided, entire data is returned.
 	* Returns: 
 		* A promise, resolved with the correspondant data.
 * `set` - Save data into the storage object.
+	* `service.storage.set([key,] value)`
 	* Arguments:
 		* key - Optional. Key of the object to set. If no provided, entire data is overwritten by the given value.
 		* value - Data to be saved.
 * `remove` - Removes a property from the stored object.
+	* `service.storage.remove(key)`
 	* Arguments:
 		* key - Key of the object to remove.
 
@@ -493,6 +498,7 @@ Set of utilities:
 
 * `templates`
 	* `compile` - Received an object containing a set of `key:'string'`, will use [_Handlebars_](http://handlebarsjs.com/) to compile each string, and return an object with same keys, but containing the compiled templates.
+	* `compiled` - Set of precompiled templates, used internally.
 ```js
 const templates = service.utils.templates.compile({
 	myTemplate1: 'Value is: {{value}}'
@@ -502,19 +508,9 @@ console.log(templates.myTemplate1({
 }))
 // Value is: 123
 ```
-	* `compiled` - Set of precompiled templates, used internally.
-* `usedCommand` - Used internally by CLI. Returns the command used to invoque it.
-* `serviceType` - Provided a package name, returns the correspondant domapic service type.
-```js
-service.utils.serviceType('example-domapic-service')
-// service
-service.utils.serviceType('example-domapic-plugin')
-// plugin
-service.utils.serviceType('example-domapic-controller')
-// controller
-service.utils.serviceType('foo-example')
-// unrecognized
-```
+* `cli`
+	* `usedCommand` - Used internally by CLI. Returns the command used to start the current process.
+* `services` - Set of utilities used internally to get api urls, normalize names, etc..
 
 [back to top](#table-of-contents)
 
@@ -564,6 +560,8 @@ To require an authentication method in your API operations, you must define the 
 ```
 
 Use the server `addAuthentication` method to define your authentication implementations. The parameter must be an object containing keys `jwt` and/or `apiKey`, which will contain the specific configuration for each method:
+
+`service.server.addAuthentication(authConfigObject)`
 
 ### Api key
 
@@ -690,6 +688,8 @@ The authorization method is agnostic in relation with the used authentication me
 Read more about how to define and use the `auth` methods in the [operations chapter](#operations).
 
 An operation `auth` method can be defined as a function, or as a string that defines which "authorization role" function has to be executed. This "authorization roles" must to be defined in the server, using the `addAuthorization` method:
+
+`service.server.addAuthorization(roleName, authHandler)`
 
 ```js
 service.server.addAuthorization('fooRoleName', (userData) => {
@@ -821,7 +821,7 @@ domapic.cli({
 })
 ```
 
-Read more about how to define them in the [Custom options chapter](#custom-options)
+Read more about how to define them in the [Custom options chapter](#custom-config)
 
 * Custom commands
 	A `customCommands` property can be defined in initialization object in order to extend the CLI features. It must be an object, whose keys will be the names of the custom commands. Each command must have properties:
@@ -836,7 +836,7 @@ Read more about how to define them in the [Custom options chapter](#custom-optio
 			* `cliUtils` - A set of methods:
 				* `tracer` - A `tracer` object, as [described here](#traces).
 				* `errors` - An `errors` object, as [described here](#errors).
-				* `config` - A `config` object, as [described here](#get-options).
+				* `config` - A `config` object, as [described here](#get-config).
 				* `utils` - An `utils` object, as [described here](#utils).
 				* `process` - An object that allows to manage the related `script` property _pm2_ process instance related to provided mandatory option `--name`. It has methods:
 					* `start` - Starts the process.

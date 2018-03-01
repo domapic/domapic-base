@@ -1,7 +1,6 @@
 
 const path = require('path')
 
-const _ = require('lodash')
 const fsExtra = require('fs-extra')
 
 const test = require('../../../index')
@@ -81,52 +80,6 @@ test.describe('Bases -> Core -> Info', () => {
       }
       test.expect(info).to.equal(null)
       test.expect(error).to.be.an.instanceof(errors.BadData)
-    })
-  })
-
-  test.describe('type', () => {
-    const testPackageType = function (options) {
-      test.it(options.description, () => {
-        readStub.returns(_.extend({}, basePackageInfo, options.customInfo))
-        info = new Info(packagePath, errors)
-        test.expect(info.type).to.equal(options.expectedResult)
-      })
-    }
-    let readStub
-
-    test.beforeEach(() => {
-      fsExtra.readJsonSync.restore()
-      readStub = test.sinon.stub(fsExtra, 'readJsonSync')
-    })
-
-    testPackageType({
-      description: 'should be "service" if package name matchs with the services regex',
-      customInfo: {},
-      expectedResult: 'service'
-    })
-
-    testPackageType({
-      description: 'should be "controller" if package name matchs with the controller regex',
-      customInfo: {
-        name: 'foo-controller'
-      },
-      expectedResult: 'controller'
-    })
-
-    testPackageType({
-      description: 'should be "plugin" if package name matchs with the controller regex',
-      customInfo: {
-        name: 'foo-plugin'
-      },
-      expectedResult: 'plugin'
-    })
-
-    testPackageType({
-      description: 'should be "unrecognized" if package name doesn´t matchs any recognized type',
-      customInfo: {
-        name: 'foo'
-      },
-      expectedResult: 'unrecognized'
     })
   })
 

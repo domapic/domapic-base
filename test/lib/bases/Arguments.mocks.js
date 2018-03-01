@@ -10,12 +10,12 @@ const getResult = {
     name: 'testing',
     logLevel: 'info',
     path: undefined,
-    port: 8090
+    port: 3000
   },
   defaults: {
     color: true,
     logLevel: 'info',
-    port: 8090,
+    port: 3000,
     authDisabled: ['127.0.0.1', '::1/128'],
     saveConfig: false,
     hostName: '0.0.0.0'
@@ -23,7 +23,7 @@ const getResult = {
   defaultsToStore: {
     color: true,
     logLevel: 'info',
-    port: 8090,
+    port: 3000,
     authDisabled: ['127.0.0.1', '::1/128'],
     hostName: '0.0.0.0'
   },
