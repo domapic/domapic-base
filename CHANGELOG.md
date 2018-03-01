@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Move utility "usedCommand" to "cli.usedCommand".
-- Add first '/' to all client requests.
+- Add first "/" to all client requests.
 - Changed default port to 3000
 
 ### Fixed

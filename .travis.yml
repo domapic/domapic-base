@@ -15,7 +15,6 @@ addons:
       secure: "$SONAR_TOKEN"
     branches:
       - master
-      - services-url-utils
 
 script:
   - npm test
