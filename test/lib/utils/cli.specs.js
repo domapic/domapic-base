@@ -24,12 +24,14 @@ test.describe('Utils -> cli', () => {
 
       test.it('it should ignore npm arguments info if it is not a valid json', () => {
         process.env['npm_config_argv'] = '{worngJson}'
-         console.log(cli.usedCommand())
+        process.env['_'] = '/fooRunCommand'
+        console.log(cli.usedCommand())
         test.expect(cli.usedCommand().indexOf('npm')).to.equal(-1)
       })
 
       test.it('it should ignore npm arguments info if it don´t contains info about the original used command', () => {
         process.env['npm_config_argv'] = '{"a":"b"}'
+        process.env['_'] = './fooRunCommand'
         console.log(cli.usedCommand())
         test.expect(cli.usedCommand().indexOf('npm')).to.equal(-1)
       })
