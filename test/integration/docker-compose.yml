@@ -23,8 +23,8 @@ services:
       args:
         - service_to_start=${service_to_start}
     # Uncomment ports for tests development and debugging
-    ports: 
-      - 3000:3000
+    # ports: 
+      # - 3000:3000
     volumes:
       - type: bind
         source: ./.config_volume
