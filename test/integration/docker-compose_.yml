@@ -1,0 +1,37 @@
+version: "3.5"
+services:
+  test:
+    build: test
+    depends_on:
+      - service
+    volumes:
+      - type: bind
+        source: ./.config_volume
+        # TODO, use docker-compose vars to change options
+        target: /start/config
+      - type: bind
+        source: ../../node_modules
+        # TODO, use docker-compose vars to change options
+        target: /start/node_modules
+  service:
+    build: service
+    ports:
+      - 3000:3000
+    volumes:
+      - type: bind
+        source: ./.config_volume
+        target: /config
+      - type: bind
+        source: ../../node_modules
+        # TODO, use docker-compose vars to change options
+        target: /start/node_modules
+      - type: bind
+        source: ../../lib
+        target: /start/lib
+      - type: bind
+        source: ../../index.js
+        target: /start/index.js
+    env_file: 
+      # TODO, use docker-compose vars to change options
+      - ./options/start.env
+    
