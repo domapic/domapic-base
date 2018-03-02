@@ -25,7 +25,7 @@
   ],
   "scripts": {
     "unit-test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test/unit",
-    "integration-test": "cd test/integration &&  docker-compose up --build --exit-code-from test",
+    "integration-test": "cd test/integration && ./run-tests.sh",
     "standard": "standard",
     "test": "npm run standard && npm run unit-test && npm run integration-test",
     "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"

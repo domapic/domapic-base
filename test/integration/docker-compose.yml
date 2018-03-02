@@ -1,7 +1,10 @@
 version: "3.5"
 services:
   test:
-    build: test
+    build:
+      context: ./test
+      args:
+        - test_to_run=${test_to_run}
     depends_on:
       - service
     volumes:
@@ -15,7 +18,10 @@ services:
         source: ../../test/unit
         target: /test/test/unit
   service:
-    build: service
+    build:
+      context: ./service
+      args:
+        - service_to_start=${service_to_start}
     ports:
       - 3000:3000
     volumes:
@@ -31,7 +37,7 @@ services:
       - type: bind
         source: ../../index.js
         target: /service/index.js
-    env_file: 
-      # TODO, use docker-compose vars to change options
-      - ./options/start.env
+    env_file:
+      - ./commands/${command_to_use}.env
+      - ./options/${options_to_use}.env
     
