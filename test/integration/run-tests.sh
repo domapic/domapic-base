@@ -1,4 +1,4 @@
- #!/usr/bin/env sh
+ #!/usr/bin/env bash
 
 export test_to_run
 export service_to_start
