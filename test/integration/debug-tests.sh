@@ -9,7 +9,7 @@ test_to_launch=$1
 debug_mode=$2
 exit_instruction="--exit-code-from test"
 
-if [[ -n "$test_to_launch" && "$debug_mode" = "alive" ]]; then
+if [ "$debug_mode" = "alive" ]; then
   exit_instruction=""
 fi
 
@@ -20,7 +20,7 @@ function launch_test {
   options_to_use=$4
   test_to_run=$5
 
-  if [[ ! -n "$test_to_launch" || (-n "$test_to_launch" && "$test_to_launch" = "$test_name") ]]; then
+  if [ "$test_to_launch" = "$test_name" ]; then
     echo "Launching integration test \"${test_name}\""
     docker-compose up --build ${exit_instruction}
   fi
