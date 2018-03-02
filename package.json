@@ -24,7 +24,9 @@
     "swagger-ui"
   ],
   "scripts": {
-    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test",
+    "unit-test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test/unit",
+    "standard": "standard",
+    "test": "npm run standard && npm run unit-test",
     "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "dependencies": {
@@ -56,7 +58,6 @@
     "dirty-chai": "2.0.1",
     "istanbul": "0.4.5",
     "mocha": "4.0.1",
-    "mocha-standard": "1.0.0",
     "sinon": "4.1.2",
     "sinon-chai": "2.14.0",
     "standard": "10.0.3"
