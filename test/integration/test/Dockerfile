@@ -7,7 +7,7 @@ ARG test_to_run
 WORKDIR /test
 
 # Copy the test contents into the container
-# TODO, change the service to copy using ARGS
+ADD ./basics .
 ADD ./${test_to_run} .
 RUN ["chmod", "+x", "wait-for-it.sh"]
 

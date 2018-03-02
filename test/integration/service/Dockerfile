@@ -12,8 +12,8 @@ ENV command_to_use=$command_to_use
 WORKDIR /service
 
 # Copy the service contents into the container
-# TODO, change the service to copy using ARGS
 ADD ./${service_to_start} .
+ADD ./package.json .
 
 # Make port 3000 available to the world outside this container
 EXPOSE 3000

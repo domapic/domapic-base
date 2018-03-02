@@ -26,4 +26,6 @@ function launch_test {
   fi
 }
 
-launch_test "start" "start" "node" "start" "start"
+launch_test "start" "start" "node" "basic" "basics"
+rm -r .config_volume/.domapic
+launch_test "log-level" "start" "node" "log-level" "tracer"
