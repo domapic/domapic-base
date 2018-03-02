@@ -7,6 +7,7 @@ export test_to_run="basics"
 
 docker-compose up --build --exit-code-from test
 
+chmod 755 .config_volume/.domapic
 rm -r .config_volume/.domapic
 service_to_start="start"
 command_to_use="node"

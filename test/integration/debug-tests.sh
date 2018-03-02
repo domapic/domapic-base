@@ -27,5 +27,7 @@ function launch_test {
 }
 
 launch_test "start" "start" "node" "basic" "basics"
+
+chmod 755 .config_volume/.domapic
 rm -r .config_volume/.domapic
 launch_test "log-level" "start" "node" "log-level" "tracer"
