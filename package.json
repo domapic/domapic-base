@@ -25,8 +25,7 @@
   ],
   "scripts": {
     "unit-test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test/unit",
-    "debug-integration-test": "cd test/integration && ./debug-tests.sh",
-    "integration-test": "cd test/integration && ./debug-tests.sh",
+    "integration-test": "cd test/integration && ./run-tests.sh",
     "standard": "standard",
     "test": "npm run standard && npm run unit-test && npm run integration-test",
     "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
