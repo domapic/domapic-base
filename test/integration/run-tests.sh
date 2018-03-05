@@ -22,11 +22,11 @@ function launch_test {
 
   if [ ! $test_to_launch ] || [ "$test_to_launch" = "$test_name" ]; then
     echo "Launching integration test \"${test_name}\""
+    docker-compose rm -fsv
+    docker volume rm -f $(docker volume ls -q)
     docker-compose up --build ${exit_instruction}
   fi
 }
 
 launch_test "start" "start" "node" "basic" "basics"
-
-rm -rf .config_volume/.domapic || sudo rm -rf .config_volume/.domapic
 launch_test "log-level" "start" "node" "log-level" "tracer"

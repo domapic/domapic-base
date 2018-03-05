@@ -1,4 +1,6 @@
 version: "3.5"
+volumes:
+  domapic_config:
 services:
   test:
     build:
@@ -8,9 +10,11 @@ services:
     depends_on:
       - service
     volumes:
-      - type: bind
-        source: ./.config_volume
+      - type: volume
+        source: domapic_config
         target: /test/config
+        volume:
+          nocopy: true
       - type: bind
         source: ../../node_modules
         target: /test/node_modules
@@ -26,9 +30,11 @@ services:
     # ports: 
      # - 5000:3000
     volumes:
-      - type: bind
-        source: ./.config_volume
+      - type: volume
+        source: domapic_config
         target: /service/config
+        volume:
+          nocopy: true
       - type: bind
         source: ../../node_modules
         target: /service/node_modules
