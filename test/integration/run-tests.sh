@@ -1,4 +1,4 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
 
 export service_to_start="start"
 export command_to_use="node"

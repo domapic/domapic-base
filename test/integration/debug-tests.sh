@@ -1,4 +1,4 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
 
 export test_to_run
 export service_to_start
@@ -20,7 +20,7 @@ function launch_test {
   options_to_use=$4
   test_to_run=$5
 
-  if [ "$test_to_launch" = "$test_name" ]; then
+  if [ ! $test_to_launch ] || [ "$test_to_launch" = "$test_name" ]; then
     echo "Launching integration test \"${test_name}\""
     docker-compose up --build ${exit_instruction}
   fi
