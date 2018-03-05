@@ -6,6 +6,7 @@ services:
     build:
       context: ./test
       args:
+        - test_type=${test_type}
         - test_to_run=${test_to_run}
     depends_on:
       - service
@@ -23,7 +24,7 @@ services:
         target: /test/test/unit
   service:
     build:
-      context: ./service
+      context: ./service/scripts
       args:
         - service_to_start=${service_to_start}
     # Uncomment ports for tests development and debugging
@@ -45,5 +46,5 @@ services:
         source: ../../index.js
         target: /service/index.js
     env_file:
-      - ./commands/${command_to_use}.env
-      - ./options/${options_to_use}.env
+      - ./service/commands/${command_to_use}.env
+      - ./service/options/${options_to_use}.env

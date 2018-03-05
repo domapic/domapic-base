@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
+export test_type
 export test_to_run
 export service_to_start
-export options_to_use
 export command_to_use
+export options_to_use
 
 test_to_launch=$1
 debug_mode=$2
@@ -14,19 +15,16 @@ if [ "$debug_mode" = "alive" ]; then
 fi
 
 function launch_test {
-  local test_name=$1
-  service_to_start=$2
-  command_to_use=$3
-  options_to_use=$4
-  test_to_run=$5
+  test_type=$1
+  test_to_run=$2
+  service_to_start=$3
+  command_to_use=$4
+  options_to_use=$5
 
-  if [ ! $test_to_launch ] || [ "$test_to_launch" = "$test_name" ]; then
-    echo "Launching integration test \"${test_name}\""
+  if [ ! $test_to_launch ] || [ "$test_to_launch" = "$test_to_run" ]; then
+    echo "Launching ${test_type} test \"${test_to_run}\""
     docker-compose rm -fsv
     docker volume rm -f $(docker volume ls -q)
     docker-compose up --build ${exit_instruction}
   fi
 }
-
-launch_test "start" "start" "node" "basic" "basics"
-launch_test "log-level" "start" "node" "log-level" "tracer"
