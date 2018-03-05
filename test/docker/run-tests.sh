@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-export test_type
 export test_to_run
 export service_to_start
 export command_to_use
@@ -16,6 +15,7 @@ fi
 
 function launch_test {
   test_type=$1
+
   test_to_run=$2
   service_to_start=$3
   command_to_use=$4
@@ -23,8 +23,7 @@ function launch_test {
 
   if [ ! $test_to_launch ] || [ "$test_to_launch" = "$test_to_run" ]; then
     echo "Launching ${test_type} test \"${test_to_run}\""
-    docker-compose rm -fsv
-    docker volume rm -f $(docker volume ls -q)
-    docker-compose up --build ${exit_instruction}
+    docker-compose down --volumes
+    docker-compose up ${exit_instruction}
   fi
 }

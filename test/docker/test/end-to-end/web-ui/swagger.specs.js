@@ -1,6 +1,6 @@
 
 const puppeteer = require('puppeteer')
-const test = require('./test/unit/index')
+const test = require('../test/unit/index')
 
 test.describe('Swagger Web UI', function () {
   let page

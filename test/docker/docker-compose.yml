@@ -5,9 +5,6 @@ services:
   test:
     build:
       context: ./test
-      args:
-        - test_type=${test_type}
-        - test_to_run=${test_to_run}
     depends_on:
       - service
     volumes:
@@ -22,11 +19,11 @@ services:
       - type: bind
         source: ../../test/unit
         target: /test/test/unit
+    environment:
+      test_to_run: ${test_to_run}
   service:
     build:
-      context: ./service/scripts
-      args:
-        - service_to_start=${service_to_start}
+      context: ./service
     # Uncomment ports for tests development and debugging
     # ports: 
      # - 5000:3000
@@ -46,5 +43,5 @@ services:
         source: ../../index.js
         target: /service/index.js
     env_file:
-      - ./service/commands/${command_to_use}.env
+      - ./service/commands/${service_to_start}.${command_to_use}.env
       - ./service/options/${options_to_use}.env

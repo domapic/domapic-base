@@ -1,7 +1,7 @@
 
 const requestPromise = require('request-promise')
 
-const test = require('./test/unit/index')
+const test = require('../test/unit/index')
 
 test.describe('Open Api', function () {
   test.describe('/api/openapi.json', function () {

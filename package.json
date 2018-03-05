@@ -24,11 +24,11 @@
     "swagger-ui"
   ],
   "scripts": {
-    "unit-test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test/unit",
-    "integration-test": "cd test/integration-end-to-end && ./integration.sh",
-    "end-to-end-test": "cd test/integration-end-to-end && ./end-to-end.sh",
     "standard": "standard",
-    "test": "npm run standard && npm run unit-test && npm run integration-test && npm run end-to-end-test",
+    "test-unit": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test/unit",
+    "test-end-to-end": "cd test/docker && ./end-to-end.sh",
+    "test-integration": "cd test/docker && ./integration.sh",
+    "test": "npm run standard && npm run test-unit && npm run test-integration && npm run test-end-to-end",
     "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "dependencies": {

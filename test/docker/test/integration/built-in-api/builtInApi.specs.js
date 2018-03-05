@@ -3,7 +3,7 @@ const _ = require('lodash')
 const Promise = require('bluebird')
 const requestPromise = require('request-promise')
 
-const test = require('./test/unit/index')
+const test = require('../test/unit/index')
 
 test.describe('Built-in API', function () {
   const BASE_URL = 'http://service:3000/api/'
@@ -67,7 +67,7 @@ test.describe('Built-in API', function () {
     test.describe('GET', function () {
       test.it('should return current saved configuration, extended with explicit service options', () => {
         return requestPromise(requestOptions).then((response) => {
-          const savedConfig = require('./config/.domapic/service/config/service.json')
+          const savedConfig = require('../config/.domapic/service/config/service.json')
           const explicitOptions = require('./explicitOptions.fixtures.json')
           return test.expect(response).to.deep.equal(_.extend({}, savedConfig, explicitOptions))
         })

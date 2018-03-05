@@ -1,7 +1,6 @@
 # Use an official Node runtime as a parent image
 FROM node:8.9.4
 
-ARG service_to_start
 ARG options
 ARG command_to_use
 
@@ -12,13 +11,10 @@ ENV command_to_use=$command_to_use
 WORKDIR /service
 
 # Copy the service contents into the container
-ADD ./${service_to_start} .
-ADD ./package.json .
+ADD ./scripts .
 
 # Make port 3000 available to the world outside this container
 EXPOSE 3000
-
-RUN echo ${command_to_use}
 
 # Start service
 CMD ["sh", "-c", "${command_to_use} ${options}"]
