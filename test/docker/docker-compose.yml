@@ -21,8 +21,9 @@ services:
       - type: bind
         source: ../../package.json
         target: /test/package.json
-    environment:
-      test_to_run: ${test_to_run}
+      - type: bind
+        source: ./test/${test_type}/${test_to_run}
+        target: /test/test-to-run
   service:
     build:
       context: ./service
@@ -39,6 +40,9 @@ services:
       - type: bind
         source: ../../index.js
         target: /service/index.js
+      - type: bind
+        source: ./service/scripts/${service_to_start}
+        target: /service/service
     env_file:
-      - ./service/commands/${service_to_start}.${command_to_use}.env
+      - ./service/commands/${command_to_use}.env
       - ./service/options/${options_to_use}.env

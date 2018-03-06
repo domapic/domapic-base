@@ -10,7 +10,8 @@ ENV command_to_use=$command_to_use
 WORKDIR /service
 
 # Copy the service contents into the container
-ADD ./scripts .
+ADD ./package.json ./package.json
+ADD ./npm-shrinkwrap.json ./npm-shrinkwrap.json
 
 RUN ["npm", "i"]
 

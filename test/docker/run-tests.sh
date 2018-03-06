@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+export test_type
 export test_to_run
 export service_to_start
 export command_to_use
@@ -14,8 +15,8 @@ build_option="--build"
 compose_options=""
 compose_up_options="--exit-code-from test"
 
-cp ../../package.json ./service/scripts/package.json
-cp ../../npm-shrinkwrap.json ./service/scripts/npm-shrinkwrap.json
+cp ../../package.json ./service/package.json
+cp ../../npm-shrinkwrap.json ./service/npm-shrinkwrap.json
 
 if [ "$2" = "$develop_option" ] || [ "$3" = "$develop_option" ]; then
   develop=true
@@ -32,7 +33,6 @@ fi
 
 function launch_test {
   test_type=$1
-
   test_to_run=$2
   service_to_start=$3
   command_to_use=$4

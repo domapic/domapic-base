@@ -6,7 +6,8 @@ test.describe('Swagger Web UI', function () {
   let page
   let browser
 
-  test.before(() => {
+  test.before(function () {
+    this.timeout(10000)
     return puppeteer.launch({
       args: [
         '--no-sandbox',
@@ -21,7 +22,7 @@ test.describe('Swagger Web UI', function () {
           return page.goto('http://service:3000')
         })
     })
-  }).timeout(5000)
+  })
 
   test.after(() => {
     return browser.close()
