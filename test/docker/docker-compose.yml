@@ -26,9 +26,6 @@ services:
   service:
     build:
       context: ./service
-  # Uncomment ports for tests development and debugging
-  # ports: 
-    # - 5000:3000
     volumes:
       - type: volume
         source: domapic_config

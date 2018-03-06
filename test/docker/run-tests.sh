@@ -6,15 +6,28 @@ export command_to_use
 export options_to_use
 
 test_to_launch=$1
-debug_mode=$2
+develop=false
+build=""
 
-exit_instruction="--exit-code-from test"
+develop_option="--develop"
+build_option="--build"
+compose_options=""
+compose_up_options="--exit-code-from test"
 
 cp ../../package.json ./service/scripts/package.json
 cp ../../npm-shrinkwrap.json ./service/scripts/npm-shrinkwrap.json
 
-if [ "$debug_mode" = "alive" ]; then
-  exit_instruction=""
+if [ "$2" = "$develop_option" ] || [ "$3" = "$develop_option" ]; then
+  develop=true
+fi
+
+if [ "$1" = "$build_option" ] || [ "$2" = "$build_option" ] || [ "$3" = "$build_option" ]; then
+  build="--build"
+fi
+
+if [ $develop = true ]; then
+  compose_options="-f docker-compose.yml -f docker-compose-develop.yml"
+  compose_up_options=""
 fi
 
 function launch_test {
@@ -29,6 +42,6 @@ function launch_test {
     echo "Launching ${test_type} test \"${test_to_run}\""
     docker-compose down --volumes
     set -e
-    docker-compose up --build ${exit_instruction}
+    docker-compose ${compose_options} up ${build} ${compose_up_options}
   fi
 }

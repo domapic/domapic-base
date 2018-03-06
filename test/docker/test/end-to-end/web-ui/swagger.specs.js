@@ -21,7 +21,7 @@ test.describe('Swagger Web UI', function () {
           return page.goto('http://service:3000')
         })
     })
-  })
+  }).timeout(5000)
 
   test.after(() => {
     return browser.close()
