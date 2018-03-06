@@ -43,12 +43,13 @@ test.describe('Built-in API', function () {
     test.describe('GET', function () {
       test.it('should return all info about the service', () => {
         return requestPromise(requestOptions).then((response) => {
+          const packageInfo = require('../package.json')
           return Promise.all([
             test.expect(response.name).to.equal('service'),
             test.expect(response.type).to.equal('unrecognized'),
-            test.expect(response.package).to.equal('service'),
-            test.expect(response.version).to.equal('1.0.0'),
-            test.expect(response.description).to.equal('Microservice starter for integration tests')
+            test.expect(response.package).to.equal(packageInfo.name),
+            test.expect(response.version).to.equal(packageInfo.version),
+            test.expect(response.description).to.equal(packageInfo.description)
           ])
         })
       })

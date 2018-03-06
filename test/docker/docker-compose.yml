@@ -1,6 +1,7 @@
 version: "3.5"
 volumes:
   domapic_config:
+  node_modules:
 services:
   test:
     build:
@@ -11,30 +12,29 @@ services:
       - type: volume
         source: domapic_config
         target: /test/config
-        volume:
-          nocopy: true
-      - type: bind
-        source: ../../node_modules
+      - type: volume
+        source: node_modules
         target: /test/node_modules
       - type: bind
         source: ../../test/unit
         target: /test/test/unit
+      - type: bind
+        source: ../../package.json
+        target: /test/package.json
     environment:
       test_to_run: ${test_to_run}
   service:
     build:
       context: ./service
-    # Uncomment ports for tests development and debugging
-    # ports: 
-     # - 5000:3000
+  # Uncomment ports for tests development and debugging
+  # ports: 
+    # - 5000:3000
     volumes:
       - type: volume
         source: domapic_config
         target: /service/config
-        volume:
-          nocopy: true
-      - type: bind
-        source: ../../node_modules
+      - type: volume
+        source: node_modules
         target: /service/node_modules
       - type: bind
         source: ../../lib
