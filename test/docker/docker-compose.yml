@@ -22,8 +22,11 @@ services:
         source: ../../package.json
         target: /test/package.json
       - type: bind
-        source: ./test/${test_type}/${test_to_run}
-        target: /test/test-to-run
+        source: ../${test_type}/${test_to_run}
+        target: /test/test/test-to-run/specs
+      - type: bind
+        source: ../utils
+        target: /test/test/utils
   service:
     build:
       context: ./service
@@ -41,8 +44,8 @@ services:
         source: ../../index.js
         target: /service/index.js
       - type: bind
-        source: ./service/scripts/${service_to_start}
-        target: /service/service
+        source: ../services/${service_to_start}
+        target: /service/test/services/service-to-run
     env_file:
       - ./service/commands/${command_to_use}.env
       - ./service/options/${options_to_use}.env

@@ -1,7 +1,8 @@
 
 const requestPromise = require('request-promise')
 
-const test = require('../test/unit/index')
+const test = require('../../unit/index')
+const serviceUtils = require('../../utils/service')
 
 test.describe('Open Api', function () {
   test.describe('/api/openapi.json', function () {
@@ -10,7 +11,7 @@ test.describe('Open Api', function () {
     test.beforeEach(() => {
       return requestPromise({
         method: 'GET',
-        url: 'http://service:3000/api/openapi.json',
+        url: serviceUtils.url() + '/api/openapi.json',
         json: true
       }).then((response) => {
         openapi = response

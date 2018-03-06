@@ -10,4 +10,4 @@ ADD ./wait-for-it.sh .
 RUN ["chmod", "+x", "wait-for-it.sh"]
 
 # Start service
-CMD ["sh", "-c", "./wait-for-it.sh service:3000 -- ./node_modules/.bin/_mocha -- --recursive test-to-run"]
+CMD ["sh", "-c", "./wait-for-it.sh service:3000 -- ./node_modules/.bin/_mocha -- --recursive test/test-to-run/specs"]

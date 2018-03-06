@@ -1,6 +1,7 @@
 
 const puppeteer = require('puppeteer')
-const test = require('../test/unit/index')
+const test = require('../../unit/index')
+const serviceUtils = require('../../utils/service')
 
 test.describe('Swagger Web UI', function () {
   let page
@@ -19,7 +20,7 @@ test.describe('Swagger Web UI', function () {
       return browser.newPage()
         .then((pg) => {
           page = pg
-          return page.goto('http://service:3000')
+          return page.goto(serviceUtils.url())
         })
     })
   })
