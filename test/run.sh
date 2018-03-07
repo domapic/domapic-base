@@ -23,7 +23,7 @@ unique_test_to_launch=false
 function getOption {
   local  __resultvar=$1
   local  option=$2
-  if [ "$3" = "$option" ] || [ "$4" = "$option" ] || [ "$5" = "$option" ] || [ "$6" = "$option" ]; then
+  if [ "$3" = "$option" ] || [ "$4" = "$option" ] || [ "$5" = "$option" ] || [ "$6" = "$option" ] || [ "$7" = "$option" ]; then
     eval $__resultvar="true"
   fi
 }
@@ -55,6 +55,7 @@ function setConfig {
   fi
 
   echo $log_sep
+  echo "Run test locally: $run_local"
   echo "Run integration tests: $integration"
   echo "Run end-to-end tests: $end_to_end"
   echo "Unique test to launch: $unique_test_to_launch"
@@ -109,6 +110,7 @@ function copy_service_install {
     fi
     # Copy install script to docker. (Will be runned in docker build, for installing needed service dependencies)
     if [ -f ./services/install/install.sh ]; then
+      echo "copying ./services/install/install.sh to ./docker/service/.install/install.sh"
       cp ./services/install/install.sh ./docker/service/.install/install.sh
     fi
   fi
