@@ -97,6 +97,7 @@ function launch_test {
 }
 
 function copy_service_install {
+  echo "Executing copy $run_local"
   if [ -d ./services/install ] && [ ! $run_local = false ]; then
     echo "./services/install exists"
     # Ensure that temporary folder for docker services dependencies installation exists
