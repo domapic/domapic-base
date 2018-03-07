@@ -8,9 +8,9 @@ module.exports = {
     port: '3000'
   },
   paths: {
-    domapicConfig: path.resolve(__dirname, '..', '..', '.tmp', '.domapic', 'service')
+    domapicConfig: path.resolve(__dirname, '..', '..', '.test', '.domapic', 'service')
   },
   explicitServiceOptions: {
-    path: path.resolve(__dirname, '..', '..', '.tmp')
+    path: '../../../.test'
   }
 }
