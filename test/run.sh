@@ -98,12 +98,15 @@ function launch_test {
 
 function copy_service_install {
   if [ -d ./services/install ] && [ ! $run_local = false ]; then
+    echo "./services/install exists"
     # Ensure that temporary folder for docker services dependencies installation exists
     if [ ! -d ./docker/service/.install ]; then
+      echo "making dir ./docker/service/.install"
       mkdir ./docker/service/.install
     fi
     # Execute custom pre-install script. (Intended to be used for copying needed dependencies to docker installation path)
     if [ -f ./services/install/pre-install.sh ]; then
+      echo "executing preinstall"
       cd ./services/install
       ./pre-install.sh
       cd ../../
