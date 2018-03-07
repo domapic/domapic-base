@@ -17,4 +17,4 @@ RUN ./install.sh
 EXPOSE 3000
 
 # Start service
-CMD ["sh", "-c", "cd ./test/services/service-to-run && ./run.sh"]
+CMD ["sh", "-c", "cd ./test/services/service-to-run/lib && ./run.sh"]
