@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
-export test_type
+export test_type=""
 export test_to_run
 export service_to_start
 export command_to_use
 export options_to_use
 
 # This options are defined from command line with the "--option" format
+run_local=false
 integration=false
 end_to_end=false
 develop=false
@@ -46,6 +47,11 @@ function setConfig {
 
   if [ $build = true ]; then
     compose_build_option="--build"
+  fi
+
+  if [ $run_local = true ] && [ $unique_test_to_launch = false ]; then
+    echo "Please provide a test name to be runned locally"
+    exit
   fi
 
   echo $log_sep
@@ -105,10 +111,12 @@ getTestToLaunch "$3"
 getTestToLaunch "$4"
 getTestToLaunch "$5"
 getTestToLaunch "$6"
-getOption integration "--integration" "$1" "$2" "$3" "$4" "$5" "$6"
-getOption end_to_end "--end-to-end" "$1" "$2" "$3" "$4" "$5" "$6"
-getOption develop "--develop" "$1" "$2" "$3" "$4" "$5" "$6"
-getOption build "--build" "$1" "$2" "$3" "$4" "$5" "$6"
+getTestToLaunch "$7"
+getOption integration "--integration" "$1" "$2" "$3" "$4" "$5" "$6" "$7"
+getOption end_to_end "--end-to-end" "$1" "$2" "$3" "$4" "$5" "$6" "$7"
+getOption develop "--develop" "$1" "$2" "$3" "$4" "$5" "$6" "$7"
+getOption build "--build" "$1" "$2" "$3" "$4" "$5" "$6" "$7"
+getOption run_local "--local" "$1" "$2" "$3" "$4" "$5" "$6" "$7"
 setConfig
 copy_service_install
 down_docker_volumes
