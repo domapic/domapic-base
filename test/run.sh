@@ -64,9 +64,11 @@ function setConfig {
 }
 
 function down_docker_volumes {
-  cd docker
-  docker-compose down --volumes
-  cd ..
+  if [ $run_local = false ]; then
+    cd docker
+    docker-compose down --volumes
+    cd ..
+  fi
 }
 
 function launch_test {
@@ -79,15 +81,19 @@ function launch_test {
     echo $log_sep
     echo "Launching ${test_type} test \"${test_to_run}\""
     echo $log_sep
-    cd docker
-    set -e
-    docker-compose ${compose_options} up ${compose_build_option} ${compose_up_options}
-    cd ..
+    if [ ! $run_local = false ]; then
+      cd docker
+      set -e
+      docker-compose ${compose_options} up ${compose_build_option} ${compose_up_options}
+      cd ..
+    else
+      echo "Run local"
+    fi
   fi
 }
 
 function copy_service_install {
-  if [ $build = true ] && [ -d ./services/install ]; then
+  if [ -d ./services/install ] && [ ! $run_local = false ]; then
     # Ensure that temporary folder for docker services dependencies installation exists
     if [ ! -d ./docker/service/.install ]; then
       mkdir ./docker/service/.install

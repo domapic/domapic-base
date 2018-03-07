@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Copy the service contents into the container
 ADD ./install.sh .
-ADD .install .
+ADD ./.install .
 
 RUN ./install.sh
 
