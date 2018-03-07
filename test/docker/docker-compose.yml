@@ -48,6 +48,6 @@ services:
         target: /app/test/services/service-to-run/lib
       - type: bind
         source: ../services/commands/${command_to_use}.sh
-        target: /app/test/services/service-to-run/lib/run.sh
+        target: /app/test/services/service-to-run/run.sh
     env_file:
       - ../services/options/${options_to_use}.env
