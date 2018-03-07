@@ -81,13 +81,16 @@ function launch_test {
     echo $log_sep
     echo "Launching ${test_type} test \"${test_to_run}\""
     echo $log_sep
-    if [ ! $run_local = false ]; then
+    if [ $run_local = false ]; then
       cd docker
       set -e
       docker-compose ${compose_options} up ${compose_build_option} ${compose_up_options}
       cd ..
     else
-      echo "Run local"
+      source "./services/options/${options_to_use}.local.sh"
+      cd services/commands
+      source "./${command_to_use}.local.sh"
+      cd ../..
     fi
   fi
 }
