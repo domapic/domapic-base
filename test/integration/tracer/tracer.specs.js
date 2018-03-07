@@ -4,13 +4,14 @@ const path = require('path')
 const Promise = require('bluebird')
 
 const test = require('../../unit/index')
+const config = require('../../utils/config')
 
 const getTodayDate = function () {
   return new Date().toISOString().slice(0, 10).replace(/-/g, '')
 }
 
 const getTracesFilePath = function () {
-  return path.resolve(__dirname, '..', '..', '..', 'config', '.domapic', 'service', 'logs', 'service.' + getTodayDate() + '.log')
+  return path.resolve(config.paths.domapicConfig, 'logs', 'service.' + getTodayDate() + '.log')
 }
 
 test.describe('Tracer', function () {

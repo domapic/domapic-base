@@ -2,7 +2,7 @@
 FROM javierbrea/node-headless-chrome:1.0.0
 
 # Set the working directory
-WORKDIR /test
+WORKDIR /app
 
 # Copy the test contents into the container
 ADD ./wait-for-it.sh .

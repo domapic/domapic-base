@@ -26,8 +26,8 @@
   "scripts": {
     "standard": "standard",
     "test-unit": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --recursive test/unit",
-    "test-end-to-end": "cd test/docker && ./end-to-end.sh",
-    "test-integration": "cd test/docker && ./integration.sh",
+    "test-end-to-end": "cd test && ./run.sh --end-to-end",
+    "test-integration": "cd test && ./run.sh --integration",
     "test": "npm run standard && npm run test-unit && npm run test-integration && npm run test-end-to-end",
     "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
   },

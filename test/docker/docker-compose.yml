@@ -11,41 +11,43 @@ services:
     volumes:
       - type: volume
         source: domapic_config
-        target: /test/config
+        target: /app/config
       - type: volume
         source: node_modules
-        target: /test/node_modules
+        target: /app/node_modules
       - type: bind
         source: ../../test/unit
-        target: /test/test/unit
+        target: /app/test/unit
       - type: bind
         source: ../../package.json
-        target: /test/package.json
+        target: /app/package.json
       - type: bind
         source: ../${test_type}/${test_to_run}
-        target: /test/test/test-to-run/specs
+        target: /app/test/test-to-run/specs
       - type: bind
         source: ../utils
-        target: /test/test/utils
+        target: /app/test/utils
   service:
     build:
       context: ./service
     volumes:
       - type: volume
         source: domapic_config
-        target: /service/config
+        target: /app/config
       - type: volume
         source: node_modules
-        target: /service/node_modules
+        target: /app/node_modules
       - type: bind
         source: ../../lib
-        target: /service/lib
+        target: /app/lib
       - type: bind
         source: ../../index.js
-        target: /service/index.js
+        target: /app/index.js
       - type: bind
-        source: ../services/${service_to_start}
-        target: /service/test/services/service-to-run
+        source: ../services/app/${service_to_start}
+        target: /app/test/services/service-to-run
+      - type: bind
+        source: ../services/commands/${command_to_use}.sh
+        target: /app/test/services/service-to-run/run.sh
     env_file:
-      - ./service/commands/${command_to_use}.env
-      - ./service/options/${options_to_use}.env
+      - ../services/options/${options_to_use}.env

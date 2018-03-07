@@ -1,13 +1,15 @@
 
+const path = require('path')
+
 const _ = require('lodash')
 const Promise = require('bluebird')
 const requestPromise = require('request-promise')
 
 const test = require('../../unit/index')
-const serviceUtils = require('../../utils/service')
+const config = require('../../utils/config')
 
 test.describe('Built-in API', function () {
-  const BASE_URL = serviceUtils.url() + '/api/'
+  const BASE_URL = config.service.url() + '/api/'
   let requestOptions = {}
 
   const testOptionsMethod = function (options) {
@@ -69,9 +71,8 @@ test.describe('Built-in API', function () {
     test.describe('GET', function () {
       test.it('should return current saved configuration, extended with explicit service options', () => {
         return requestPromise(requestOptions).then((response) => {
-          const savedConfig = require('../../../config/.domapic/service/config/service.json')
-          const explicitOptions = require('./explicitOptions.fixtures.json')
-          return test.expect(response).to.deep.equal(_.extend({}, savedConfig, explicitOptions))
+          const savedConfig = require(path.resolve(config.paths.domapicConfig, 'config', 'service.json'))
+          return test.expect(response).to.deep.equal(_.extend({}, savedConfig, config.explicitServiceOptions))
         })
       })
     })
