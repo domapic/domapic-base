@@ -45,9 +45,9 @@ services:
         target: /app/index.js
       - type: bind
         source: ../services/app/${service_to_start}
-        target: /app/test/services/service-to-run
+        target: /app/test/services/service-to-run/lib
       - type: bind
         source: ../services/commands/${command_to_use}.sh
-        target: /app/test/services/service-to-run/run.sh
+        target: /app/test/services/service-to-run/lib/run.sh
     env_file:
       - ../services/options/${options_to_use}.env
