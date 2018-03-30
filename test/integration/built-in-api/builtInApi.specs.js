@@ -52,7 +52,9 @@ test.describe('Built-in API', function () {
             test.expect(response.type).to.equal('unrecognized'),
             test.expect(response.package).to.equal(packageInfo.name),
             test.expect(response.version).to.equal(packageInfo.version),
-            test.expect(response.description).to.equal(packageInfo.description)
+            test.expect(response.description).to.equal(packageInfo.description),
+            test.expect(response.author).to.equal(packageInfo.author.name),
+            test.expect(response.homepage).to.equal(packageInfo.homepage)
           ])
         })
       })
