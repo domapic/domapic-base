@@ -4,7 +4,7 @@ const Promise = require('bluebird')
 const tracer = require('tracer')
 const chalk = require('chalk')
 
-const test = require('../../../index')
+const test = require('mocha-sinon-chai')
 const mocks = require('../../../mocks')
 
 const Errors = require('../../../../../lib/bases/core/Errors')

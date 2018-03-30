@@ -1,6 +1,6 @@
 
 const puppeteer = require('puppeteer')
-const test = require('../../unit/index')
+const test = require('mocha-sinon-chai')
 const config = require('../../utils/config')
 
 test.describe('Swagger Web UI', function () {

@@ -5,7 +5,7 @@ const _ = require('lodash')
 const Promise = require('bluebird')
 const requestPromise = require('request-promise')
 
-const test = require('../../unit/index')
+const test = require('mocha-sinon-chai')
 const config = require('../../utils/config')
 
 test.describe('Built-in API', function () {

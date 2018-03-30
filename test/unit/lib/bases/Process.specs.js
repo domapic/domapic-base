@@ -5,7 +5,7 @@ const path = require('path')
 const Promise = require('bluebird')
 const pm2 = require('pm2')
 
-const test = require('../../index')
+const test = require('mocha-sinon-chai')
 const mocks = require('../../mocks')
 
 const Process = require('../../../../lib/bases/Process')

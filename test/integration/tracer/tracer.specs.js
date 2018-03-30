@@ -3,7 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const Promise = require('bluebird')
 
-const test = require('../../unit/index')
+const test = require('mocha-sinon-chai')
 const config = require('../../utils/config')
 
 const getTodayDate = function () {

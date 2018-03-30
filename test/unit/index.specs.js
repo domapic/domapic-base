@@ -1,5 +1,5 @@
 
-const test = require('./index')
+const test = require('mocha-sinon-chai')
 
 const index = require('../../index.js')
 const Service = require('../../lib/Service')

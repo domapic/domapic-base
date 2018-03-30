@@ -1,5 +1,5 @@
 
-const test = require('../../index')
+const test = require('mocha-sinon-chai')
 
 const pm2Process = {
   name: 'fooProcessName'

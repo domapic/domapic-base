@@ -2,7 +2,7 @@
 const _ = require('lodash')
 const path = require('path')
 
-const test = require('../../index')
+const test = require('mocha-sinon-chai')
 
 const serviceArguments = require('../../../../lib/arguments/service')
 
