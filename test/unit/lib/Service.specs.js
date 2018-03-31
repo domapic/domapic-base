@@ -22,6 +22,7 @@ test.describe('Service', () => {
     fooClientMethod: 'fooCMethod'
   }
   const coreStub = new mocks.core.Stub()
+  const argumentsStub = new mocks.arguments.Stub()
   const ensureCoreProperty = function (coreProperty) {
     test.it('should return the core ' + coreProperty, (done) => {
       new Service()
@@ -31,13 +32,9 @@ test.describe('Service', () => {
         })
     })
   }
-  let getArgumentsStub
 
   test.beforeEach(() => {
-    getArgumentsStub = test.sinon.stub().usingPromise(Promise).resolves(mocks.arguments.getResult)
-    test.sinon.stub(bases, 'Arguments').returns({
-      get: getArgumentsStub
-    })
+    test.sinon.stub(bases, 'Arguments').returns(argumentsStub)
     test.sinon.stub(bases, 'Core').returns(coreStub)
     test.sinon.stub(bases, 'Server').returns(fooServer)
     test.sinon.stub(bases, 'Client').returns(fooClient)

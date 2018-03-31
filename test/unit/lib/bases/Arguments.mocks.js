@@ -63,7 +63,15 @@ const options = {
 
 const terminalWidth = 500
 
+const Stub = function () {
+  return {
+    get: test.sinon.stub().usingPromise(Promise).resolves(_.clone(getResult)),
+    runCommand: test.sinon.stub()
+  }
+}
+
 module.exports = {
+  Stub: Stub,
   options: options,
   getResult: getResult,
   terminalWidth: terminalWidth,
