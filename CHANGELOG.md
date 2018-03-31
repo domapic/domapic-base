@@ -4,14 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.5.0] - 2018-03-30
+## [0.5.0] - 2018-03-31
 ### Added
+- Add Cors headers to server
 - Add integration tests
 - Add end-to-end tests
 
 ### Changed
+- Set default hostName configuration as empty string.
 - Use "mocha-sinon-chai" dependency
 - Unit tests moved from 'test' to 'test/unit'
+
+### Fixed
+- Swagger server set to local ip if no hostName is provided.
 
 ## [0.4.0] - 2018-02-29
 ### Added

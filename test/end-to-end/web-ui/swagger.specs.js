@@ -5,6 +5,7 @@ const test = require('mocha-sinon-chai')
 const config = require('../../utils/config')
 
 test.describe('Swagger Web UI', function () {
+  this.timeout(10000)
   let page
   let browser
 
@@ -26,7 +27,6 @@ test.describe('Swagger Web UI', function () {
       return page.waitForSelector(trySelector)
     })
     .then(() => {
-      console.log('try')
       return page.$(trySelector).then((elementHandle) => {
         return elementHandle.click()
       })
@@ -35,20 +35,20 @@ test.describe('Swagger Web UI', function () {
       return page.waitForSelector(executeSelector)
     })
     .then(() => {
-      console.log('execute')
+      return page.waitFor(500)
+    })
+    .then(() => {
       return page.$(executeSelector).then((elementHandle) => {
         return elementHandle.click()
       })
     })
     .then(() => {
-      console.log('clicked')
       return Promise.all([
         page.waitForSelector(codeResponseSelector),
         page.waitForSelector(bodyResponseSelector)
       ])
     })
     .then(() => {
-      console.log('response painted')
       return Promise.props({
         code: page.$eval(codeResponseSelector, element => element.textContent),
         body: page.$eval(bodyResponseSelector, element => {
@@ -59,7 +59,6 @@ test.describe('Swagger Web UI', function () {
   }
 
   test.before(function () {
-    this.timeout(10000)
     return puppeteer.launch({
       args: [
         '--no-sandbox',
@@ -80,7 +79,7 @@ test.describe('Swagger Web UI', function () {
     return browser.close()
   })
 
-  test.it('should print the package info when "get /about" api resource is executed', () => {
+  test.it('should print the package info when "get /about" api resource is executed', function () {
     const packageInfo = require('../../../package.json')
     return executeOperation('#operations-about-getAbout')
       .then((response) => {

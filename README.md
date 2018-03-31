@@ -125,7 +125,7 @@ option | type | description | default
 --- | --- | --- | ---
 `name` | String | Service instance name | -
 `port` | Number | Http port used | 3000
-`hostName` | String | Hostname for the server | 0.0.0.0
+`hostName` | String | Hostname for the server | -
 `sslCert` | String | Path to an ssl certificate | -
 `sslKey` | String | Path to an ssl key | - 
 `authDisabled` | Array | Array of IPs or CIDR IP ranges with authentication disabled | ['127.0.0.1', '::1/128']

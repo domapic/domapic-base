@@ -18,14 +18,14 @@ const getResult = {
     port: 3000,
     authDisabled: ['127.0.0.1', '::1/128'],
     saveConfig: false,
-    hostName: '0.0.0.0'
+    hostName: ''
   },
   defaultsToStore: {
     color: true,
     logLevel: 'info',
     port: 3000,
     authDisabled: ['127.0.0.1', '::1/128'],
-    hostName: '0.0.0.0'
+    hostName: ''
   },
   explicit: {
     name: 'testing'
