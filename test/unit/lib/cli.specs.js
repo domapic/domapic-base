@@ -119,7 +119,7 @@ test.describe('cli', () => {
 
     test.beforeEach(() => {
       bases.Arguments.restore()
-      test.sinon.stub(bases, 'Arguments').returns(_.extend({} ,argumentsStub, {
+      test.sinon.stub(bases, 'Arguments').returns(_.extend({}, argumentsStub, {
         runCommand: test.sinon.stub().callsFake(runCommand)
       }))
       test.sinon.stub(bases, 'Process').returns(fooProcess)
