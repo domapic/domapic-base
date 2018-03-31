@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Swagger server set to local ip if no hostName is provided.
+- Normalize and convert to absolute the "path" option
 
 ## [0.4.0] - 2018-02-29
 ### Added
