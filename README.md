@@ -38,6 +38,7 @@ WebAPI Microservice base for Domapic Node.js packages.
 	* [Implementation](#implementation)
 	* [Usage](#usage)
 	* [Custom options and commands](#custom-options-and-commands)
+* [Test suite](#test-suite)
 
 ---
 
@@ -124,7 +125,7 @@ option | type | description | default
 --- | --- | --- | ---
 `name` | String | Service instance name | -
 `port` | Number | Http port used | 3000
-`hostName` | String | Hostname for the server | 0.0.0.0
+`hostName` | String | Hostname for the server | -
 `sslCert` | String | Path to an ssl certificate | -
 `sslKey` | String | Path to an ssl key | - 
 `authDisabled` | Array | Array of IPs or CIDR IP ranges with authentication disabled | ['127.0.0.1', '::1/128']
@@ -880,6 +881,32 @@ Example of custom command usage:
 your-cli-name stopCustom value1 --fooOption2=false --name=testing
 # Will display configuration for the custom command, and then stop the process of script "server.js" with name "testing"
 ```
+
+[back to top](#table-of-contents)
+
+---
+
+## Test Suite
+
+This package is distributed with a test suite that includes a javascript linter, unit tests, integration and end-to-end tests.
+
+```shell
+npm test
+```
+
+In order to make easier the development of tests, the `test` command has many options:
+
+option | description | example
+--- | --- | ---
+`[test-name]` | Integration or end-to-end test to be launched independently | `npm test tracer`
+`--standard` | Run only the [standardjs][standard-url] code linter | `npm test -- --standard`
+`--unit` | Run only unit tests | `npm test -- --unit`
+`--integration` | Run only integration tests | `npm test -- --integration`
+`--end-to-end` | Run only end-to-end tests | `npm test -- --end-to-end`
+`--build` | Rebuild docker images. Use it when dependencies change, etc. | `npm test web-ui -- --build`
+`--develop` | Expose docker port 3000 to localhost, and do not exit docker after running test | `npm test tracer -- --develop`
+`--local` | Do not use Docker to run integration and end-to-end tests. An specific test name must be provided to be executed independently. The related service has to be running locally as well when test is launched | `npm test tracer -- --local`
+`--service` | Must be used with `--local`. Starts locally the service related to the provided test name | `npm test tracer -- --local --service`
 
 [back to top](#table-of-contents)
 
