@@ -24,7 +24,7 @@
     "swagger-ui"
   ],
   "scripts": {
-    "standard": "standard",
+    "domapic-test": "domapic-test",
     "test": "cd test && ./run.sh",
     "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
@@ -55,11 +55,8 @@
   "devDependencies": {
     "coveralls": "3.0.0",
     "is-docker": "1.1.0",
-    "istanbul": "0.4.5",
-    "mocha-sinon-chai": "1.1.0",
-    "puppeteer": "1.1.1",
-    "request-promise": "4.2.2",
-    "standard": "10.0.3"
+    "domapic-test": "0.0.1-alpha.2",
+    "request-promise": "4.2.2"
   },
   "engines": {
     "node": "8.9.4",

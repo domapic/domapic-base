@@ -1,0 +1,36 @@
+docker-images:
+  - name: basic-service
+    add:
+      - package.json
+      - npm-shrinkwrap.json
+    expose: 3000
+    install: domapic-test/docker/images/basic-service/install
+  - name: basic-test
+    add:
+      - .
+    install: domapic-test/docker/images/basic-test/install
+test:
+  unit: test/unit
+  integration:
+    - name: built-in-api
+      docker-compose-down: true
+      services:
+        - docker-image: basic-service
+          commands:
+            local: domapic-test/integration/built-in-api/basic-service/start-local
+            docker: domapic-test/integration/built-in-api/basic-service/start
+      test: 
+        docker-image: basic-test
+        waitFor: basic-service
+        specs: domapic-test/integration/built-in-api
+  end-to-end:
+    - name: web-ui
+      services:
+        - docker-image: basic-service
+          commands:
+            local: domapic-test/end-to-end/web-ui/basic-service/start-local
+            docker: domapic-test/end-to-end/web-ui/basic-service/start
+      test: 
+        docker-image: basic-test
+        waitFor: basic-service
+        specs: domapic-test/end-to-end/web-ui
