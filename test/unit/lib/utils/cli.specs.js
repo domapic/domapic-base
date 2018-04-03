@@ -1,5 +1,5 @@
 
-const test = require('mocha-sinon-chai')
+const test = require('domapic-test')
 
 const cli = require('../../../../lib/utils/cli')
 

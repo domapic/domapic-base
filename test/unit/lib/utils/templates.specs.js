@@ -1,7 +1,7 @@
 
 const _ = require('lodash')
 
-const test = require('mocha-sinon-chai')
+const test = require('domapic-test')
 
 const templates = require('../../../../lib/utils/templates')
 const cliTemplates = require('../../../../lib/utils/templates/cli')

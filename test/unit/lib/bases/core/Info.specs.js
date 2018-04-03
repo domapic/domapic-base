@@ -3,7 +3,7 @@ const path = require('path')
 
 const fsExtra = require('fs-extra')
 
-const test = require('mocha-sinon-chai')
+const test = require('domapic-test')
 
 const Info = require('../../../../../lib/bases/core/Info')
 const Errors = require('../../../../../lib/bases/core/Errors')

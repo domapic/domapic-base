@@ -2,7 +2,7 @@
 const _ = require('lodash')
 const Boom = require('boom')
 
-const test = require('mocha-sinon-chai')
+const test = require('domapic-test')
 
 const Errors = require('../../../../../lib/bases/core/Errors')
 

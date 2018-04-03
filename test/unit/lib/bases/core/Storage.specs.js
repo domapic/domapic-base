@@ -2,7 +2,7 @@
 const _ = require('lodash')
 const Promise = require('bluebird')
 
-const test = require('mocha-sinon-chai')
+const test = require('domapic-test')
 const mocks = require('../../../mocks')
 
 const Storage = require('../../../../../lib/bases/core/Storage')

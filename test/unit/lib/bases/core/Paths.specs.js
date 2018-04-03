@@ -7,7 +7,7 @@ const _ = require('lodash')
 const Promise = require('bluebird')
 const fsExtra = require('fs-extra')
 
-const test = require('mocha-sinon-chai')
+const test = require('domapic-test')
 const mocks = require('../../../mocks')
 
 const Paths = require('../../../../../lib/bases/core/Paths')
