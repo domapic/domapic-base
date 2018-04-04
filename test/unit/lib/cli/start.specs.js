@@ -1,7 +1,7 @@
 
 const Promise = require('bluebird')
 
-const test = require('domapic-test')
+const test = require('austral-whale')
 const mocks = require('../../mocks')
 
 const start = require('../../../../lib/cli/start')

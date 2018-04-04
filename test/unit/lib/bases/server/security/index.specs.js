@@ -1,5 +1,5 @@
 
-const test = require('domapic-test')
+const test = require('austral-whale')
 const mocks = require('../../../../mocks')
 
 const SecurityMethods = require('../../../../../../lib/bases/server/security')

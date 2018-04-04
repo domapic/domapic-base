@@ -1,5 +1,5 @@
 
-const test = require('domapic-test')
+const test = require('austral-whale')
 
 const index = require('../../index.js')
 const Service = require('../../lib/Service')

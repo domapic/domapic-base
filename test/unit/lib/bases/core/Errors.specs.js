@@ -2,7 +2,7 @@
 const _ = require('lodash')
 const Boom = require('boom')
 
-const test = require('domapic-test')
+const test = require('austral-whale')
 
 const Errors = require('../../../../../lib/bases/core/Errors')
 

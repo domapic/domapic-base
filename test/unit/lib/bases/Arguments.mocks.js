@@ -2,7 +2,7 @@
 const _ = require('lodash')
 const Promise = require('bluebird')
 
-const test = require('domapic-test')
+const test = require('austral-whale')
 
 const getResult = {
   options: {

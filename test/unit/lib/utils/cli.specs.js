@@ -1,5 +1,5 @@
 
-const test = require('domapic-test')
+const test = require('austral-whale')
 
 const cli = require('../../../../lib/utils/cli')
 

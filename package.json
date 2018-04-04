@@ -24,8 +24,8 @@
     "swagger-ui"
   ],
   "scripts": {
-    "domapic-test": "domapic-test",
-    "test": "cd test && ./run.sh",
+    "test": "austral-whale",
+    "old-test": "cd test && ./run.sh",
     "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "dependencies": {
@@ -55,7 +55,7 @@
   "devDependencies": {
     "coveralls": "3.0.0",
     "is-docker": "1.1.0",
-    "domapic-test": "0.0.1-alpha.2",
+    "austral-whale": "0.0.1-alpha.4",
     "request-promise": "4.2.2"
   },
   "engines": {

@@ -3,7 +3,7 @@ const _ = require('lodash')
 const Promise = require('bluebird')
 const yargs = require('yargs')
 
-const test = require('domapic-test')
+const test = require('austral-whale')
 const mocks = require('../../mocks')
 
 const Arguments = require('../../../../lib/bases/Arguments')

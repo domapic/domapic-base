@@ -1,7 +1,7 @@
 
 const Promise = require('bluebird')
 
-const test = require('domapic-test')
+const test = require('austral-whale')
 
 const utils = require('../../../../lib/utils')
 const configMocks = require('./core/Config.mocks')
