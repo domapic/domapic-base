@@ -1,7 +1,7 @@
 
 const Promise = require('bluebird')
 const _ = require('lodash')
-const test = require('austral-whale')
+const test = require('narval')
 
 const mocks = require('../mocks')
 

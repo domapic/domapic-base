@@ -1,4 +1,4 @@
 
-const mochaSinonChai = require('austral-whale')
+const mochaSinonChai = require('narval')
 
 module.exports = mochaSinonChai

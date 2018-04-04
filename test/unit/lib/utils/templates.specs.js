@@ -1,7 +1,7 @@
 
 const _ = require('lodash')
 
-const test = require('austral-whale')
+const test = require('narval')
 
 const templates = require('../../../../lib/utils/templates')
 const cliTemplates = require('../../../../lib/utils/templates/cli')

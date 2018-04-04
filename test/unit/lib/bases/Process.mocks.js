@@ -1,5 +1,5 @@
 
-const test = require('austral-whale')
+const test = require('narval')
 
 const pm2Process = {
   name: 'fooProcessName'

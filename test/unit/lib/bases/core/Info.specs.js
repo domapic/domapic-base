@@ -3,7 +3,7 @@ const path = require('path')
 
 const fsExtra = require('fs-extra')
 
-const test = require('austral-whale')
+const test = require('narval')
 
 const Info = require('../../../../../lib/bases/core/Info')
 const Errors = require('../../../../../lib/bases/core/Errors')

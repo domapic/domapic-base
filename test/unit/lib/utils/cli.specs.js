@@ -1,5 +1,5 @@
 
-const test = require('austral-whale')
+const test = require('narval')
 
 const cli = require('../../../../lib/utils/cli')
 
