@@ -4,6 +4,8 @@ docker-images:
     add:
       - package.json
       - npm-shrinkwrap.json
+      - old-test\integration///built-in-api/builtInApi.specs.js
+      - old-test\integration///tracer
     expose: 3000
     install: domapic-test/docker/basic-image/install
 docker-services:
