@@ -6,20 +6,26 @@ docker-images:
       - npm-shrinkwrap.json
       - old-test\integration///built-in-api/builtInApi.specs.js
       - old-test\integration///tracer
-    expose: 3000
-    install: domapic-test/docker/basic-image/install
+    expose:
+      - 3000
+    install: test/docker/basic-image/install
 docker-services:
   - name: basic-service
-    from: basic-image
+    build: 
+      context: basic-image
     bind:
-      - domapic-test
+      - lib
+      - test
   - name: basic-test
-    from: basic-image
+    build:
+      context: basic-image
     bind:
-      - domapic-test/integration
-      - domapic-test/unit
-      - domapic-test/end-to-end
-    depends_on: basic-service
+      - lib
+      - test
+      - node_modules
+      - index.js
+    depends_on:
+      - basic-service
 test:
   unit: test/unit
   integration:
@@ -28,18 +34,18 @@ test:
       services:
         - docker-service: basic-service
           commands:
-            local: domapic-test/integration/built-in-api/basic-service/start-local
-            docker: domapic-test/integration/built-in-api/basic-service/start
+            local: test/integration/built-in-api/basic-service/start-local
+            docker: test/docker/command-example-1
       test: 
         docker-service: basic-test
-        specs: domapic-test/integration/built-in-api
+        specs: test/unit
   end-to-end:
     - name: web-ui
       services:
         - docker-service: basic-service
           commands:
-            local: domapic-test/end-to-end/web-ui/basic-service/start-local
-            docker: domapic-test/end-to-end/web-ui/basic-service/start
+            local: test/end-to-end/web-ui/basic-service/start-local
+            docker: test/docker/command-example2
       test: 
         docker-service: basic-test
-        specs: domapic-test/end-to-end/web-ui
+        specs: test/unit
