@@ -35,7 +35,7 @@ test:
         - docker-service: basic-service
           commands:
             local: test/integration/built-in-api/basic-service/start-local
-            docker: test/docker/command-example-1
+            docker: test/docker/command-example1
       test: 
         docker-service: basic-test
         specs: test/unit
