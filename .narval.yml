@@ -4,21 +4,17 @@ docker-images:
     add:
       - package.json
       - npm-shrinkwrap.json
-      - old-test\integration///built-in-api/builtInApi.specs.js
-      - old-test\integration///tracer
     expose:
       - 3000
     install: test/docker/basic-image/install
 docker-services:
   - name: basic-service
-    build: 
-      context: basic-image
+    build: basic-image
     bind:
       - lib
       - test
   - name: basic-test
-    build:
-      context: basic-image
+    build: basic-image
     bind:
       - lib
       - test
@@ -26,21 +22,25 @@ docker-services:
       - index.js
     depends_on:
       - basic-service
-test:
-  unit: test/unit
+suites:
+  unit: 
+    - name: unit
+      test:
+        specs: test/unit
   integration:
     - name: built-in-api
       docker-compose-down: true
       services:
         - docker-service: basic-service
           commands:
-            local: test/integration/built-in-api/basic-service/start-local
+            #local: test/integration/built-in-api/basic-service/start-local
             docker: test/docker/command-example1
       test: 
         docker-service: basic-test
         specs: test/unit
   end-to-end:
     - name: web-ui
+      docker-compose-down: true
       services:
         - docker-service: basic-service
           commands:
@@ -48,4 +48,5 @@ test:
             docker: test/docker/command-example2
       test: 
         docker-service: basic-test
+        wait-for: service:3000
         specs: test/unit

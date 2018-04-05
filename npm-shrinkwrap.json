@@ -3580,9 +3580,9 @@
       }
     },
     "mocha-sinon-chai": {
-      "version": "2.0.0-alpha.20",
-      "resolved": "http://localhost:4873/mocha-sinon-chai/-/mocha-sinon-chai-2.0.0-alpha.20.tgz",
-      "integrity": "sha512-aUn4H2GRR6yIZOVpv4qtAhGTkRTPJ6MBrKIip3eqlm00aUtyIWWBpPkcRqrHVOwB3tWvm8gqEXGf6uafjBLelw==",
+      "version": "2.0.0-alpha.21",
+      "resolved": "http://localhost:4873/mocha-sinon-chai/-/mocha-sinon-chai-2.0.0-alpha.21.tgz",
+      "integrity": "sha512-wlMu0bby1NZIDQaKCVcL28ZxepMdtTQFIy5YAE2/OnIUPfKp7utF9/bCb5n5V8HrguY99aoiSxucVT+FNhYJhw==",
       "dev": true,
       "requires": {
         "chai": "4.1.2",
@@ -3623,9 +3623,9 @@
       "optional": true
     },
     "narval": {
-      "version": "0.0.1-alpha.4",
-      "resolved": "http://localhost:4873/narval/-/narval-0.0.1-alpha.4.tgz",
-      "integrity": "sha512-YUBoFhRJTO+ukk2JCIAlC45HsB9vZ6TUhHeDEAa8YiU5OzR06b55zK4KdVS94rVs8Vst6Mouc8ahoCwlI91jjQ==",
+      "version": "0.0.1-alpha.7",
+      "resolved": "http://localhost:4873/narval/-/narval-0.0.1-alpha.7.tgz",
+      "integrity": "sha512-sNMcFkflu5KDAIe4YfIBQRGZqpx3l3wDbfVE8Ze2GZDLnpdviCbVY2FMkGH1Q2G8tYhb1xj7dQQwiEbfHh5SSA==",
       "dev": true,
       "requires": {
         "bluebird": "3.5.1",
@@ -3635,7 +3635,7 @@
         "handlebars": "4.0.11",
         "js-yaml": "3.11.0",
         "lodash": "4.17.5",
-        "mocha-sinon-chai": "2.0.0-alpha.20",
+        "mocha-sinon-chai": "2.0.0-alpha.21",
         "standard": "10.0.3",
         "tracer": "0.8.12"
       },
