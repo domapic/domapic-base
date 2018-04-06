@@ -8,10 +8,10 @@ module.exports = {
     port: '3000'
   },
   paths: {
-    domapicConfig: path.resolve(__dirname, '..', '..', 'config', '.domapic', 'service')
+    domapicConfig: path.resolve(__dirname, '..', '..', '.shared', '.domapic', 'service')
   },
   explicitServiceOptions: {
-    path: '/app/config',
+    path: '/app/.shared',
     hostName: 'service'
   }
 }

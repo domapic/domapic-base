@@ -1,6 +1,6 @@
 {
   "name": "domapic-microservice",
-  "version": "0.5.0",
+  "version": "0.4.0",
   "description": "WebAPI Microservice base for Domapic Node.js packages",
   "main": "index.js",
   "keywords": [
@@ -24,9 +24,9 @@
     "swagger-ui"
   ],
   "scripts": {
-    "test": "narval",
-    "old-test": "cd test && ./run.sh",
-    "coveralls": "cat ./.coverage/lcov.info | coveralls"
+    "standard": "standard",
+    "test": "cd test && ./run.sh",
+    "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "dependencies": {
     "bluebird": "3.5.1",
@@ -37,7 +37,6 @@
     "express-request-id": "1.4.0",
     "fs-extra": "5.0.0",
     "hbs": "4.0.1",
-    "ip": "1.1.5",
     "ip-range-check": "0.0.2",
     "is-promise": "2.1.0",
     "jsonschema": "1.2.2",
@@ -53,11 +52,17 @@
     "yargs": "10.0.3"
   },
   "devDependencies": {
+    "chai": "4.1.2",
     "coveralls": "3.0.0",
+    "dirty-chai": "2.0.1",
     "is-docker": "1.1.0",
-    "request-promise": "4.2.2",
+    "istanbul": "0.4.5",
+    "mocha": "4.0.1",
     "puppeteer": "1.1.1",
-    "narval": "0.0.1-alpha.8"
+    "request-promise": "4.2.2",
+    "sinon": "4.1.2",
+    "sinon-chai": "2.14.0",
+    "standard": "10.0.3"
   },
   "engines": {
     "node": "8.9.4",

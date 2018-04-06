@@ -1,8 +1,8 @@
 
 const Promise = require('bluebird')
 const puppeteer = require('puppeteer')
-const test = require('mocha-sinon-chai')
-const config = require('../../utils/config')
+const test = require('narval')
+const config = require('../../common/config')
 
 test.describe('Swagger Web UI', function () {
   this.timeout(10000)

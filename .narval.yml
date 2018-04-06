@@ -1,19 +1,21 @@
 docker-images:
   - name: basic-image
-    from: node:8.9.4
+    from: javierbrea/node-headless-chrome:1.0.0
     add:
       - package.json
       - npm-shrinkwrap.json
     expose:
       - 3000
-    install: test/docker/basic-image/install
+    install: test/docker/install
 docker-services:
-  - name: basic-service
+  - name: service
     build: basic-image
     bind:
       - lib
       - test
-  - name: basic-test
+      - node_modules
+      - index.js
+  - name: test
     build: basic-image
     bind:
       - lib
@@ -21,7 +23,7 @@ docker-services:
       - node_modules
       - index.js
     depends_on:
-      - basic-service
+      - service
 suites:
   unit: 
     - name: unit
@@ -29,24 +31,34 @@ suites:
         specs: test/unit
   integration:
     - name: built-in-api
+      services:
+        - docker-service: service
+          commands:
+#            local: test/integration/built-in-api/basic-service/start-local
+            docker: test/services/commands/docker/basic-start
+      test: 
+        docker-service: test
+        wait-for: service:3000
+        specs: test/integration/built-in-api
+    - name: tracer
       docker-compose-down: true
       services:
-        - docker-service: basic-service
+        - docker-service: service
           commands:
-            #local: test/integration/built-in-api/basic-service/start-local
-            docker: test/docker/command-example1
+  #            local: test/integration/built-in-api/basic-service/start-local
+            docker: test/services/commands/docker/log-level-warn
       test: 
-        docker-service: basic-test
-        specs: test/unit
+        docker-service: test
+        wait-for: service:3000
+        specs: test/integration/tracer
   end-to-end:
     - name: web-ui
-      docker-compose-down: true
       services:
-        - docker-service: basic-service
+        - docker-service: service
           commands:
-            local: test/end-to-end/web-ui/basic-service/start-local
-            docker: test/docker/command-example2
+#            local: test/end-to-end/web-ui/basic-service/start-local
+            docker: test/services/commands/docker/basic-start
       test: 
-        docker-service: basic-test
+        docker-service: test
         wait-for: service:3000
-        specs: test/unit
+        specs: test/end-to-end/web-ui

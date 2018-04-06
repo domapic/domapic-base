@@ -3,8 +3,8 @@ const fs = require('fs')
 const path = require('path')
 const Promise = require('bluebird')
 
-const test = require('mocha-sinon-chai')
-const config = require('../../utils/config')
+const test = require('narval')
+const config = require('../../common/config')
 
 const getTodayDate = function () {
   return new Date().toISOString().slice(0, 10).replace(/-/g, '')
@@ -28,7 +28,7 @@ test.describe('Tracer', function () {
       encoding: 'utf8'
     })
 
-    test.it('should log only traces with trace level', () => {
+    test.it('should log only traces with warn level', () => {
       return Promise.all([
         test.expect(tracesFileContent).not.to.include('[info]'),
         test.expect(tracesFileContent).to.include('[warn]')
