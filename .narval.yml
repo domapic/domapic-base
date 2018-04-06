@@ -40,25 +40,31 @@ suites:
         docker-service: test
         wait-for: service:3000
         specs: test/integration/built-in-api
+      coverage:
+        from: service
     - name: tracer
       docker-compose-down: true
       services:
         - docker-service: service
           commands:
-  #            local: test/integration/built-in-api/basic-service/start-local
+  #         local: test/integration/built-in-api/basic-service/start-local
             docker: test/services/commands/docker/log-level-warn
       test: 
         docker-service: test
         wait-for: service:3000
         specs: test/integration/tracer
+      coverage:
+        from: service
   end-to-end:
     - name: web-ui
       services:
         - docker-service: service
           commands:
-#            local: test/end-to-end/web-ui/basic-service/start-local
+#           local: test/end-to-end/web-ui/basic-service/start-local
             docker: test/services/commands/docker/basic-start
       test: 
         docker-service: test
         wait-for: service:3000
         specs: test/end-to-end/web-ui
+      coverage:
+        from: service
