@@ -29,6 +29,8 @@ suites:
     - name: unit
       test:
         specs: test/unit
+      config:
+        dir: .coverage/unit
   integration:
     - name: built-in-api
       services:
