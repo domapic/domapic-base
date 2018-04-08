@@ -13,14 +13,12 @@ docker-services:
     bind:
       - lib
       - test
-      - node_modules
       - index.js
   - name: test
     build: basic-image
     bind:
       - lib
       - test
-      - node_modules
       - index.js
     depends_on:
       - service
@@ -30,7 +28,8 @@ suites:
       test:
         specs: test/unit
       coverage:
-        dir: .coverage/unit
+        config:
+          dir: .coverage/unit
   integration:
     - name: built-in-api
       services:
