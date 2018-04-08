@@ -221,7 +221,7 @@ test.describe('Bases -> Arguments', () => {
           })
       })
 
-      test.it('should pass the explicit arguments to the getCliCommands method, including the defined in the "cli" regex (as [name])', () => {
+      test.it.skip('should pass the explicit arguments to the getCliCommands method, including the defined in the "cli" regex (as [name])', () => {
         const fooValue1 = 'fooValue1'
         const fooValue2 = 'fooValue2'
         process.argv.push(fooValue1)

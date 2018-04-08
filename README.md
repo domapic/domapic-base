@@ -932,6 +932,7 @@ option | description | example
 [release-url]: https://github.com/domapic/domapic-microservice/releases
 [standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
 [standard-url]: http://standardjs.com/
+
 [website-image]: https://img.shields.io/website-up-down-green-red/http/domapic.com.svg?label=domapic.com
 [website-url]: http://domapic.com/
 
