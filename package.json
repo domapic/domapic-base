@@ -1,6 +1,6 @@
 {
   "name": "domapic-microservice",
-  "version": "0.5.0",
+  "version": "1.0.0-beta.1",
   "description": "WebAPI Microservice base for Domapic Node.js packages",
   "main": "index.js",
   "keywords": [
@@ -56,7 +56,7 @@
     "is-docker": "1.1.0",
     "request-promise": "4.2.2",
     "puppeteer": "1.1.1",
-    "narval": "0.0.1-beta.2"
+    "narval": "0.0.1-beta.3"
   },
   "engines": {
     "node": "8.9.4",

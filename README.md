@@ -38,7 +38,7 @@ WebAPI Microservice base for Domapic Node.js packages.
 	* [Implementation](#implementation)
 	* [Usage](#usage)
 	* [Custom options and commands](#custom-options-and-commands)
-* [Test suite](#test-suite)
+* [Test suites](#test-suites)
 
 ---
 
@@ -886,27 +886,17 @@ your-cli-name stopCustom value1 --fooOption2=false --name=testing
 
 ---
 
-## Test Suite
+## Test Suites
 
-This package is distributed with a test suite that includes a javascript linter, unit tests, integration and end-to-end tests.
+This package uses [Narval][narval-url] as test suites runner.
+
+Different test suites are included, categorized in "unit", "integration", and "end-to-end" tests. For further details, read the `.narval.yml`, and, if needed, you can learn more about Narval configuration at [its own documentation][narval-url].
+
+Run tests:
 
 ```shell
 npm test
 ```
-
-In order to make easier the development of tests, the `test` command has many options:
-
-option | description | example
---- | --- | ---
-`[test-name]` | Integration or end-to-end test to be launched independently | `npm test tracer`
-`--standard` | Run only the [standardjs][standard-url] code linter | `npm test -- --standard`
-`--unit` | Run only unit tests | `npm test -- --unit`
-`--integration` | Run only integration tests | `npm test -- --integration`
-`--end-to-end` | Run only end-to-end tests | `npm test -- --end-to-end`
-`--build` | Rebuild docker images. Use it when dependencies change, etc. | `npm test web-ui -- --build`
-`--develop` | Expose docker port 3000 to localhost, and do not exit docker after running test | `npm test tracer -- --develop`
-`--local` | Do not use Docker to run integration and end-to-end tests. An specific test name must be provided to be executed independently. The related service has to be running locally as well when test is launched | `npm test tracer -- --local`
-`--service` | Must be used with `--local`. Starts locally the service related to the provided test name | `npm test tracer -- --local --service`
 
 [back to top](#table-of-contents)
 
@@ -938,3 +928,4 @@ option | description | example
 
 [pm2-url]: http://pm2.keymetrics.io/
 [yargs-url]: https://www.npmjs.com/package/yargs
+[narval-url]: https://www.npmjs.com/package/narval
