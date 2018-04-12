@@ -36,7 +36,8 @@ suites:
         - docker-service: service
           exit_after: 20000
           commands:
-#            local: test/integration/built-in-api/basic-service/start-local
+            pre-local: test/services/commands/local/clean-shared
+            local: test/services/app/start.js --name=service --path=.test
             docker: test/services/app/start.js --name=service --path=/app/.shared --host=service
       test: 
         docker-service: test
@@ -49,7 +50,7 @@ suites:
       services:
         - docker-service: service
           commands:
-  #         local: test/integration/built-in-api/basic-service/start-local
+            local: test/services/commands/local/log-level-warn
             docker: test/services/commands/docker/log-level-warn
       test: 
         docker-service: test
