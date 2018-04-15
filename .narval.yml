@@ -41,7 +41,7 @@ suites:
             docker: test/services/app/start.js --name=service --path=/app/.shared --host=service
       test: 
         docker-service: test
-        wait-for: service:3000
+        wait-for: tcp:localhost:3000
         specs: test/integration/built-in-api
       coverage:
         from: service

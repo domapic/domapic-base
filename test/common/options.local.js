@@ -11,6 +11,6 @@ module.exports = {
     domapicConfig: path.resolve(__dirname, '..', '..', '.test', '.domapic', 'service')
   },
   explicitServiceOptions: {
-    path: '../../../.test'
+    path: path.resolve(__dirname, '..', '..', '.test')
   }
 }
