@@ -7,7 +7,7 @@ docker-images:
     expose:
       - 3000
     install: test/docker/install
-docker-services:
+docker-containers:
   - name: service
     build: basic-image
     bind:
@@ -33,39 +33,58 @@ suites:
   integration:
     - name: built-in-api
       services:
-        - docker-service: service
-          exit_after: 20000
-          commands:
-            pre-local: test/services/commands/local/clean-shared
-            local: test/services/app/start.js --name=service --path=.test
-            docker: test/services/app/start.js --name=service --path=/app/.shared --host=service
-      test: 
-        docker-service: test
-        wait-for: tcp:localhost:3000
+        - name: service
+          docker: 
+            container: service
+            command: test/services/app/start.js --name=service --path=/app/.shared --host=service
+            exit_after: 20000
+          local:
+            command: test/services/app/start.js --name=service --path=.test
+      test:
         specs: test/integration/built-in-api
+        docker:
+          container: test
+          wait-for: service:3000
+        local:
+          wait-for: tcp:localhost:3000
       coverage:
         from: service
     - name: tracer
-      docker-compose-down: true
+      before:
+        docker:
+          down-volumes: true
+        local:
+          command: test/services/commands/local/clean
       services:
-        - docker-service: service
-          commands:
-            local: test/services/commands/local/log-level-warn
-            docker: test/services/commands/docker/log-level-warn
-      test: 
-        docker-service: test
-        wait-for: service:3000
+        - name: service
+          docker:
+            container: service
+            command: test/services/commands/docker/log-level-warn
+          local:
+            command: test/services/commands/local/log-level-warn
+      test:
         specs: test/integration/tracer
+        docker:
+          container: test
+          wait-for: service:3000
+        local:
+          wait-for: tcp:localhost:3000
       coverage:
         enabled: false
   end-to-end:
     - name: web-ui
       services:
-        - docker-service: service
-          commands:
-#           local: test/end-to-end/web-ui/basic-service/start-local
-            docker: test/services/commands/docker/basic-start
-      test: 
-        docker-service: test
-        wait-for: service:3000
+        - name: service
+          docker:
+            container: service
+            command: test/services/commands/docker/basic-start
+          local:
+            command: test/services/commands/local/basic-start
+      test:
         specs: test/end-to-end/web-ui
+        docker: 
+          container: test
+          wait-for: service:3000
+        local:
+          wait-for: tcp:localhost:3000
+        
