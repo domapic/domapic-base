@@ -3,7 +3,7 @@ docker-images:
     from: javierbrea/node-headless-chrome:1.0.0
     add:
       - package.json
-      - npm-shrinkwrap.json
+#      - npm-shrinkwrap.json
     expose:
       - 3000
     install: test/docker/install
