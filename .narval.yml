@@ -37,7 +37,7 @@ suites:
           docker: 
             container: service
             command: test/services/app/start.js --name=service --path=/app/.shared --host=service
-            exit_after: 20000
+            exit_after: 10000
           local:
             command: test/services/app/start.js --name=service --path=.test
       test:
@@ -87,4 +87,3 @@ suites:
           wait-for: service:3000
         local:
           wait-for: tcp:localhost:3000
-        
