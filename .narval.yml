@@ -1,54 +1,64 @@
 docker-images:
+  # Reuse the same Docker image for all containers, to improve build time
   - name: basic-image
     from: javierbrea/node-headless-chrome:1.0.0
     add:
       - package.json
-#      - npm-shrinkwrap.json
     expose:
       - 3000
     install: test/docker/install
 docker-containers:
-  - name: service
+  # Container used for running service
+  - name: service-container
     build: basic-image
     bind:
       - lib
       - test
       - index.js
-  - name: test
+  # Container used for running tests
+  - name: test-container
     build: basic-image
     bind:
       - lib
       - test
       - index.js
     depends_on:
-      - service
+      - service-container
 suites:
-  unit: 
-    - name: unit
+  # Suites of type "unit"
+  unit:
+    # Example of suite that only runs unit tests execution without Docker.
+    - name: unit 
       test:
         specs: test/unit
       coverage:
+        # Custom coverage folder
         config:
           dir: .coverage/unit
+  # Suites of type "integration"
   integration:
-    - name: built-in-api
+    # Example of suite that gets coverage from a service
+    - name: api 
       services:
-        - name: service
+        - name: api-service
           docker: 
-            container: service
-            command: test/services/app/start.js --name=service --path=/app/.shared --host=service
+            container: service-container
+            command: test/services/app/start.js --name=service --path=/narval/.shared --host=service-container
             exit_after: 10000
           local:
             command: test/services/app/start.js --name=service --path=.test
       test:
         specs: test/integration/built-in-api
         docker:
-          container: test
-          wait-for: service:3000
+          container: test-container
+          wait-for: service-container:3000
         local:
           wait-for: tcp:localhost:3000
       coverage:
-        from: service
+        from: api-service
+        config:
+          print: both
+    # Example of suite with coverage disabled. Clean Docker volumes or local environment before run it.
     - name: tracer
       before:
         docker:
@@ -56,34 +66,37 @@ suites:
         local:
           command: test/services/commands/local/clean
       services:
-        - name: service
+        - name: api-service
           docker:
-            container: service
+            container: service-container
             command: test/services/commands/docker/log-level-warn
           local:
             command: test/services/commands/local/log-level-warn
       test:
         specs: test/integration/tracer
         docker:
-          container: test
-          wait-for: service:3000
+          container: test-container
+          wait-for: service-container:3000
         local:
           wait-for: tcp:localhost:3000
+        config:
+          report: list
       coverage:
         enabled: false
+  # Suites of type "end-to-end"
   end-to-end:
     - name: web-ui
       services:
-        - name: service
+        - name: web-service
           docker:
-            container: service
+            container: service-container
             command: test/services/commands/docker/basic-start
           local:
             command: test/services/commands/local/basic-start
       test:
         specs: test/end-to-end/web-ui
         docker: 
-          container: test
-          wait-for: service:3000
+          container: test-container
+          wait-for: service-container:3000
         local:
           wait-for: tcp:localhost:3000
