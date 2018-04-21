@@ -6,4 +6,6 @@ new domapic.Service({
   packagePath: path.resolve(__dirname, '..', '..', '..')
 }).then((service) => {
   return service.server.start()
+}).catch(() => {
+  process.exit(1)
 })
