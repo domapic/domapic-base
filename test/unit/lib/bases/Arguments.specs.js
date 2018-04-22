@@ -230,16 +230,16 @@ test.describe('Bases -> Arguments', () => {
         return args.runCommand({
           start: _.extend({}, commands.start, {cli: 'start [testing] <testing2>'})
         }, cliCommandsMethods.get)
-        .then(() => {
-          return Promise.all([
-            test.expect(cliCommandsMethods.get.getCall(0).args[0].explicit.testing).to.equal(fooValue1),
-            test.expect(cliCommandsMethods.get.getCall(0).args[0].explicit.testing2).to.equal(fooValue2)
-          ])
-        })
-        .finally(() => {
-          process.argv.pop()
-          process.argv.pop()
-        })
+          .then(() => {
+            return Promise.all([
+              test.expect(cliCommandsMethods.get.getCall(0).args[0].explicit.testing).to.equal(fooValue1),
+              test.expect(cliCommandsMethods.get.getCall(0).args[0].explicit.testing2).to.equal(fooValue2)
+            ])
+          })
+          .finally(() => {
+            process.argv.pop()
+            process.argv.pop()
+          })
       })
 
       test.it('should reject the promise if retrieving configuration fails', () => {

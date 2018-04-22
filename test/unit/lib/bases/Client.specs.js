@@ -4,7 +4,7 @@ const test = require('narval')
 // const Client = require('../../../../lib/bases/Client')
 
 test.describe('Bases -> Client', () => {
- /* let client
+  /* let client
 
   test.beforeEach(() => {
     client = new Client()

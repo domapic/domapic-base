@@ -248,9 +248,9 @@ test.describe('Bases -> Process', () => {
       return pm2Process.logs({
         lines: fooLines
       })
-      .then(() => {
-        return test.expect(childProcess.spawn.getCall(0).args[1].indexOf('--lines=' + fooLines)).to.be.above(-1)
-      })
+        .then(() => {
+          return test.expect(childProcess.spawn.getCall(0).args[1].indexOf('--lines=' + fooLines)).to.be.above(-1)
+        })
     })
 
     test.it('should log the spawned process stdout', () => {

@@ -100,12 +100,12 @@ test.describe('Bases -> Core -> Paths', () => {
         name: mocks.arguments.options.name
       })
       paths.ensureDir(subDir)
-          .then((dir) => {
-            test.expect(fsExtra.ensureDir).to.have.been.called()
-            test.expect(fsExtra.ensureDir).to.have.been.calledWith(resolvedPath)
-            test.expect(dir).to.equal(resolvedPath)
-            done()
-          })
+        .then((dir) => {
+          test.expect(fsExtra.ensureDir).to.have.been.called()
+          test.expect(fsExtra.ensureDir).to.have.been.calledWith(resolvedPath)
+          test.expect(dir).to.equal(resolvedPath)
+          done()
+        })
     })
 
     test.it('should not resolve the base path more than one time, when called multiple times', (done) => {
@@ -114,13 +114,13 @@ test.describe('Bases -> Core -> Paths', () => {
         name: mocks.arguments.options.name
       })
       paths.ensureDir(subDir)
-          .then(() => {
-            paths.ensureDir(subDir)
-              .then((dir) => {
-                test.expect(os.homedir).to.have.been.calledOnce()
-                done()
-              })
-          })
+        .then(() => {
+          paths.ensureDir(subDir)
+            .then((dir) => {
+              test.expect(os.homedir).to.have.been.calledOnce()
+              done()
+            })
+        })
     })
   })
 
