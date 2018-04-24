@@ -2,6 +2,7 @@
 
 echo "ENVIRONMENT VARS IN CLEAN"
 echo "fooClean1 - $fooClean1"
+echo "narval_suite_type - $narval_suite_type"
 echo "narval_suite - $narval_suite"
 echo "narval_service - $narval_service"
 echo "narval_is_docker - $narval_is_docker"
