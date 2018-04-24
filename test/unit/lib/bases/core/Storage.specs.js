@@ -281,9 +281,9 @@ test.describe('Bases -> Core -> Storage', () => {
             .then((data) => {
               delete mocksCopy[fooKey]
               test.expect(paths.writeJSON).to.have.been.calledWith(
-                  mocks.storage.options.fileName,
-                  mocksCopy
-                )
+                mocks.storage.options.fileName,
+                mocksCopy
+              )
               done()
             })
         })
