@@ -1,3 +1,12 @@
 #!/usr/bin/env bash
 
+echo "ENVIRONMENT VARS IN BASH"
+echo "fooVar1 - $fooVar1"
+echo "fooVar2 - $fooVar2"
+echo "fooVar3 - $fooVar3"
+echo "narval_suite - $narval_suite"
+echo "narval_service - $narval_service"
+echo "narval_is_docker - $narval_is_docker"
+echo "--------------------------"
+
 node ./test/services/app/start.js --name=service --path=.test --logLevel=warn

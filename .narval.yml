@@ -65,24 +65,44 @@ suites:
           down-volumes: true
         local:
           command: test/services/commands/local/clean
+          env:
+            fooClean1: foo clean Value 1
       services:
         - name: api-service
           docker:
             container: service-container
             command: test/services/commands/docker/log-level-warn
+            env:
+              fooVar1: foo docker Value 1
+              fooVar2: foo docker Value 2
+              fooVar3: foo docker Val 3
           local:
             command: test/services/commands/local/log-level-warn
+            env:
+              fooVar1: foo local Value 1
+              fooVar2: foo local Value 2
+              fooVar3: foo local Val 3
       test:
         specs: test/integration/tracer
         docker:
           container: test-container
           wait-for: service-container:3000
+          env:
+            fooVar1: foo docker test Value 1
+            fooVar2: foo docker test Value 2
+            fooVar3: foo docker test Val 3
+            fooTestVar: foo docker test value testVar 1
         local:
           wait-for: tcp:localhost:3000
+          env:
+            fooVar1: foo local test Value 1
+            fooVar2: foo local test Value 2
+            fooVar3: foo local test Val 3
+            fooTestVar: foo test local value testVar 1
         config:
           report: list
       coverage:
-        enabled: false
+        enabled: true
   # Suites of type "end-to-end"
   end-to-end:
     - name: web-ui
