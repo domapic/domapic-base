@@ -62,6 +62,7 @@ suites:
     - name: tracer
       before:
         docker:
+          command: test/services/commands/local/clean
           down-volumes: true
         local:
           command: test/services/commands/local/clean
