@@ -72,6 +72,7 @@ suites:
         - name: api-service
           docker:
             container: service-container
+            abort-on-exit: true
             command: test/services/commands/docker/log-level-warn
             env:
               fooVar1: foo docker Value 1
@@ -107,6 +108,9 @@ suites:
   # Suites of type "end-to-end"
   end-to-end:
     - name: web-ui
+      before:
+          docker:
+            down-volumes: true
       services:
         - name: web-service
           docker:
