@@ -70,9 +70,9 @@ suites:
             fooClean1: foo clean Value 1
       services:
         - name: api-service
+          abort-on-error: true
           docker:
             container: service-container
-            abort-on-exit: true
             command: test/services/commands/docker/log-level-warn
             env:
               fooVar1: foo docker Value 1
