@@ -77,7 +77,7 @@ suites:
           local:
             command: test/services/commands/timeout
       test:
-        specs: test/integration/logs
+        specs: test/integration/logs/logs.specs.js test/integration/logs/logs.specs.2.js
         docker:
           container: test-container
           wait-on: .narval/logs/integration/logs/timeout/exit-code.log
