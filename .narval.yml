@@ -9,6 +9,12 @@ docker-images:
     install: test/docker/install
 docker-containers:
   # Container used for running service
+  - name: service-container-2
+    build: basic-image
+    bind:
+      - lib
+      - test
+      - index.js
   - name: service-container
     build: basic-image
     bind:
@@ -51,13 +57,32 @@ suites:
         specs: test/integration/built-in-api
         docker:
           container: test-container
-          wait-for: service-container:3000
+          wait-on: http://service-container:3000
         local:
-          wait-for: tcp:localhost:3000
+          wait-on: tcp:localhost:3000
       coverage:
         from: api-service
         config:
           print: both
+    - name: logs
+      before:
+        docker:
+          down-volumes: true
+      services:
+        - name: timeout
+          abort-on-error: true
+          docker: 
+            container: service-container
+            command: test/services/commands/timeout
+          local:
+            command: test/services/commands/timeout
+      test:
+        specs: test/integration/logs
+        docker:
+          container: test-container
+          wait-on: .narval/logs/integration/logs/timeout/exit-code.log
+        local:
+          wait-on: .narval/logs/integration/logs/timeout/exit-code.log
     # Example of suite with coverage disabled. Clean Docker volumes or local environment before run it.
     - name: tracer
       before:
@@ -74,28 +99,51 @@ suites:
           docker:
             container: service-container
             command: test/services/commands/docker/log-level-warn
+            wait-on: http://service-container-2:3001
             env:
-              fooVar1: foo docker Value 1
+              servicePath: /narval/.shared
+              serviceName: service
+              hostName: service-container
+              port: 3000
               fooVar2: foo docker Value 2
               fooVar3: foo docker Val 3
           local:
-            command: test/services/commands/local/log-level-warn
+            command: test/services/commands/docker/log-level-warn
+            wait-on: http://localhost:3001
             env:
-              fooVar1: foo local Value 1
-              fooVar2: foo local Value 2
-              fooVar3: foo local Val 3
+              servicePath: .test
+              serviceName: service
+              hostName: localhost
+              port: 3000
+        - name: api-service-2
+          abort-on-error: true
+          docker:
+            container: service-container-2
+            command: test/services/commands/docker/log-level-warn
+            env:
+              servicePath: /narval/.shared
+              serviceName: service-2
+              hostName: service-container-2
+              port: 3001
+          local:
+            command: test/services/commands/docker/log-level-warn
+            env:
+              servicePath: .test
+              serviceName: service-2
+              hostName: localhost
+              port: 3001
       test:
         specs: test/integration/tracer
         docker:
           container: test-container
-          wait-for: service-container:3000
+          wait-on: http://service-container:3000
           env:
             fooVar1: foo docker test Value 1
             fooVar2: foo docker test Value 2
             fooVar3: foo docker test Val 3
             fooTestVar: foo docker test value testVar 1
         local:
-          wait-for: tcp:localhost:3000
+          wait-on: tcp:localhost:3000
           env:
             fooVar1: foo local test Value 1
             fooVar2: foo local test Value 2
@@ -122,6 +170,6 @@ suites:
         specs: test/end-to-end/web-ui
         docker: 
           container: test-container
-          wait-for: service-container:3000
+          wait-on: tcp:service-container:3000
         local:
-          wait-for: tcp:localhost:3000
+          wait-on: tcp:localhost:3000
