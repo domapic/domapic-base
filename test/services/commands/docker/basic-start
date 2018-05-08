@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-node ./test/services/app/start.js --name=service --path=/narval/.shared --host=service-container

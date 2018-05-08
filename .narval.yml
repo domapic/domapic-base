@@ -1,127 +1,124 @@
 docker-images:
-  # Reuse the same Docker image for all containers, to improve build time
   - name: basic-image
     from: javierbrea/node-headless-chrome:1.0.0
     add:
       - package.json
-    expose:
-      - 3000
-    install: test/docker/install
+    install: test/commands/install.sh
 docker-containers:
-  # Container used for running service
   - name: service-container
     build: basic-image
     bind:
       - lib
       - test
       - index.js
-  # Container used for running tests
   - name: test-container
     build: basic-image
     bind:
       - lib
       - test
       - index.js
-    depends_on:
-      - service-container
 suites:
-  # Suites of type "unit"
   unit:
-    # Example of suite that only runs unit tests execution without Docker.
     - name: unit 
       test:
         specs: test/unit
       coverage:
-        # Custom coverage folder
         config:
           dir: .coverage/unit
-  # Suites of type "integration"
   integration:
-    # Example of suite that gets coverage from a service
     - name: api 
+      before:
+        local:
+          command: test/services/commands/clean
       services:
         - name: api-service
           docker: 
             container: service-container
-            command: test/services/app/start.js --name=service --path=/narval/.shared --host=service-container
+            command: test/app/start.js --name=service --path=/narval/.shared --host=service-container
             exit_after: 10000
           local:
-            command: test/services/app/start.js --name=service --path=.test
+            command: test/app/start.js --name=service --path=.test
       test:
         specs: test/integration/built-in-api
         docker:
           container: test-container
-          wait-for: service-container:3000
+          wait-on: service-container:3000
+          env:
+            host_name: service-container
+            app_path: .shared
         local:
-          wait-for: tcp:localhost:3000
+          wait-on: tcp:localhost:3000
+          env:
+            host_name: localhost
+            app_path: .test
       coverage:
         from: api-service
-        config:
-          print: both
-    # Example of suite with coverage disabled. Clean Docker volumes or local environment before run it.
     - name: tracer
       before:
         docker:
-          command: test/services/commands/local/clean
           down-volumes: true
         local:
-          command: test/services/commands/local/clean
-          env:
-            fooClean1: foo clean Value 1
+          command: test/services/commands/clean
       services:
         - name: api-service
           abort-on-error: true
           docker:
             container: service-container
-            command: test/services/commands/docker/log-level-warn
+            command: test/services/commands/start
             env:
-              fooVar1: foo docker Value 1
-              fooVar2: foo docker Value 2
-              fooVar3: foo docker Val 3
+              host_name: service-container
+              app_path: .shared
+              extra_options: --logLevel=warn
           local:
-            command: test/services/commands/local/log-level-warn
+            command: test/services/commands/start
             env:
-              fooVar1: foo local Value 1
-              fooVar2: foo local Value 2
-              fooVar3: foo local Val 3
+              host_name: localhost
+              app_path: .test
+              extra_options: --logLevel=warn
       test:
         specs: test/integration/tracer
         docker:
           container: test-container
-          wait-for: service-container:3000
+          wait-on: service-container:3000
           env:
-            fooVar1: foo docker test Value 1
-            fooVar2: foo docker test Value 2
-            fooVar3: foo docker test Val 3
-            fooTestVar: foo docker test value testVar 1
+            host_name: service-container
+            app_path: .shared
+            extra_options: --logLevel=warn
         local:
-          wait-for: tcp:localhost:3000
+          wait-on: tcp:localhost:3000
           env:
-            fooVar1: foo local test Value 1
-            fooVar2: foo local test Value 2
-            fooVar3: foo local test Val 3
-            fooTestVar: foo test local value testVar 1
-        config:
-          report: list
+            host_name: localhost
+            app_path: .test
       coverage:
         enabled: true
-  # Suites of type "end-to-end"
   end-to-end:
     - name: web-ui
       before:
-          docker:
-            down-volumes: true
+        docker:
+          down-volumes: true
       services:
         - name: web-service
           docker:
             container: service-container
-            command: test/services/commands/docker/basic-start
+            command: test/services/commands/start
+            env:
+              host_name: service-container
+              app_path: .shared
           local:
-            command: test/services/commands/local/basic-start
+            command: test/services/commands/start
+            env:
+              host_name: localhost
+              app_path: .test
       test:
         specs: test/end-to-end/web-ui
         docker: 
           container: test-container
-          wait-for: service-container:3000
+          wait-on: service-container:3000
+          env:
+            host_name: service-container
+            app_path: .shared
         local:
-          wait-for: tcp:localhost:3000
+          wait-on: tcp:localhost:3000
+          env:
+            host_name: localhost
+            app_path: .test

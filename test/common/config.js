@@ -1,20 +1,23 @@
 
-const isDocker = require('is-docker')
-const localOptions = require('./options.local.js')
-const dockerOptions = require('./options.docker.js')
+const path = require('path')
 
-const options = isDocker() ? dockerOptions : localOptions
+const PORT = '3000'
 
 const serviceUrl = function () {
-  return options.service.protocol + options.service.host + ':' + options.service.port
+  return `http://${process.env.host_name}:${PORT}`
 }
 
 module.exports = {
   service: {
-    host: options.service.host,
-    port: options.service.port,
+    host: process.env.host_name,
+    port: PORT,
     url: serviceUrl
   },
-  paths: options.paths,
-  explicitServiceOptions: options.explicitServiceOptions
+  paths: {
+    domapicConfig: path.resolve(__dirname, '..', '..', process.env.app_path, '.domapic', 'service')
+  },
+  explicitServiceOptions: {
+    path: process.env.app_path,
+    hostName: process.env.host_name
+  }
 }
