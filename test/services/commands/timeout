@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-node ./test/services/app/timeout.js
