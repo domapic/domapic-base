@@ -42,7 +42,7 @@ suites:
         specs: test/integration/built-in-api
         docker:
           container: test-container
-          wait-on: service-container:3000
+          wait-on: tcp:service-container:3000
           env:
             host_name: service-container
             app_path: .shared
@@ -79,7 +79,7 @@ suites:
         specs: test/integration/tracer
         docker:
           container: test-container
-          wait-on: service-container:3000
+          wait-on: tcp:service-container:3000
           env:
             host_name: service-container
             app_path: .shared
@@ -113,7 +113,7 @@ suites:
         specs: test/end-to-end/web-ui
         docker: 
           container: test-container
-          wait-on: service-container:3000
+          wait-on: tcp:service-container:3000
           env:
             host_name: service-container
             app_path: .shared
