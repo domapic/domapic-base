@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-npm i
+rm -rf .test
