@@ -55,7 +55,7 @@
     "coveralls": "3.0.0",
     "request-promise": "4.2.2",
     "puppeteer": "1.1.1",
-    "narval": "1.0.0-beta.6"
+    "narval": "1.0.0"
   },
   "engines": {
     "node": "8.11.1",
