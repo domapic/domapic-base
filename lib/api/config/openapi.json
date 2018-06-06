@@ -6,7 +6,7 @@
   "components": {
     "schemas": {
       "Config": {
-        "description": "Microservice configuration properties",
+        "description": "Service configuration properties",
         "type": "object",
         "properties": {
           "path": {

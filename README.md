@@ -1,8 +1,8 @@
-![Domapic Microservice](lib/bases/server/assets/domapic-microservice.jpg)
+![Domapic Base][domapic-base-logo-image]
 
-# Domapic Microservice
+# Domapic Base
 
-WebAPI Microservice base for Domapic Node.js packages.
+Base for Domapic Node.js packages.
 
 [![Build status][travisci-image]][travisci-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Quality Gate][quality-gate-image]][quality-gate-url] [![js-standard-style][standard-image]][standard-url]
 
@@ -62,7 +62,7 @@ It provides:
 	* Automatic error handling mapped to HTTP errors.
 	* Openapi.json auto generated and served.
 	* _Swagger_ web interface.
-* __Client__ to other Domapic microservices:
+* __Client__ to other Domapic services:
 	* Automatic authentication if API resource requires it.
 	* Requests as Promises.
 * __Configuration__
@@ -92,7 +92,7 @@ It provides:
 ```js
 // server.js file
 const path = require('path')
-const domapic = require('domapic-microservice')
+const domapic = require('domapic-base')
 
 new domapic.Service({
 	packagePath: path.resolve(__dirname)
@@ -101,7 +101,7 @@ new domapic.Service({
 })
 ```
 
-The `packagePath` parameter must be the path where your package.json file is, in order to automatically create the `/api/about` api resource that can provide useful information about the package to other microservices.
+The `packagePath` parameter must be the path where your package.json file is, in order to automatically create the `/api/about` api resource that can provide useful information about the package to other domapic services.
 
 ```shell
 # Start server
@@ -230,7 +230,7 @@ You can add your own API resources. They will be automatically added to the open
 ```js
 // server.js file
 const path = require('path')
-const domapic = require('domapic-microservice')
+const domapic = require('domapic-base')
 
 const myOpenApi = require('./api/myOpenApi.json')
 
@@ -258,7 +258,7 @@ new domapic.Service({
 
 `service.server.extendOpenApi(openApiDefinition)`
 
-Openapi 3.0 spec is used to define new API paths. Read more about how to define paths in [_Swagger_ specification docs](https://swagger.io/specification/). You can even use the [_Swagger_ editor](https://swagger.io/swagger-editor/) to define and design your API, and afterwards, load the resultant .json files in _domapic microservice_.
+Openapi 3.0 spec is used to define new API paths. Read more about how to define paths in [_Swagger_ specification docs](https://swagger.io/specification/). You can even use the [_Swagger_ editor](https://swagger.io/swagger-editor/) to define and design your API, and afterwards, load the resultant .json files in _domapic base_.
 
 You can add as many openApi definitions as you want, and for each one you can define "components", "tags", or "paths". The resultant `openapi.json` will be the result of extending all of them, after adding all needed base properties.
 
@@ -316,7 +316,7 @@ service.server.addOperations({
 
 ## Client
 
-Make requests to other _Domapic Microservices_ based services. Automatic authentication and error handling is provided.
+Make requests to other _Domapic_ services. Automatic authentication and error handling is provided.
 
 ```js
 new domapic.Service().then((service) => {
@@ -415,7 +415,7 @@ new domapic.Service().then((service) => {
 
 Consult [all available error constructors](lib/bases/core/Errors.js) and its correspondences with html errors.
 
-In addition to error constructors, three methods are provided in the `errors` object. These methods are used internally by _domapic-microservice_ in order to map the returned errors to HTML errors and viceversa:
+In addition to error constructors, three methods are provided in the `errors` object. These methods are used internally by _domapic-base_ in order to map the returned errors to HTML errors and viceversa:
 
 * `isControlled` - Allows to know if error has been created with a custom error constructor
 	* `service.errors.isControlled(error)`
@@ -747,7 +747,7 @@ require('../cli/index')
 
 ```js
 const path = require('path')
-const domapic = require('domapic-microservice')
+const domapic = require('domapic-base')
 
 domapic.cli({
 	script: path.resolve(__dirname, '..', 'server.js')
@@ -813,7 +813,7 @@ your-cli-name logs fooName --lines=300
 
 ```js
 const path = require('path')
-const domapic = require('domapic-microservice')
+const domapic = require('domapic-base')
 const customConfig = require('./customConfig')
 
 domapic.cli({
@@ -848,7 +848,7 @@ Read more about how to define them in the [Custom options chapter](#custom-confi
 
 ```js
 const path = require('path')
-const domapic = require('domapic-microservice')
+const domapic = require('domapic-base')
 
 domapic.cli({
 	script: path.resolve(__dirname, '..', 'server.js'),
@@ -900,22 +900,24 @@ npm test
 
 [back to top](#table-of-contents)
 
-[coveralls-image]: https://coveralls.io/repos/github/domapic/domapic-microservice/badge.svg
-[coveralls-url]: https://coveralls.io/github/domapic/domapic-microservice
-[travisci-image]: https://travis-ci.org/domapic/domapic-microservice.svg?branch=master
-[travisci-url]: https://travis-ci.org/domapic/domapic-microservice
-[last-commit-image]: https://img.shields.io/github/last-commit/domapic/domapic-microservice.svg
-[last-commit-url]: https://github.com/domapic/domapic-microservice/commits
-[license-image]: https://img.shields.io/npm/l/domapic-microservice.svg
-[license-url]: https://github.com/domapic/domapic-microservice/blob/master/LICENSE
-[npm-downloads-image]: https://img.shields.io/npm/dm/domapic-microservice.svg
-[npm-downloads-url]: https://www.npmjs.com/package/domapic-microservice
-[npm-dependencies-image]: https://img.shields.io/david/domapic/domapic-microservice.svg
-[npm-dependencies-url]: https://david-dm.org/domapic/domapic-microservice
-[quality-gate-image]: https://sonarcloud.io/api/project_badges/measure?project=domapic-microservice&metric=alert_status
-[quality-gate-url]: https://sonarcloud.io/dashboard?id=domapic-microservice
-[release-image]: https://img.shields.io/github/release-date/domapic/domapic-microservice.svg
-[release-url]: https://github.com/domapic/domapic-microservice/releases
+[domapic-base-logo-image]: https://domapic.com/assets/domapic-logo.png
+
+[coveralls-image]: https://coveralls.io/repos/github/domapic/domapic-base/badge.svg
+[coveralls-url]: https://coveralls.io/github/domapic/domapic-base
+[travisci-image]: https://travis-ci.org/domapic/domapic-base.svg?branch=master
+[travisci-url]: https://travis-ci.org/domapic/domapic-base
+[last-commit-image]: https://img.shields.io/github/last-commit/domapic/domapic-base.svg
+[last-commit-url]: https://github.com/domapic/domapic-base/commits
+[license-image]: https://img.shields.io/npm/l/domapic-base.svg
+[license-url]: https://github.com/domapic/domapic-base/blob/master/LICENSE
+[npm-downloads-image]: https://img.shields.io/npm/dm/domapic-base.svg
+[npm-downloads-url]: https://www.npmjs.com/package/domapic-base
+[npm-dependencies-image]: https://img.shields.io/david/domapic/domapic-base.svg
+[npm-dependencies-url]: https://david-dm.org/domapic/domapic-base
+[quality-gate-image]: https://sonarcloud.io/api/project_badges/measure?project=domapic-base&metric=alert_status
+[quality-gate-url]: https://sonarcloud.io/dashboard?id=domapic-base
+[release-image]: https://img.shields.io/github/release-date/domapic/domapic-base.svg
+[release-url]: https://github.com/domapic/domapic-base/releases
 [standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
 [standard-url]: http://standardjs.com/
 

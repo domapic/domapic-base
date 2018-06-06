@@ -1,7 +1,7 @@
 {
-  "name": "domapic-microservice",
+  "name": "domapic-base",
   "version": "1.0.0-beta.1",
-  "description": "WebAPI Microservice base for Domapic Node.js packages",
+  "description": "Base for Domapic Node.js packages",
   "main": "index.js",
   "keywords": [
     "microservice",
@@ -63,5 +63,5 @@
   },
   "homepage": "http://domapic.com",
   "license": "MIT",
-  "repository": "https://github.com/domapic/domapic-microservice"
+  "repository": "https://github.com/domapic/domapic-base"
 }
