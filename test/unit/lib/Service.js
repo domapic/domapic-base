@@ -9,7 +9,7 @@ const bases = require('../../../lib/bases')
 const Service = require('../../../lib/Service')
 const serviceArguments = require('../../../lib/arguments/service')
 
-test.describe('Service', () => {
+test.describe('Base', () => {
   const coreExposedProperties = ['config', 'errors', 'info', 'storage', 'tracer', 'utils']
 
   const fooServer = {
