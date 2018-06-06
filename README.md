@@ -900,7 +900,7 @@ npm test
 
 [back to top](#table-of-contents)
 
-[domapic-base-logo-image]: https://domapic.com/assets/domapic-logo.png
+[domapic-base-logo-image]: http://domapic.com/assets/domapic-logo.png
 
 [coveralls-image]: https://coveralls.io/repos/github/domapic/domapic-base/badge.svg
 [coveralls-url]: https://coveralls.io/github/domapic/domapic-base
