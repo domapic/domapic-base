@@ -1,7 +1,7 @@
 
 const Promise = require('bluebird')
 
-const test = require('mocha-sinon-chai')
+const test = require('narval')
 
 const utils = require('../../../../lib/utils')
 const configMocks = require('./core/Config.mocks')

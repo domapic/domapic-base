@@ -1,6 +1,6 @@
 {
   "name": "domapic-microservice",
-  "version": "0.5.0",
+  "version": "1.0.0-beta.1",
   "description": "WebAPI Microservice base for Domapic Node.js packages",
   "main": "index.js",
   "keywords": [
@@ -24,50 +24,42 @@
     "swagger-ui"
   ],
   "scripts": {
-    "standard": "standard",
-    "test": "cd test && ./run.sh",
-    "coveralls": "cat ./.coverage/lcov.info | ./node_modules/.bin/coveralls"
+    "test": "narval",
+    "coveralls": "cat ./.coverage/unit/lcov.info | coveralls"
   },
   "dependencies": {
     "bluebird": "3.5.1",
-    "body-parser": "1.18.2",
-    "boom": "7.1.1",
-    "chalk": "2.3.0",
-    "express": "4.16.2",
+    "body-parser": "1.18.3",
+    "boom": "7.2.0",
+    "chalk": "2.4.1",
+    "express": "4.16.3",
     "express-request-id": "1.4.0",
-    "fs-extra": "5.0.0",
+    "fs-extra": "6.0.1",
     "hbs": "4.0.1",
     "ip": "1.1.5",
     "ip-range-check": "0.0.2",
     "is-promise": "2.1.0",
-    "jsonschema": "1.2.2",
-    "jsonwebtoken": "8.1.0",
-    "lodash": "4.17.4",
-    "openapi-jsonschema-parameters": "0.2.0",
-    "pm2": "2.8.0",
+    "jsonschema": "1.2.4",
+    "jsonwebtoken": "8.2.2",
+    "lodash": "4.17.10",
+    "openapi-jsonschema-parameters": "0.3.2",
+    "pm2": "2.10.4",
     "rand-token": "0.4.0",
-    "request": "2.83.0",
-    "swagger-ui-dist": "3.8.1",
+    "request": "2.87.0",
+    "swagger-ui-dist": "3.17.0",
     "tracer": "0.8.11",
     "uuid": "3.2.1",
-    "yargs": "10.0.3"
+    "yargs": "11.0.0"
   },
   "devDependencies": {
-    "coveralls": "3.0.0",
-    "is-docker": "1.1.0",
-    "istanbul": "0.4.5",
-    "mocha-sinon-chai": "1.1.0",
-    "puppeteer": "1.1.1",
+    "coveralls": "3.0.1",
     "request-promise": "4.2.2",
-    "standard": "10.0.3"
-  },
-  "engines": {
-    "node": "8.9.4",
-    "npm": "5.6.0"
+    "puppeteer": "1.4.0",
+    "narval": "1.1.0"
   },
   "author": {
     "name": "Javier Brea",
-    "url": "http://javierbrea.com"
+    "url": "https://javierbrea.com"
   },
   "homepage": "http://domapic.com",
   "license": "MIT",

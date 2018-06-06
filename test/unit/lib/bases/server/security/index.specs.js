@@ -1,5 +1,5 @@
 
-const test = require('mocha-sinon-chai')
+const test = require('narval')
 const mocks = require('../../../../mocks')
 
 const SecurityMethods = require('../../../../../../lib/bases/server/security')

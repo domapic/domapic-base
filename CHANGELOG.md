@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.0-beta.1]
+### Changed
+- Use Narval for running tests
+- Improve tests coverage
+- Change Sonar configuration
+
 ## [0.5.0] - 2018-03-31
 ### Added
 - Add Cors headers to server

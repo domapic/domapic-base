@@ -6,7 +6,7 @@ WebAPI Microservice base for Domapic Node.js packages.
 
 [![Build status][travisci-image]][travisci-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Quality Gate][quality-gate-image]][quality-gate-url] [![js-standard-style][standard-image]][standard-url]
 
-[![Node version][node-version-image]][node-version-url] [![NPM version][npm-image]][npm-url] [![NPM dependencies][npm-dependencies-image]][npm-dependencies-url] [![Last commit][last-commit-image]][last-commit-url] [![Last release][release-image]][release-url] 
+[![NPM dependencies][npm-dependencies-image]][npm-dependencies-url] [![Last commit][last-commit-image]][last-commit-url] [![Last release][release-image]][release-url] 
 
 [![NPM downloads][npm-downloads-image]][npm-downloads-url] [![Website][website-image]][website-url] [![License][license-image]][license-url]
 
@@ -38,7 +38,7 @@ WebAPI Microservice base for Domapic Node.js packages.
 	* [Implementation](#implementation)
 	* [Usage](#usage)
 	* [Custom options and commands](#custom-options-and-commands)
-* [Test suite](#test-suite)
+* [Test suites](#test-suites)
 
 ---
 
@@ -886,27 +886,17 @@ your-cli-name stopCustom value1 --fooOption2=false --name=testing
 
 ---
 
-## Test Suite
+## Test Suites
 
-This package is distributed with a test suite that includes a javascript linter, unit tests, integration and end-to-end tests.
+This package uses [Narval][narval-url] as test suites runner.
+
+Different test suites are included, categorized in "unit", "integration", and "end-to-end" tests. For further details, read the `.narval.yml`, and, if needed, you can learn more about Narval configuration at [its own documentation][narval-url].
+
+Run tests:
 
 ```shell
 npm test
 ```
-
-In order to make easier the development of tests, the `test` command has many options:
-
-option | description | example
---- | --- | ---
-`[test-name]` | Integration or end-to-end test to be launched independently | `npm test tracer`
-`--standard` | Run only the [standardjs][standard-url] code linter | `npm test -- --standard`
-`--unit` | Run only unit tests | `npm test -- --unit`
-`--integration` | Run only integration tests | `npm test -- --integration`
-`--end-to-end` | Run only end-to-end tests | `npm test -- --end-to-end`
-`--build` | Rebuild docker images. Use it when dependencies change, etc. | `npm test web-ui -- --build`
-`--develop` | Expose docker port 3000 to localhost, and do not exit docker after running test | `npm test tracer -- --develop`
-`--local` | Do not use Docker to run integration and end-to-end tests. An specific test name must be provided to be executed independently. The related service has to be running locally as well when test is launched | `npm test tracer -- --local`
-`--service` | Must be used with `--local`. Starts locally the service related to the provided test name | `npm test tracer -- --local --service`
 
 [back to top](#table-of-contents)
 
@@ -918,22 +908,20 @@ option | description | example
 [last-commit-url]: https://github.com/domapic/domapic-microservice/commits
 [license-image]: https://img.shields.io/npm/l/domapic-microservice.svg
 [license-url]: https://github.com/domapic/domapic-microservice/blob/master/LICENSE
-[node-version-image]: https://img.shields.io/node/v/domapic-microservice.svg
-[node-version-url]: https://github.com/domapic/domapic-microservice/blob/master/package.json
-[npm-image]: https://img.shields.io/npm/v/domapic-microservice.svg
-[npm-url]: https://www.npmjs.com/package/domapic-microservice
 [npm-downloads-image]: https://img.shields.io/npm/dm/domapic-microservice.svg
 [npm-downloads-url]: https://www.npmjs.com/package/domapic-microservice
 [npm-dependencies-image]: https://img.shields.io/david/domapic/domapic-microservice.svg
 [npm-dependencies-url]: https://david-dm.org/domapic/domapic-microservice
-[quality-gate-image]: https://sonarcloud.io/api/badges/gate?key=domapic-microservice
-[quality-gate-url]: https://sonarcloud.io/dashboard/index/domapic-microservice
+[quality-gate-image]: https://sonarcloud.io/api/project_badges/measure?project=domapic-microservice&metric=alert_status
+[quality-gate-url]: https://sonarcloud.io/dashboard?id=domapic-microservice
 [release-image]: https://img.shields.io/github/release-date/domapic/domapic-microservice.svg
 [release-url]: https://github.com/domapic/domapic-microservice/releases
 [standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
 [standard-url]: http://standardjs.com/
+
 [website-image]: https://img.shields.io/website-up-down-green-red/http/domapic.com.svg?label=domapic.com
 [website-url]: http://domapic.com/
 
 [pm2-url]: http://pm2.keymetrics.io/
 [yargs-url]: https://www.npmjs.com/package/yargs
+[narval-url]: https://www.npmjs.com/package/narval

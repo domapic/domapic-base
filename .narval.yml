@@ -1,0 +1,123 @@
+docker-images:
+  - name: basic-image
+    from: javierbrea/node-headless-chrome:1.0.0
+    add:
+      - package.json
+    install: test/commands/install.sh
+docker-containers:
+  - name: service-container
+    build: basic-image
+    bind:
+      - lib
+      - test
+      - index.js
+  - name: test-container
+    build: basic-image
+    bind:
+      - lib
+      - test
+      - index.js
+suites:
+  unit:
+    - name: unit 
+      test:
+        specs: test/unit
+      coverage:
+        config:
+          dir: .coverage/unit
+  integration:
+    - name: api
+      services:
+        - name: api-service
+          docker: 
+            container: service-container
+            command: test/app/start.js --name=service --path=/narval/.shared --host=service-container
+            exit_after: 10000
+          local:
+            command: test/app/start.js --name=service --path=.test --host=localhost
+      test:
+        specs: test/integration/built-in-api
+        docker:
+          container: test-container
+          wait-on: tcp:service-container:3000
+          env:
+            host_name: service-container
+            app_path: .shared
+        local:
+          wait-on: tcp:localhost:3000
+          env:
+            host_name: localhost
+            app_path: .test
+      coverage:
+        from: api-service
+    - name: tracer
+      before:
+        docker:
+          down-volumes: true
+        local:
+          command: test/commands/clean.sh
+      services:
+        - name: api-service
+          abort-on-error: true
+          docker:
+            container: service-container
+            command: test/commands/start.sh
+            env:
+              host_name: service-container
+              app_path: .shared
+              extra_options: --logLevel=warn
+          local:
+            command: test/commands/start.sh
+            env:
+              host_name: localhost
+              app_path: .test
+              extra_options: --logLevel=warn
+      test:
+        specs: test/integration/tracer
+        docker:
+          container: test-container
+          wait-on: tcp:service-container:3000
+          env:
+            host_name: service-container
+            app_path: .shared
+            extra_options: --logLevel=warn
+        local:
+          wait-on: tcp:localhost:3000
+          env:
+            host_name: localhost
+            app_path: .test
+      coverage:
+        enabled: true
+  end-to-end:
+    - name: web-ui
+      before:
+        docker:
+          down-volumes: true
+        local:
+          command: test/commands/clean.sh
+      services:
+        - name: web-service
+          docker:
+            container: service-container
+            command: test/commands/start.sh
+            env:
+              host_name: service-container
+              app_path: .shared
+          local:
+            command: test/commands/start.sh
+            env:
+              host_name: localhost
+              app_path: .test
+      test:
+        specs: test/end-to-end/web-ui
+        docker: 
+          container: test-container
+          wait-on: tcp:service-container:3000
+          env:
+            host_name: service-container
+            app_path: .shared
+        local:
+          wait-on: tcp:localhost:3000
+          env:
+            host_name: localhost
+            app_path: .test

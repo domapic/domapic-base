@@ -1,4 +1,4 @@
 
-const mochaSinonChai = require('mocha-sinon-chai')
+const mochaSinonChai = require('narval')
 
 module.exports = mochaSinonChai

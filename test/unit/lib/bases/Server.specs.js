@@ -1,7 +1,7 @@
 /*
 const Promise = require('bluebird')
 
-const test = require('mocha-sinon-chai')
+const test = require('narval')
 const mocks = require('../../mocks')
 
 const Server = require('../../../../lib/bases/Server')

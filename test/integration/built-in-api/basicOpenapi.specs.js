@@ -1,8 +1,8 @@
 
 const requestPromise = require('request-promise')
 
-const test = require('mocha-sinon-chai')
-const config = require('../../utils/config')
+const test = require('narval')
+const config = require('../../common/config')
 
 test.describe('Open Api', function () {
   test.describe('/api/openapi.json', function () {
