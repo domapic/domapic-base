@@ -3,7 +3,7 @@ const test = require('narval')
 
 const cli = require('../../../../lib/utils/cli')
 
-test.describe.skip('Utils -> cli', () => {
+test.describe('Utils -> cli', () => {
   test.describe('usedCommand', () => {
     let originalProcessEnv
 
