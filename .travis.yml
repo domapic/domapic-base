@@ -27,6 +27,9 @@ addons:
     organization: "domapic"
     token:
       secure: "$SONAR_TOKEN"
+    branches:
+      - master
+      - rename-package
 
 script:
   - npm test
