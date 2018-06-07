@@ -95,9 +95,9 @@ const path = require('path')
 const domapic = require('domapic-base')
 
 new domapic.Service({
-	packagePath: path.resolve(__dirname)
+  packagePath: path.resolve(__dirname)
 }).then((service) => {
-	return service.server.start()
+  return service.server.start()
 })
 ```
 
@@ -147,11 +147,11 @@ Options defined from command line are available in the `config` object of the se
 
 ```js
 new domapic.Service({
-	packagePath: path.resolve(__dirname)
+  packagePath: path.resolve(__dirname)
 }).then((service) => {
-	return service.config.get()
+  return service.config.get()
 }).then((configuration) => {
-	console.log(configuration)
+  console.log(configuration)
 })
 ```
 
@@ -163,13 +163,13 @@ It is not recommended, but, it if has sense, `config` properties can be modified
 
 ```js
 new domapic.Service({
-	packagePath: path.resolve(__dirname)
+  packagePath: path.resolve(__dirname)
 }).then((service) => {
-	return service.config.set('fooKey', 'fooValue')
-		.then((value) => {
-			console.log(value)
-			// fooValue
-		})
+  return service.config.set('fooKey', 'fooValue')
+    .then((value) => {
+      console.log(value)
+      // fooValue
+    })
 })
 ```
 
@@ -182,19 +182,19 @@ You can add your own custom configuration options. They will be seteable from co
 ```js
 // Usage of customConfig parameter
 new domapic.Service({
-	packagePath: path.resolve(__dirname),
-	customConfig: {
-		fooOption: {
-			type: 'boolean',
-			alias: ['foo-option'],
-			describe: 'Testing a custom configuration option',
-			default: true
-		}
-	}
+  packagePath: path.resolve(__dirname),
+  customConfig: {
+    fooOption: {
+      type: 'boolean',
+      alias: ['foo-option'],
+      describe: 'Testing a custom configuration option',
+      default: true
+    }
+  }
 }).then((service) => {
-	return service.config.get()
+  return service.config.get()
 }).then((configuration) => {
-	console.log(configuration)
+  console.log(configuration)
 })
 ```
 ```shell
@@ -235,22 +235,22 @@ const domapic = require('domapic-base')
 const myOpenApi = require('./api/myOpenApi.json')
 
 new domapic.Service({
-	packagePath: path.resolve(__dirname)
+  packagePath: path.resolve(__dirname)
 }).then((service) => {
-	return Promise.all([
-		service.server.extendOpenApi(myOpenApi),
-		service.server.addOperations({
-			myApiOperation: {
-				handler: (params, body, res) => {
-					return Promise.resolve({
-						hello: 'world'
-					})
-				}
-			}
-		})
-	]).then(() => {
-		return service.server.start()
-	})
+  return Promise.all([
+    service.server.extendOpenApi(myOpenApi),
+    service.server.addOperations({
+      myApiOperation: {
+        handler: (params, body, res) => {
+          return Promise.resolve({
+            hello: 'world'
+          })
+        }
+      }
+    })
+  ]).then(() => {
+    return service.server.start()
+  })
 })
 ```
 
@@ -292,21 +292,21 @@ Each operation can have properties:
 
 ```js
 service.server.addOperations({
-	myApiOperation: {
-		auth: (userData) => {
-			if (userIsAllowed(userData)) {
-				return Promise.resolve()
-			}
-			return Promise.reject()
-		},
-		handler: (params, body, res) => {
-			res.status(201)
-			res.header('location', '/api/books/new-book')
-			return Promise.resolve({
-				hello: 'world'
-			})
-		}
-	}
+  myApiOperation: {
+    auth: (userData) => {
+      if (userIsAllowed(userData)) {
+        return Promise.resolve()
+      }
+      return Promise.reject()
+    },
+    handler: (params, body, res) => {
+      res.status(201)
+      res.header('location', '/api/books/new-book')
+      return Promise.resolve({
+        hello: 'world'
+      })
+    }
+  }
 })
 ```
 
@@ -320,26 +320,26 @@ Make requests to other _Domapic_ services. Automatic authentication and error ha
 
 ```js
 new domapic.Service().then((service) => {
-	const client = new service.client.Connection('http://localhost:3000')
-	return client.get('/about').then((response) => {
-		console.log(response)
-	})
+  const client = new service.client.Connection('http://localhost:3000')
+  return client.get('/about').then((response) => {
+    console.log(response)
+  })
 })
 ```
 
 ```js
 // Client with two authentication methods example
 new domapic.Service().then((service) => {
-	const client = new service.client.Connection('http://localhost:3000',{
-		apiKey: 'thisIsaFooApiKey',
-		jwt: {
-			userName: 'fooUserName',
-			password: 'fooPassword'
-		}
-	})
-	return client.get('/about').then((response) => {
-		console.log(response)
-	})
+  const client = new service.client.Connection('http://localhost:3000',{
+    apiKey: 'thisIsaFooApiKey',
+    jwt: {
+      userName: 'fooUserName',
+      password: 'fooPassword'
+    }
+  })
+  return client.get('/about').then((response) => {
+    console.log(response)
+  })
 })
 ```
 
@@ -361,15 +361,15 @@ Tracer usage:
 
 ```js
 new domapic.Service().then((service) => {
-	return service.tracer.debug('testing').then(() => {
-		return service.tracer.log('testing log')
-	}).then(() => {
-		return service.tracer.warn('This is a warning', 'This is part of the same warning')
-	}).then(() => {
-		return service.tracer.error(new Error('This will print the error stack'))
-	}).then(() => {
-		return service.tracer.error('Printed with error style, but no stack')
-	})
+  return service.tracer.debug('testing').then(() => {
+    return service.tracer.log('testing log')
+  }).then(() => {
+    return service.tracer.warn('This is a warning', 'This is part of the same warning')
+  }).then(() => {
+    return service.tracer.error(new Error('This will print the error stack'))
+  }).then(() => {
+    return service.tracer.error('Printed with error style, but no stack')
+  })
 })
 ```
 
@@ -377,17 +377,17 @@ There is an extra method called `group`, that allows to invoque different levels
 
 ```js
 new domapic.Service().then((service) => {
-	return service.tracer.group([
-		{
-			log: 'This is a log'
-		},
-		{
-			trace: 'This is a trace'
-		},
-		{
-			warn: 'This is a warn'
-		}
-	])
+  return service.tracer.group([
+    {
+      log: 'This is a log'
+    },
+    {
+      trace: 'This is a trace'
+    },
+    {
+      warn: 'This is a warn'
+    }
+  ])
 })
 ```
 
@@ -405,11 +405,11 @@ Custom errors usage:
 const Promise = require('bluebird')
 
 new domapic.Service().then((service) => {
-	return Promise.reject(new service.errors.BadData('Received bad data'))
-		.catch(service.errors.BadData, () => {
-			console.log('Bad data error caught')
-			throw new service.errors.BadImplementation()
-		})
+  return Promise.reject(new service.errors.BadData('Received bad data'))
+    .catch(service.errors.BadData, () => {
+      console.log('Bad data error caught')
+      throw new service.errors.BadImplementation()
+    })
 })
 ```
 
@@ -435,11 +435,11 @@ console.log(service.errors.isControlled(error))
 	
 ```js
 return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
-	.catch(service.errors.Forbidden, (err) => {
-		console.log('Forbidden error caught')
-		console.log(err.message)
-		// Custom message
-	})
+  .catch(service.errors.Forbidden, (err) => {
+    console.log('Forbidden error caught')
+    console.log(err.message)
+    // Custom message
+  })
 ```
 
 * `toHTML` - Returns a [_Boomified_](https://www.npmjs.com/package/boom) error correspondent to the used error constructor. Each error constructor is mapped to an specific status code, ready to be returned by the API:
@@ -461,14 +461,14 @@ Storage methods read and save json data from a file stored as `~/.domapic/<servi
 
 ```js
 service.storage.set('fooProperty', {test: 'testing'})
-	.then(() => {
-		return service.storage.get('fooProperty')
-	})
-	.then((data) => {
-		console.log(data)
-		// {test: 'testing'}
-		return service.storage.remove('fooProperty')
-	})
+  .then(() => {
+    return service.storage.get('fooProperty')
+  })
+  .then((data) => {
+    console.log(data)
+    // {test: 'testing'}
+    return service.storage.remove('fooProperty')
+  })
 ```
 
 Methods
@@ -502,10 +502,10 @@ Set of utilities:
 	* `compiled` - Set of precompiled templates, used internally.
 ```js
 const templates = service.utils.templates.compile({
-	myTemplate1: 'Value is: {{value}}'
+  myTemplate1: 'Value is: {{value}}'
 })
 console.log(templates.myTemplate1({
-	value: 123
+  value: 123
 }))
 // Value is: 123
 ```
@@ -548,15 +548,15 @@ To require an authentication method in your API operations, you must define the 
 
 ```json
 "paths": {
-	"/fooOperationPath": {
-		"post": {
-			"security": [{
-				"jwt": []
-			}, {
-				"apiKey": []
-			}]
-		}
-	}
+  "/fooOperationPath": {
+    "post": {
+      "security": [{
+        "jwt": []
+      }, {
+        "apiKey": []
+      }]
+    }
+  }
 }
 ```
 
@@ -591,32 +591,32 @@ Implementation example:
 
 ```js
 service.server.addAuthentication({
-	apiKey: {
-		verify: (apiKey) => {
-			// Check if apiKey is allowed, and return correspondant user data, or reject.
-			return getUserDataFromApiKey(apiKey)
-		},
-		authenticate: {
-			auth: (userData) => {
-				// Check if user is allowed to create a new api key, resolve or reject
-				return checkUserPermissionToManageApiKeys(userData)
-			},
-			handler: () => {
-				// Returns a new api key
-				return getNewApiKey()
-			}
-		},
-		revoke: {
-			auth: (userData) => {
-				// Check if user is allowed to remove an existant api key, resolve or reject
-				return checkUserPermissionToManageApiKeys(userData)
-			},
-			handler: (apiKey) => {
-				// Remove existant api key
-				return removeApiKey(apiKey)
-			}
-		}
-	}
+  apiKey: {
+    verify: (apiKey) => {
+      // Check if apiKey is allowed, and return correspondant user data, or reject.
+      return getUserDataFromApiKey(apiKey)
+    },
+    authenticate: {
+      auth: (userData) => {
+        // Check if user is allowed to create a new api key, resolve or reject
+        return checkUserPermissionToManageApiKeys(userData)
+      },
+      handler: () => {
+        // Returns a new api key
+        return getNewApiKey()
+      }
+    },
+    revoke: {
+      auth: (userData) => {
+        // Check if user is allowed to remove an existant api key, resolve or reject
+        return checkUserPermissionToManageApiKeys(userData)
+      },
+      handler: (apiKey) => {
+        // Remove existant api key
+        return removeApiKey(apiKey)
+      }
+    }
+  }
 })
 ```
 
@@ -642,41 +642,41 @@ Implementation example:
 
 ```js
 service.server.addAuthentication({
-	jwt: {
-		secret: 'thisIsNotaRealTokenSecretPleaseReplaceIt',
-		expiresIn: 180,
-		authenticate: {
-			handler: (userCredentials) => {
-				// Check if user has right credentials, or refresh token. Returns user data (with new refresh token if not provided)
-				if (userCredentials.refreshToken) {
-					return getUserDataFromRefreshToken(userCredentials.refreshToken)
-				} else {
-					return checkUserData({
-						name: userCredentials.userName,
-						password: userCredentials.password
-					}).then((userData) => {
-						return createNewRefreshToken(userData)
-							.then((refreshToken) => {
-								return Promise.resolve({
-									userData: userData,
-									refreshToken: refreshToken
-								})
-							})
-					})
-				}
-			}
-		},
-		revoke: {
-			auth: (userData) => {
-				// Check if user is allowed to remove an existant refresh token
-				return checkUserPermissionToManageApiKeys(userData)
-			},
-			handler: (refreshToken) => {
-				// Remove existant refresh token
-				return removeRefreshToken(refreshToken)
-			}
-		}
-	}
+  jwt: {
+    secret: 'thisIsNotaRealTokenSecretPleaseReplaceIt',
+    expiresIn: 180,
+    authenticate: {
+      handler: (userCredentials) => {
+        // Check if user has right credentials, or refresh token. Returns user data (with new refresh token if not provided)
+        if (userCredentials.refreshToken) {
+          return getUserDataFromRefreshToken(userCredentials.refreshToken)
+        } else {
+          return checkUserData({
+            name: userCredentials.userName,
+            password: userCredentials.password
+          }).then((userData) => {
+            return createNewRefreshToken(userData)
+              .then((refreshToken) => {
+                return Promise.resolve({
+                  userData: userData,
+                  refreshToken: refreshToken
+                })
+              })
+          })
+        }
+      }
+    },
+    revoke: {
+      auth: (userData) => {
+        // Check if user is allowed to remove an existant refresh token
+        return checkUserPermissionToManageApiKeys(userData)
+      },
+      handler: (refreshToken) => {
+        // Remove existant refresh token
+        return removeRefreshToken(refreshToken)
+      }
+    }
+  }
 })
 ```
 
@@ -694,21 +694,21 @@ An operation `auth` method can be defined as a function, or as a string that def
 
 ```js
 service.server.addAuthorization('fooRoleName', (userData) => {
-	if (roleIsAllowed(userData.role)) {
-		return Promise.resolve()
-		// Execute the operation handler
-	}
-	return false
-	// Forbidden response
+  if (roleIsAllowed(userData.role)) {
+    return Promise.resolve()
+    // Execute the operation handler
+  }
+  return false
+  // Forbidden response
 }).then(() => {
-	return service.server.addOperations({
-		fooOperation: {
-			auth: 'fooRoleName',
-			handler: () => {
-				return {}
-			}
-		}
-	})
+  return service.server.addOperations({
+    fooOperation: {
+      auth: 'fooRoleName',
+      handler: () => {
+        return {}
+      }
+    }
+  })
 })
 ```
 
@@ -735,12 +735,12 @@ require('../cli/index')
 * Add a `bin` property to your `package.json`, and add an npm script to allow using the CLI through npm alternatively:
 
 ```json
-	"bin": {
-		"your-cli-name": "./bin/your-cli-name"
-	},
-	"scripts": {
-		"your-cli-name": "./bin/your-cli-name"
-	}
+  "bin": {
+    "your-cli-name": "./bin/your-cli-name"
+  },
+  "scripts": {
+    "your-cli-name": "./bin/your-cli-name"
+  }
 ```
 
 * Create a `/cli/index.js` file in your package. It must contains the CLI initialization:
@@ -750,7 +750,7 @@ const path = require('path')
 const domapic = require('domapic-base')
 
 domapic.cli({
-	script: path.resolve(__dirname, '..', 'server.js')
+  script: path.resolve(__dirname, '..', 'server.js')
 })
 ```
 The `script` parameter must be the path to the file where you have your service initialization. This will be the process that will be started in background.
@@ -817,8 +817,8 @@ const domapic = require('domapic-base')
 const customConfig = require('./customConfig')
 
 domapic.cli({
-	script: path.resolve(__dirname, '..', 'server.js'),
-	customConfig: customConfig
+  script: path.resolve(__dirname, '..', 'server.js'),
+  customConfig: customConfig
 })
 ```
 
@@ -851,27 +851,27 @@ const path = require('path')
 const domapic = require('domapic-base')
 
 domapic.cli({
-	script: path.resolve(__dirname, '..', 'server.js'),
-	customCommands: {
-		restart: {
-			processName: 'stopCustom',
-			describe: 'Example of a custom command',
-			cli: 'stopCustom <fooOption1>',
-			options: {
-				fooOption2: {
-					type: 'boolean',
-					describe: 'Foo option for command example',
-					default: true
-				}
-			},
-			command: (config, cliUtils) => {
-				return cliUtils.tracer.info(JSON.stringify(config))
-					.then(() => {
-						cliUtils.process.stop()
-					})
-			}
-		}
-	}
+  script: path.resolve(__dirname, '..', 'server.js'),
+  customCommands: {
+    restart: {
+      processName: 'stopCustom',
+      describe: 'Example of a custom command',
+      cli: 'stopCustom <fooOption1>',
+      options: {
+        fooOption2: {
+          type: 'boolean',
+          describe: 'Foo option for command example',
+          default: true
+        }
+      },
+      command: (config, cliUtils) => {
+        return cliUtils.tracer.info(JSON.stringify(config))
+          .then(() => {
+            cliUtils.process.stop()
+          })
+      }
+    }
+  }
 })
 ```
 
