@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
 ### Added
+- Pass user data to api handlers as fourth argument
+- Add apikey auth url utility
 ### Changed
 ### Fixed
 ### Removed
