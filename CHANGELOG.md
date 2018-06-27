@@ -6,14 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
 ### Added
+### Changed
+### Fixed
+### Removed
+
+## [1.0.0-beta.3] - 2018-06-27
+### Added
 - Pass user data to api handlers as fourth argument
 - Add apikey auth url utility
 - Add timeout to client requests
 - Add Error responses components to openapi
-
-### Changed
-### Fixed
-### Removed
 
 ## [1.0.0-beta.2] - 2018-06-17
 ### Added
