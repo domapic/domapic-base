@@ -69,6 +69,48 @@
           }
         }
       },
+      "ConflictError" : {
+        "description": "Conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Error"
+                },
+                {
+                  "example": {
+                    "statusCode": 409,
+                    "error": "Conflict",
+                    "message": "Conflict error message"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "ServerUnavailableError" : {
+        "description": "Server unavailable",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Error"
+                },
+                {
+                  "example": {
+                    "statusCode": 503,
+                    "error": "Server unavailable",
+                    "message": "Server unavailable error details"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
       "UnexpectedError" : {
         "description": "Unexpected error",
         "content": {
