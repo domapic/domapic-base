@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Pass user data to api handlers as fourth argument
 - Add apikey auth url utility
+- Add timeout to client requests
+- Add Error responses components to openapi
+
 ### Changed
 ### Fixed
 ### Removed
