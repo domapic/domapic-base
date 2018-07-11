@@ -11,7 +11,7 @@ const mocks = require('../../mocks')
 
 const Process = require('../../../../lib/bases/Process')
 
-test.describe.only('Bases -> Process', () => {
+test.describe('Bases -> Process', () => {
   const fooFilePath = '/logs/fooName.pm2.log'
   const fooScriptPath = '/fooScript.js'
   let stubCore
