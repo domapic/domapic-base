@@ -1,6 +1,7 @@
 
 const childProcess = require('child_process')
 const path = require('path')
+const fs = require('fs')
 
 const Promise = require('bluebird')
 const pm2 = require('pm2')
@@ -236,9 +237,25 @@ test.describe('Bases -> Process', () => {
       return pm2Process.logs()
         .then(() => {
           return Promise.all([
-            test.expect(childProcess.spawn.getCall(0).args[0]).to.equal(path.resolve(__dirname, '..', '..', '..', '..', 'node_modules', '.bin', 'pm2')),
+            test.expect(childProcess.spawn.getCall(0).args[0]).to.equal(path.resolve(__dirname, '..', '..', '..', '..', 'node_modules', 'pm2', 'bin', 'pm2')),
             test.expect(childProcess.spawn.getCall(0).args[1][0]).to.equal('logs'),
             test.expect(childProcess.spawn.getCall(0).args[1][1]).to.equal(mocks.arguments.options.name)
+          ])
+        })
+    })
+
+    test.it('should throw an error if pm2 binary is not found in node_modules folder', () => {
+      const existsSyncStub = test.sinon.stub(fs, 'existsSync').returns(false)
+
+      return pm2Process.logs()
+        .then(() => {
+          existsSyncStub.restore()
+          return test.assert.fail('Promise was resolved')
+        }, (err) => {
+          existsSyncStub.restore()
+          return Promise.all([
+            test.expect(existsSyncStub.callCount).to.equal(5),
+            test.expect(err.message).to.include('not found in dependencies')
           ])
         })
     })

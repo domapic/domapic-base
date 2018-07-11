@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.4] - 2018-07-11
+### Fixed
+- Look for pm2 binary in node_modules folder at different levels, going up in the tree.
+
 ## [1.0.0-beta.3] - 2018-06-27
 ### Added
 - Pass user data to api handlers as fourth argument
