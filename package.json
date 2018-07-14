@@ -42,20 +42,20 @@
     "jsonschema": "1.2.4",
     "jsonwebtoken": "8.3.0",
     "lodash": "4.17.10",
-    "openapi-jsonschema-parameters": "0.3.2",
-    "pm2": "2.10.4",
+    "openapi-jsonschema-parameters": "0.4.0",
+    "pm2": "3.0.0",
     "rand-token": "0.4.0",
     "request": "2.87.0",
-    "swagger-ui-dist": "3.17.1",
-    "tracer": "0.9.0",
-    "uuid": "3.2.1",
-    "yargs": "11.0.0"
+    "swagger-ui-dist": "3.17.4",
+    "tracer": "0.9.1",
+    "uuid": "3.3.2",
+    "yargs": "12.0.1"
   },
   "devDependencies": {
-    "coveralls": "3.0.1",
+    "coveralls": "3.0.2",
     "request-promise": "4.2.2",
-    "puppeteer": "1.5.0",
-    "narval": "1.1.0"
+    "puppeteer": "1.6.0",
+    "narval": "1.2.0"
   },
   "author": {
     "name": "Javier Brea",
