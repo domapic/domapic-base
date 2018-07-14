@@ -71,8 +71,10 @@ test.describe('cli', () => {
     cli({
       customConfig: fooCustomConfig
     })
-
-    test.expect(_.extend.getCall(0).args[1]).to.deep.equal(fooCustomConfig)
+    return Promise.all([
+      test.expect(_.extend.getCall(0).args[2]).to.deep.equal(fooCustomConfig),
+      test.expect(_.extend.getCall(0).args[1]).to.deep.equal(start.options)
+    ])
   })
 
   test.it('should throw an error if any custom config has the same name than a start command option', () => {
