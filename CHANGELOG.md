@@ -10,10 +10,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
-## [1.0.0-beta.5] - 2018-07-14
-### Fixed
-- Fix "extend start command options".
-
 ## [1.0.0-beta.4] - 2018-07-11
 ### Fixed
 - Look for pm2 binary in node_modules folder at different levels, going up in the tree.
