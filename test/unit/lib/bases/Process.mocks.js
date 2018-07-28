@@ -33,6 +33,7 @@ const processSpawn = function () {
   const stderr = test.sinon.spy((eventName, func) => {
     if (functionToExecute === 'stderr') {
       func(returns)
+      resolver(resolverReturn)
     }
   })
 
