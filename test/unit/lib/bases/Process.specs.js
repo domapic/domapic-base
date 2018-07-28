@@ -225,10 +225,12 @@ test.describe('Bases -> Process', () => {
     test.beforeEach(() => {
       spawnStub.callsFake('on', 0)
       test.sinon.stub(childProcess, 'spawn').returns(spawnStub)
+      test.sinon.spy(console, 'log')
     })
 
     test.afterEach(() => {
       childProcess.spawn.restore()
+      console.log.restore()
     })
 
     commonTests('logs')
@@ -273,39 +275,32 @@ test.describe('Bases -> Process', () => {
     test.it('should log the spawned process stdout', () => {
       const fooLog = 'This is a foo process log'
       spawnStub.callsFake('stdout', fooLog)
-      test.sinon.spy(console, 'log')
       return pm2Process.logs()
         .then(() => {
           return test.expect(console.log).to.have.been.calledWith(fooLog)
         })
-        .finally(() => {
-          console.log.restore()
+    })
+
+    test.it('should log the spawned process stderr', () => {
+      const fooLog = 'This is a foo process error log'
+      spawnStub.callsFake('stderr', fooLog)
+      return pm2Process.logs()
+        .then(() => {
+          return test.expect(console.log).to.have.been.calledWith(fooLog)
         })
     })
 
     test.it('should not log the spawned process empty stdout', () => {
       const fooLog = ''
       spawnStub.callsFake('stdout', fooLog)
-      test.sinon.spy(console, 'log')
       return pm2Process.logs()
         .then(() => {
           return test.expect(console.log).not.to.have.been.called()
-        })
-        .finally(() => {
-          console.log.restore()
         })
     })
 
     test.it('should reject the promise if the spawned process is closed with error code', () => {
       spawnStub.callsFake('on', 1)
-      return pm2Process.logs()
-        .catch((err) => {
-          return test.expect(err).to.be.an.instanceof(stubCore.errors.ChildProcess)
-        })
-    })
-
-    test.it('should reject the promise if the spawned process stderr is called', () => {
-      spawnStub.callsFake('stderr', 'error')
       return pm2Process.logs()
         .catch((err) => {
           return test.expect(err).to.be.an.instanceof(stubCore.errors.ChildProcess)

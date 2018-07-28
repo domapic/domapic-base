@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.6] - 2018-07-28
+### Fixed
+- Do not reject promise when process logs receives an stderr
+- Use only two first arguments of used npm command to suggest another commands
+
 ## [1.0.0-beta.5] - 2018-07-14
 ### Fixed
 - Fix "extend start command options".
