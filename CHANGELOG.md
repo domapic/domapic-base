@@ -6,7 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
 ### Added
+- Add package-lock
+- Add allow methods header
+- Pass request data to auth handlers
 ### Changed
+- Allow api resources to be defined without auth method
+- Change userName by user in authentication handlers
+- Convert all received errors into unathorization errors in jwt authentication method
 ### Fixed
 ### Removed
 
