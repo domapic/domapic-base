@@ -286,7 +286,7 @@ Each operation can have properties:
 * `parse` - Parse parameters from request.
 		* It must be an object, with first level keys as request object where the parameter will be found, and second level keys as parameter name to be parsed. The `parser` function will receive the original value of the parameter as argument, and should return the parsed value.
 		* Useful, for example, to convert numeric values from request params or query strings, that are received as strings, to real numbers.
-* `auth` - If authentication is enabled for the api resource, this method will be executed to check if the user has enough permissions. Can be a function, or a string that defines which authorization role function has to be executed. Read [Authentication](#authentication) for further info.
+* `auth` - If authentication is enabled for the api resource, this method will be executed to check if the user has enough permissions. Can be a function, or a string that defines which authorization role function has to be executed. If this method is not defined, the api resource will be available for all authenticated users. Read [Authentication](#authentication) for further info.
 	* Arguments:
 		* userData - The decoded data about the user that is making the request. Usually should contain user name, or even user role (Depending of the authentication method and implementation).
 	* Returns: 
@@ -348,7 +348,7 @@ new domapic.Service().then((service) => {
   const client = new service.client.Connection('http://localhost:3000',{
     apiKey: 'thisIsaFooApiKey',
     jwt: {
-      userName: 'fooUserName',
+      user: 'fooUserName',
       password: 'fooPassword'
     }
   })
@@ -593,7 +593,7 @@ Must contain properties:
 	* `auth` - Authorization method for the `/api/auth/apikey` _POST_ api resource.
 	* `handler` - Operation handler for the `/api/auth/apikey` _POST_ api resource.
 		* Arguments:
-			* `userData` - An object containing `userName`, `role` and `reference`
+			* `userData` - An object containing `user`, `role` and `reference`
 		* Should return a new api key.
 * `revoke` - API operation for removing an api key. This api resource needs authentication as well.
 	* `auth` - Authorization method for the `/api/auth/apikey` _DELETE_ api resource.
@@ -641,10 +641,10 @@ Properties:
 
 * `secret` - Optional. String used to generate tokens. If not provided, a random secret is used.
 * `expiresIn` - Number. Time of tokens expiration time in miliseconds. By default, 300 will be used if this option is not provided. It is not recommended to use a high value for this option. Tokens should expire in short time, and then, refresh tokens should be used to request a new token again.
-* `authenticate` - API operation for requesting a new token. Will receive `userName` and `password`, or `refreshToken`. Your implementation should be able to identify the user, and then return the correspondant data that will be stored in the _Json Web Token_. Afterwards, the API will use that data in each request to apply the correspondant authorization policy for each api resource. _Refresh Token_ is used to renew the user credentials without providing the user data again when the token expires.
+* `authenticate` - API operation for requesting a new token. Will receive `user` and `password`, or `refreshToken`. Your implementation should be able to identify the user, and then return the correspondant data that will be stored in the _Json Web Token_. Afterwards, the API will use that data in each request to apply the correspondant authorization policy for each api resource. _Refresh Token_ is used to renew the user credentials without providing the user data again when the token expires.
 	* `handler` - Operation handler for the `/api/auth/jwt` _POST_ api resource.
 		* Arguments:
-			* `userData` - An object containing `userName` and `password`, or `refreshToken`.
+			* `userData` - An object containing `user` and `password`, or `refreshToken`.
 		* Should return an object containing `userData` (an object with all user data that will be passed as argument to the API resources authorization handlers), and `refreshToken` if the request has not received it.
 * `revoke` - API operation for removing a refresh token. This api resource needs authentication as well, and it only supports the `jwt` authentication method.
 	* `auth` - Authorization method for the `/api/auth/jwt` _DELETE_ api resource.
@@ -665,20 +665,19 @@ service.server.addAuthentication({
         // Check if user has right credentials, or refresh token. Returns user data (with new refresh token if not provided)
         if (userCredentials.refreshToken) {
           return getUserDataFromRefreshToken(userCredentials.refreshToken)
-        } else {
-          return checkUserData({
-            name: userCredentials.userName,
-            password: userCredentials.password
-          }).then((userData) => {
-            return createNewRefreshToken(userData)
-              .then((refreshToken) => {
-                return Promise.resolve({
-                  userData: userData,
-                  refreshToken: refreshToken
-                })
-              })
-          })
         }
+        return checkUserData({
+          name: userCredentials.user,
+          password: userCredentials.password
+        }).then((userData) => {
+          return createNewRefreshToken(userData)
+            .then((refreshToken) => {
+              return Promise.resolve({
+                userData: userData,
+                refreshToken: refreshToken
+              })
+            })
+        })
       }
     },
     revoke: {

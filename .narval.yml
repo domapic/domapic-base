@@ -27,6 +27,9 @@ suites:
           dir: .coverage/unit
   integration:
     - name: api
+      before:
+        docker:
+          down-volumes: true
       services:
         - name: api-service
           docker: 

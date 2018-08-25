@@ -25,26 +25,36 @@
           "content": {
             "application/json": {
               "schema": {
-                  "type": "object",
+                "type": "object",
+                "example": {
+                  "refreshToken": "fooRefreshToken"
+                },
+                "oneOf": [{
                   "properties": {
-                    "userName": {
+                    "user": {
                       "description": "User name",
                       "type": "string"
                     },
                     "password": {
                       "description": "User password",
                       "type": "string"
-                    },
+                    }
+                  },
+                  "additionalProperties": false,
+                  "example": {
+                    "user": "fooUser",
+                    "password": "fooPassword"
+                  }
+                },
+                {
+                  "properties": {
                     "refreshToken": {
                       "description": "Refresh token",
                       "type": "string"
                     }
                   },
-                  "additionalProperties": false,
-                  "example": {
-                    "userName": "fooUser",
-                    "password": "fooPassword"
-                  }
+                  "additionalProperties": false
+                }]
               }
             }
           }

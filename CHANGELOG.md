@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.7] - 2018-08-25
+### Added
+- Add package-lock
+- Add allow methods header
+- Pass request data to auth handlers
+
+### Changed
+- Allow api resources to be defined without auth method
+- Change userName by user in authentication handlers
+- Convert all received errors into unathorization errors in jwt authentication method
+
 ## [1.0.0-beta.6] - 2018-07-28
 ### Fixed
 - Do not reject promise when process logs receives an stderr
