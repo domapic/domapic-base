@@ -286,7 +286,7 @@ Each operation can have properties:
 * `parse` - Parse parameters from request.
 		* It must be an object, with first level keys as request object where the parameter will be found, and second level keys as parameter name to be parsed. The `parser` function will receive the original value of the parameter as argument, and should return the parsed value.
 		* Useful, for example, to convert numeric values from request params or query strings, that are received as strings, to real numbers.
-* `auth` - If authentication is enabled for the api resource, this method will be executed to check if the user has enough permissions. Can be a function, or a string that defines which authorization role function has to be executed. Read [Authentication](#authentication) for further info.
+* `auth` - If authentication is enabled for the api resource, this method will be executed to check if the user has enough permissions. Can be a function, or a string that defines which authorization role function has to be executed. If this method is not defined, the api resource will be available for all authenticated users. Read [Authentication](#authentication) for further info.
 	* Arguments:
 		* userData - The decoded data about the user that is making the request. Usually should contain user name, or even user role (Depending of the authentication method and implementation).
 	* Returns: 
