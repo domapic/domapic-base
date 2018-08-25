@@ -27,7 +27,7 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "userName": {
+                  "user": {
                     "description": "User owner of the new api key",
                     "type": "string"
                   },
@@ -40,7 +40,7 @@
                     "type": "string"
                   }
                 },
-                "required": ["userName"]
+                "required": ["user"]
               }
             }
           }
