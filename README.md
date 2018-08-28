@@ -279,16 +279,19 @@ Each operation can have properties:
 		* params - Request parameters. `params.path` and `params.query`.
 		* body - Request body
 		* res - Allows to set custom headers and statusCode to response. Examples: `res.status(201)`, `res.header('location', '/api/books/new-book')`
+		* userData - If user is "loged", here will be received the userData returned by the correspondant authentication method `verify` handler.
 	* Returns:
 		* Can return a Promise. If rejected, the error will be mapped to a correspondant html error. If resolved, the resolved value will be returned as response body.
 		* If returns a value, the value will be returned as response body.
 		* If throws an error, the error will be mapped to a correspondant html error.
 * `parse` - Parse parameters from request.
-		* It must be an object, with first level keys as request object where the parameter will be found, and second level keys as parameter name to be parsed. The `parser` function will receive the original value of the parameter as argument, and should return the parsed value.
-		* Useful, for example, to convert numeric values from request params or query strings, that are received as strings, to real numbers.
+	* It must be an object, with first level keys as request object where the parameter will be found, and second level keys as parameter name to be parsed. The `parser` function will receive the original value of the parameter as argument, and should return the parsed value.
+	* Useful, for example, to convert numeric values from request params or query strings, that are received as strings, to real numbers.
 * `auth` - If authentication is enabled for the api resource, this method will be executed to check if the user has enough permissions. Can be a function, or a string that defines which authorization role function has to be executed. If this method is not defined, the api resource will be available for all authenticated users. Read [Authentication](#authentication) for further info.
 	* Arguments:
-		* userData - The decoded data about the user that is making the request. Usually should contain user name, or even user role (Depending of the authentication method and implementation).
+		* userData - The decoded data about the user that is making the request.
+		* params - Request parameters. `params.path` and `params.query`.
+		* body - Request body
 	* Returns: 
 		* Promise.resolve, or `true` to validate the user.
 		* Any other returned value will result in a "Forbidden" response.
@@ -296,13 +299,13 @@ Each operation can have properties:
 ```js
 service.server.addOperations({
   myApiOperation: {
-    auth: (userData) => {
+    auth: (userData, params, body) => {
       if (userIsAllowed(userData)) {
         return Promise.resolve()
       }
       return Promise.reject()
     },
-    handler: (params, body, res) => {
+    handler: (params, body, res, userData) => {
       res.status(201)
       res.header('location', '/api/books/new-book')
       return Promise.resolve({
@@ -591,15 +594,29 @@ Must contain properties:
 		* Rejected promise -> Unauthorized.
 * `authenticate` - API operation for requesting a new api key. This api point needs authentication as well, so, if your system  authentication is only api key based, you have to define an initial api key that could be used to request more in case it´s needed. This method supports _Json Web Token_ authentication as well, if it is implemented.
 	* `auth` - Authorization method for the `/api/auth/apikey` _POST_ api resource.
+		* Arguments:
+			* userData - The decoded data about the user that is making the request.
+			* params - Request parameters. `params.path` and `params.query`.
+			* body - Request body
 	* `handler` - Operation handler for the `/api/auth/apikey` _POST_ api resource.
 		* Arguments:
-			* `userData` - An object containing `user`, `role` and `reference`
+			* params - Request parameters. `params.path` and `params.query`.
+			* body - Request body
+			* res - Allows to set custom headers and statusCode to response. Examples: `res.status(201)`, `res.header('location', '/api/books/new-book')`
+			* userData - If user is "loged", here will be received the userData returned by the correspondant authentication method `verify` handler.
 		* Should return a new api key.
 * `revoke` - API operation for removing an api key. This api resource needs authentication as well.
 	* `auth` - Authorization method for the `/api/auth/apikey` _DELETE_ api resource.
+		* Arguments:
+			* userData - The decoded data about the user that is making the request.
+			* params - Request parameters. `params.path` and `params.query`.
+			* body - Request body
 	* `handler` - Operation handler for the `/api/auth/apikey` _DELETE_ api resource.
 		* Arguments:
-			* `apiKey` - Api key to be removed.
+			* params - Request parameters. `params.path` and `params.query`.
+			* body - Request body
+			* res - Allows to set custom headers and statusCode to response. Examples: `res.status(201)`, `res.header('location', '/api/books/new-book')`
+			* userData - If user is "loged", here will be received the userData returned by the correspondant authentication method `verify` handler.
 		* Any returned value will be ignored, and not exposed to the api response.
 
 Implementation example:
@@ -612,23 +629,23 @@ service.server.addAuthentication({
       return getUserDataFromApiKey(apiKey)
     },
     authenticate: {
-      auth: (userData) => {
+      auth: (userData, params, body) => {
         // Check if user is allowed to create a new api key, resolve or reject
         return checkUserPermissionToManageApiKeys(userData)
       },
-      handler: () => {
+      handler: (params, body, res, userData) => {
         // Returns a new api key
         return getNewApiKey()
       }
     },
     revoke: {
-      auth: (userData) => {
+      auth: (userData, params, body) => {
         // Check if user is allowed to remove an existant api key, resolve or reject
         return checkUserPermissionToManageApiKeys(userData)
       },
-      handler: (apiKey) => {
+      handler: (params, body, res, userData) => {
         // Remove existant api key
-        return removeApiKey(apiKey)
+        return removeApiKey(body.apiKey)
       }
     }
   }
@@ -644,13 +661,22 @@ Properties:
 * `authenticate` - API operation for requesting a new token. Will receive `user` and `password`, or `refreshToken`. Your implementation should be able to identify the user, and then return the correspondant data that will be stored in the _Json Web Token_. Afterwards, the API will use that data in each request to apply the correspondant authorization policy for each api resource. _Refresh Token_ is used to renew the user credentials without providing the user data again when the token expires.
 	* `handler` - Operation handler for the `/api/auth/jwt` _POST_ api resource.
 		* Arguments:
-			* `userData` - An object containing `user` and `password`, or `refreshToken`.
+			* params - Request parameters. `params.path` and `params.query`.
+			* body - Request body
+			* res - Allows to set custom headers and statusCode to response. Examples: `res.status(201)`, `res.header('location', '/api/books/new-book')`
 		* Should return an object containing `userData` (an object with all user data that will be passed as argument to the API resources authorization handlers), and `refreshToken` if the request has not received it.
 * `revoke` - API operation for removing a refresh token. This api resource needs authentication as well, and it only supports the `jwt` authentication method.
 	* `auth` - Authorization method for the `/api/auth/jwt` _DELETE_ api resource.
+		* Arguments:
+			* userData - The decoded data about the user that is making the request.
+			* params - Request parameters. `params.path` and `params.query`.
+			* body - Request body
 	* `handler` - Operation handler for the `/api/auth/jwt` _DELETE_ api resource.
 		* Arguments:
-			* `refreshToken` - Refresh token to be removed.
+			* params - Request parameters. `params.path` and `params.query`.
+			* body - Request body
+			* res - Allows to set custom headers and statusCode to response. Examples: `res.status(201)`, `res.header('location', '/api/books/new-book')`
+			* userData - If user is "loged", here will be received the userData returned by the correspondant authentication method `verify` handler.
 		* Any returned value will be ignored, and not exposed to the api response.
 
 Implementation example:
@@ -661,14 +687,14 @@ service.server.addAuthentication({
     secret: 'thisIsNotaRealTokenSecretPleaseReplaceIt',
     expiresIn: 180,
     authenticate: {
-      handler: (userCredentials) => {
+      handler: (params, body, res) => {
         // Check if user has right credentials, or refresh token. Returns user data (with new refresh token if not provided)
-        if (userCredentials.refreshToken) {
-          return getUserDataFromRefreshToken(userCredentials.refreshToken)
+        if (body.refreshToken) {
+          return getUserDataFromRefreshToken(body.refreshToken)
         }
         return checkUserData({
-          name: userCredentials.user,
-          password: userCredentials.password
+          name: body.user,
+          password: body.password
         }).then((userData) => {
           return createNewRefreshToken(userData)
             .then((refreshToken) => {
@@ -681,13 +707,13 @@ service.server.addAuthentication({
       }
     },
     revoke: {
-      auth: (userData) => {
+      auth: (userData, params, body) => {
         // Check if user is allowed to remove an existant refresh token
         return checkUserPermissionToManageApiKeys(userData)
       },
-      handler: (refreshToken) => {
+      handler: (params, body, res, userData) => {
         // Remove existant refresh token
-        return removeRefreshToken(refreshToken)
+        return removeRefreshToken(body.refreshToken)
       }
     }
   }
