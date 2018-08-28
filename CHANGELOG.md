@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.8] - 2018-08-28
+### Fixed
+- Pass userData to operation handlers that has not defined an specific auth function.
+
+### Changed
+- Add apiKey authentication to jwt remove refresh token api.
+- Pass same arguments to authentication handlers than other operation handlers.
+
 ## [1.0.0-beta.7] - 2018-08-25
 ### Added
 - Add package-lock
