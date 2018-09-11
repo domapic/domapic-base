@@ -45,9 +45,9 @@ test.describe('Utils -> services', () => {
     })
   })
 
-  test.describe('commandUrl', () => {
-    test.it('should return the url for the provided command name', () => {
-      test.expect(services.commandUrl('fooCommand')).to.equal('commands/foo-command')
+  test.describe('actionUrl', () => {
+    test.it('should return the url for the provided action name', () => {
+      test.expect(services.actionUrl('fooAction')).to.equal('actions/foo-action')
     })
   })
 
