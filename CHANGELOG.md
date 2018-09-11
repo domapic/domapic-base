@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased]
 ### Added
 ### Changed
+- Change "command" by "action" in services urls helper.
 ### Fixed
 ### Removed
 
