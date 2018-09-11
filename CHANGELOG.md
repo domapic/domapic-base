@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.9] - 2018-09-11
+### Fixed
+- Change "command" by "action" in services urls helper.
+
 ## [1.0.0-beta.8] - 2018-08-28
 ### Fixed
 - Pass userData to operation handlers that has not defined an specific auth function.
