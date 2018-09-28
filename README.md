@@ -529,7 +529,7 @@ console.log(templates.myTemplate1({
 ```
 * `cli`
 	* `usedCommand` - Used internally by CLI. Returns the command used to start the current process.
-* `services` - Set of utilities used internally to get api urls, normalize names, etc..
+* `services` - Set of utilities used internally to get service types, normalize names, etc..
 
 [back to top](#table-of-contents)
 
