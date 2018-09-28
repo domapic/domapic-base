@@ -44,40 +44,4 @@ test.describe('Utils -> services', () => {
       test.expect(services.normalizeName('__FOO_BAR__')).to.equal(expectedResult)
     })
   })
-
-  test.describe('actionUrl', () => {
-    test.it('should return the url for the provided action name', () => {
-      test.expect(services.actionUrl('fooAction')).to.equal('actions/foo-action')
-    })
-  })
-
-  test.describe('eventUrl', () => {
-    test.it('should return the url for the provided event name', () => {
-      test.expect(services.eventUrl('foo_Event')).to.equal('events/foo-event')
-    })
-  })
-
-  test.describe('stateUrl', () => {
-    test.it('should return the url for the provided event name', () => {
-      test.expect(services.stateUrl('Foo-state')).to.equal('states/foo-state')
-    })
-  })
-
-  test.describe('servicesUrl', () => {
-    test.it('should return the url for services', () => {
-      test.expect(services.servicesUrl()).to.equal('services')
-    })
-  })
-
-  test.describe('serviceUrl', () => {
-    test.it('should return the url for the provided service name', () => {
-      test.expect(services.serviceUrl('foo_Service')).to.equal('services/foo-service')
-    })
-  })
-
-  test.describe('serviceEventUrl', () => {
-    test.it('should return the url for the provided event of the provided service name', () => {
-      test.expect(services.serviceEventUrl('FooService', 'foo_Event')).to.equal('services/foo-service/events/foo-event')
-    })
-  })
 })
