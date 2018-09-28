@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.10] - 2018-09-28
+### Removed
+- Remove service url utils
+- Remove domapic headers from responses
+
+### Changed
+- Resolve client promises with full server response
+
 ## [1.0.0-beta.9] - 2018-09-11
 ### Fixed
 - Change "command" by "action" in services urls helper.
