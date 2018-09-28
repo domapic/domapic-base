@@ -90,7 +90,7 @@ suites:
             host_name: localhost
             app_path: .test
       coverage:
-        enabled: true
+        enabled: false
   end-to-end:
     - name: web-ui
       before:
@@ -124,3 +124,5 @@ suites:
           env:
             host_name: localhost
             app_path: .test
+      coverage:
+        enabled: false
