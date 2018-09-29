@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.11] - 2018-09-29
+### Changed
+- Avoid encoding url characters in templates
+
 ## [1.0.0-beta.10] - 2018-09-28
 ### Removed
 - Remove service url utils

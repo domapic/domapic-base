@@ -92,33 +92,25 @@
             }
           }
         }
-      },
+      }
+    },
+    "/auth/jwt/{refreshToken}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "refreshToken",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Refresh token to be removed"
+          }
+        ],
         "tags": ["security"],
         "summary": "Remove Refresh Token",
         "description": "Removes an existant jwt refresh token",
         "operationId": "jwtRemoveRefreshToken",
-        "requestBody": {
-          "description": "Refresh token to be removed",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "refreshToken": {
-                    "description": "Refresh token",
-                    "type": "string"
-                  }
-                },
-                "required": ["refreshToken"],
-                "example": {
-                  "refreshToken": "fooRefreshToken"
-                }
-              }
-            }
-          }
-        },
         "responses": {
           "204": {
             "description": "Refresh token sucessfully removed"
