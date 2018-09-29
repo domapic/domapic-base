@@ -63,29 +63,25 @@
         }, {
           "apiKey": []
         }]
-      },
+      }
+    },
+    "/auth/apikey/{apiKey}": {
       "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "apiKey",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Api key to be removed"
+          }
+        ],
         "tags": ["security"],
         "summary": "Remove Api Key",
         "description": "Removes an existant api key",
-        "operationId": "apiKeyRemove", 
-        "requestBody": {
-          "description": "Api key to be removed",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "apiKey": {
-                    "type": "string"
-                  }
-                },
-                "required": ["apiKey"]
-              }
-            }
-          }
-        },
+        "operationId": "apiKeyRemove",
         "responses": {
           "204": {
             "description": "Api Key removed"
