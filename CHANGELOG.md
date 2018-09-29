@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0-beta.11] - 2018-09-29
 ### Changed
 - Avoid encoding url characters in templates
+- Do not use requestBody in delete methods
 
 ## [1.0.0-beta.10] - 2018-09-28
 ### Removed
