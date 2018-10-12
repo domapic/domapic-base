@@ -37,7 +37,7 @@
     "express-request-id": "1.4.0",
     "fs-extra": "6.0.1",
     "hbs": "4.0.1",
-    "helmet": "^3.14.0",
+    "helmet": "3.14.0",
     "ip": "1.1.5",
     "ip-range-check": "0.0.2",
     "is-promise": "2.1.0",
