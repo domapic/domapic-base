@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.12] - 2018-10-12
+### Changed
+- Use cors package to enable cors
+
+### Added
+- Use helmet package to improve security
+
 ## [1.0.0-beta.11] - 2018-09-29
 ### Changed
 - Avoid encoding url characters in templates
