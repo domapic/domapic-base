@@ -1,6 +1,6 @@
 {
   "name": "domapic-base",
-  "version": "1.0.0-beta.12",
+  "version": "1.0.0-beta.13",
   "description": "Base for Domapic Node.js packages",
   "main": "index.js",
   "keywords": [
