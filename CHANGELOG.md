@@ -8,9 +8,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 ### Changed
 ### Fixed
-- Avoid escaping characters in traces
-
 ### Removed
+
+## [1.0.0-beta.13] - 2018-10-15
+### Added
+- Add Error constructors for GatewayTimeout and BadGateway
+
+### Fixed
+- Avoid escaping characters in traces
 
 ## [1.0.0-beta.12] - 2018-10-12
 ### Changed

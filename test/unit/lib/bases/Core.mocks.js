@@ -58,13 +58,15 @@ const Stub = function () {
       NotImplemented: FooErrorConstructor,
       BadData: FooErrorConstructor,
       TimeOut: FooErrorConstructor,
-      ClienTimeOut: FooErrorConstructor,
+      ClientTimeOut: FooErrorConstructor,
       Forbidden: FooErrorConstructor,
       Unauthorized: FooErrorConstructor,
       NotFound: FooErrorConstructor,
       Conflict: FooErrorConstructor,
       ServerUnavailable: FooErrorConstructor,
-      MethodNotAllowed: FooErrorConstructor
+      MethodNotAllowed: FooErrorConstructor,
+      BadGateway: FooErrorConstructor,
+      GatewayTimeOut: FooErrorConstructor
     },
     paths: {
       ensureFile: test.sinon.stub().usingPromise(Promise).resolves()
