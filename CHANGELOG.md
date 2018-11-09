@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 ### Changed
 - Define service type programatically using an option in the Service constructor
+- Do not demand name option. Use package name as service name if it is not defined
 ### Fixed
 ### Removed
 

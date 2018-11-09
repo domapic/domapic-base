@@ -107,7 +107,7 @@ new domapic.Service({
 
 ```shell
 # Start server
-node ./server.js --name=fooName
+node ./server.js
 ```
 
 Browse to http://localhost:3000 to open _Swagger_ interface and inspect API.
@@ -125,7 +125,7 @@ node ./server.js --help
 
 option | type | description | default
 --- | --- | --- | ---
-`name` | String | Service instance name | -
+`name` | String | Service instance name. If not received, the service name will be the package name | -
 `port` | Number | Http port used | 3000
 `hostName` | String | Hostname for the server | -
 `sslCert` | String | Path to an ssl certificate | -
@@ -200,7 +200,7 @@ new domapic.Service({
 })
 ```
 ```shell
-node ./server.js --name=fooName --fooOption=false
+node ./server.js --fooOption=false
 ```
 
 Custom options defined for a service should be defined in CLI implementation too, to make them available from command line interface. Read the [CLI custom options and commands](#custom-options-and-commands) chapter for further info.
@@ -812,7 +812,7 @@ your-cli-name start --help
 # Displays help for start command
 ```
 
-* `start` - Starts the service process in background. A name for the process instance must be provided as first argument, or using the `--name` option.
+* `start` - Starts the service process in background. A custom name for the process instance can be provided as first argument, or using the `--name` option.
 
 ```shell
 // global cli
@@ -834,17 +834,23 @@ All available options for the `start` command are described in the [options chap
 * `stop` - Stops a background service instance:
 
 ```shell
+your-cli-name stop
+
+## If name was provided when started, if must be provided to stop:
 your-cli-name stop fooName
 ```
 
 * `logs` - Displays logs of a background service instance:
 
 ```shell
-your-cli-name logs fooName
+your-cli-name logs
 # Displays logs
 
-your-cli-name logs fooName --lines=300
+your-cli-name logs --lines=300
 # Displays 300 last lines of logs (30 by default, if option is not provided)
+
+## If name was provided when started, if must be provided to stop:
+your-cli-name logs fooName --lines=300
 ```
 
 ### Custom options and commands
