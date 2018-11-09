@@ -12,6 +12,7 @@ const packageJson = require('../../../../../package.json')
 const packagePath = path.resolve(__dirname, '..', '..', '..', '..', '..')
 
 test.describe('Bases -> Core -> Info', () => {
+  const serviceType = 'module'
   const basePackageInfo = {
     name: 'foo-service',
     version: '1.0.0',
@@ -23,7 +24,7 @@ test.describe('Bases -> Core -> Info', () => {
   test.beforeEach(() => {
     errors = new Errors()
     test.sinon.spy(fsExtra, 'readJsonSync')
-    info = new Info(packagePath, errors)
+    info = new Info(packagePath, serviceType, errors)
   })
 
   test.afterEach(() => {
@@ -35,7 +36,7 @@ test.describe('Bases -> Core -> Info', () => {
       let error
       info = null
       try {
-        info = new Info(null, errors)
+        info = new Info(null, serviceType, errors)
       } catch (err) {
         error = err
       }
@@ -47,7 +48,7 @@ test.describe('Bases -> Core -> Info', () => {
       let error
       info = null
       try {
-        info = new Info('dasddasd', errors)
+        info = new Info('dasddasd', serviceType, errors)
       } catch (err) {
         error = err
       }
@@ -74,7 +75,7 @@ test.describe('Bases -> Core -> Info', () => {
       let error
       info = null
       try {
-        info = new Info(packagePath, errors)
+        info = new Info(packagePath, serviceType, errors)
       } catch (err) {
         error = err
       }
@@ -97,7 +98,7 @@ test.describe('Bases -> Core -> Info', () => {
       let error
       info = null
       try {
-        info = new Info(packagePath, errors)
+        info = new Info(packagePath, serviceType, errors)
       } catch (err) {
         error = err
       }
@@ -120,7 +121,7 @@ test.describe('Bases -> Core -> Info', () => {
       let error
       info = null
       try {
-        info = new Info(packagePath, errors)
+        info = new Info(packagePath, serviceType, errors)
       } catch (err) {
         error = err
       }
@@ -137,7 +138,7 @@ test.describe('Bases -> Core -> Info', () => {
     test.it('should return an empty string if the provided package.json have not "homepage" property', () => {
       fsExtra.readJsonSync.restore()
       test.sinon.stub(fsExtra, 'readJsonSync').returns(basePackageInfo)
-      info = new Info(packagePath, errors)
+      info = new Info(packagePath, serviceType, errors)
       test.expect(info.homepage).to.equal('')
     })
   })
@@ -150,7 +151,7 @@ test.describe('Bases -> Core -> Info', () => {
     test.it('should return an empty object if the provided package.json have not "author" property', () => {
       fsExtra.readJsonSync.restore()
       test.sinon.stub(fsExtra, 'readJsonSync').returns(basePackageInfo)
-      info = new Info(packagePath, errors)
+      info = new Info(packagePath, serviceType, errors)
       test.expect(info.author).to.deep.equal({})
     })
   })
@@ -163,8 +164,14 @@ test.describe('Bases -> Core -> Info', () => {
     test.it('should return an empty string if the provided package.json have not "license" property', () => {
       fsExtra.readJsonSync.restore()
       test.sinon.stub(fsExtra, 'readJsonSync').returns(basePackageInfo)
-      info = new Info(packagePath, errors)
+      info = new Info(packagePath, serviceType, errors)
       test.expect(info.license).to.equal('')
+    })
+  })
+
+  test.describe('type', () => {
+    test.it('Should return the provided type', () => {
+      test.expect(info.type).to.equal(serviceType)
     })
   })
 })
