@@ -27,6 +27,7 @@ suites:
           dir: .coverage/unit
   integration:
     - name: api
+      describe: The api should work as expected
       before:
         docker:
           down-volumes: true
@@ -46,11 +47,43 @@ suites:
           env:
             host_name: service-container
             app_path: .shared
+            service_name: service
         local:
           wait-on: tcp:localhost:3000
           env:
             host_name: localhost
             app_path: .test
+            service_name: service
+      coverage:
+        from: api-service
+    - name: no-name-provided
+      describe: The api should work as expected when no --name option is provided
+      before:
+        docker:
+          down-volumes: true
+      services:
+        - name: api-service
+          docker: 
+            container: service-container
+            command: test/app/start.js --path=/narval/.shared --host=service-container
+            exit_after: 10000
+          local:
+            command: test/app/start.js --path=.test --host=localhost
+      test:
+        specs: test/integration/built-in-api
+        docker:
+          container: test-container
+          wait-on: tcp:service-container:3000
+          env:
+            host_name: service-container
+            app_path: .shared
+            service_name: domapic-base
+        local:
+          wait-on: tcp:localhost:3000
+          env:
+            host_name: localhost
+            app_path: .test
+            service_name: domapic-base
       coverage:
         from: api-service
     - name: tracer
@@ -84,11 +117,13 @@ suites:
             host_name: service-container
             app_path: .shared
             extra_options: --logLevel=warn
+            service_name: service
         local:
           wait-on: tcp:localhost:3000
           env:
             host_name: localhost
             app_path: .test
+            service_name: service
       coverage:
         enabled: false
   end-to-end:
@@ -119,10 +154,12 @@ suites:
           env:
             host_name: service-container
             app_path: .shared
+            service_name: service
         local:
           wait-on: tcp:localhost:3000
           env:
             host_name: localhost
             app_path: .test
+            service_name: service
       coverage:
         enabled: false

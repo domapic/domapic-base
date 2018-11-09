@@ -48,7 +48,7 @@ test.describe('Built-in API', function () {
         return requestPromise(requestOptions).then((response) => {
           const packageInfo = require('../../../package.json')
           return Promise.all([
-            test.expect(response.name).to.equal('service'),
+            test.expect(response.name).to.equal(config.serviceName),
             test.expect(response.type).to.equal('module'),
             test.expect(response.package).to.equal(packageInfo.name),
             test.expect(response.version).to.equal(packageInfo.version),

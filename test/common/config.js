@@ -14,10 +14,11 @@ module.exports = {
     url: serviceUrl
   },
   paths: {
-    domapicConfig: path.resolve(__dirname, '..', '..', process.env.app_path, '.domapic', 'service')
+    domapicConfig: path.resolve(__dirname, '..', '..', process.env.app_path, '.domapic', process.env.service_name)
   },
   explicitServiceOptions: {
     path: path.resolve(__dirname, '..', '..', process.env.app_path),
     hostName: process.env.host_name
-  }
+  },
+  serviceName: process.env.service_name
 }
