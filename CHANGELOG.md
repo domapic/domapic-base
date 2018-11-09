@@ -7,12 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased]
 ### Added
 ### Changed
-- Define service type programatically using an option in the Service constructor
-- Do not demand name option. Use package name as service name if it is not defined
 ### Fixed
 ### Removed
 
 ## [1.0.0-beta.14] - 2018-11-09
+### Changed
+- Define service type programatically using an option in the Service constructor
+- Do not demand name option. Use package name as service name if it is not defined
 
 ## [1.0.0-beta.13] - 2018-10-15
 ### Added
