@@ -86,7 +86,7 @@ test.describe('Swagger Web UI', function () {
         return Promise.all([
           test.expect(response.code).to.equal('200'),
           test.expect(response.body.name).to.equal('service'),
-          test.expect(response.body.type).to.equal('unrecognized'),
+          test.expect(response.body.type).to.equal('module'),
           test.expect(response.body.package).to.equal(packageInfo.name),
           test.expect(response.body.version).to.equal(packageInfo.version),
           test.expect(response.body.description).to.equal(packageInfo.description),

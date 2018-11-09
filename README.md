@@ -44,7 +44,7 @@ Base for Domapic Node.js packages.
 
 ## Introduction
 
-This package is used as a base for __domapic-controller__, __domapic-service__ and __domapic-plugin__ packages.
+This package is used as a base for [__domapic-controller__][domapic-controller-url] and [__domapic-service__][domapic-service-url] packages.
 
 Maybe you´ll better want to read documentation about that pieces and learn how use them directly, because this is an internal dependency. Anyway, if you think it can be useful for you separately...
 
@@ -52,7 +52,7 @@ It provides:
 
 * __Server__ with an extensible API:
 	* Optional ssl protocol, just provide ssl certificate and key paths.
-	* Jwt and/or apiKey customizable authentication to api resources of choice.
+	* OAUTH. Jwt and/or apiKey customizable authentication to api resources of choice.
 	* Authentication can be disabled in a range of IPs of choice.
 	* Customizable authorization level for each API resource.
 	* Add API resources using OpenApi 3.0 definitions.
@@ -78,7 +78,7 @@ It provides:
 	* Mapping to HTTP errors.
 * __Storage__
 	* Javascript objects to JSON at file system and viceversa.
-	* File system access scoped to service instance folder.
+	* File system access scoped to unique service instance folder.
 * __CLI__. Easy implementable in your own package, it provides:
 	* If the service is started using the CLI, the process will be executed in background, and managed using [_PM2_][pm2-url].
 	* Multi-instanciable. Start many services instances providing different names.
@@ -95,13 +95,15 @@ const path = require('path')
 const domapic = require('domapic-base')
 
 new domapic.Service({
-  packagePath: path.resolve(__dirname)
+  packagePath: path.resolve(__dirname),
+  type: 'module'
 }).then((service) => {
   return service.server.start()
 })
 ```
 
-The `packagePath` parameter must be the path where your package.json file is, in order to automatically create the `/api/about` api resource that can provide useful information about the package to other domapic services.
+* The `packagePath` option must be the path where your package.json file is, in order to automatically create the `/api/about` api resource that can provide useful information about the package to other domapic services.
+* The `type` option will be exposed in the `api/about` api resource directly, in order to inform about the service type.
 
 ```shell
 # Start server
@@ -529,7 +531,7 @@ console.log(templates.myTemplate1({
 ```
 * `cli`
 	* `usedCommand` - Used internally by CLI. Returns the command used to start the current process.
-* `services` - Set of utilities used internally to get service types, normalize names, etc..
+* `services` - Set of utilities used internally to normalize services names, etc..
 
 [back to top](#table-of-contents)
 
@@ -540,8 +542,7 @@ console.log(templates.myTemplate1({
 Static object containing information about the package, from the `package.json` file.
 
 * `name` - Mandatory. The `package.json` must contain this property.
-* `type` - Domapic category for the package. It is calculated using the package name.
-	* Possible values are: `service`, `controller`, `plugin`, `unrecognized`
+* `type` - Category of the service. It is defined with an argument when service is created. Possible values when using Domapic packages are `module`, `controller` or `plugin`.
 * `version` - Mandatory. The `package.json` must contain this property.
 * `description` - Mandatory. The `package.json` must contain this property.
 * `homepage`
@@ -558,7 +559,7 @@ console.log(service.info)
 
 ## Authentication
 
-The server supports two types of authentication with built-in api "login" urls and token validations.
+The server supports two types of OAUTH authentication methods, with built-in api "login" urls and token validations.
 
 Each authentication strategy need some different methods to be provided in order to be activated. This externally provided methods have the responsibility of checking the user data, and then delegate the rest of the flow into the built-in security modules. In the case of Json Web Token, as the rest of the process is "token-based", this methods will be only invoqued at "login" or "refresh token" points.
 
@@ -967,3 +968,5 @@ npm test
 [pm2-url]: http://pm2.keymetrics.io/
 [yargs-url]: https://www.npmjs.com/package/yargs
 [narval-url]: https://www.npmjs.com/package/narval
+[domapic-controller-url]: https://npmjs.com/domapic-controller
+[domapic-service-url]: https://npmjs.com/domapic-service
