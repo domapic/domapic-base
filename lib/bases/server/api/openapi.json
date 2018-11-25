@@ -8,7 +8,7 @@
   "tags": [],
   "servers": [
     {
-      "url": "{{protocol}}://{{host}}:{{port}}/api"
+      "url": "{{protocol}}://{{host}}/api"
     }
   ],
   "paths": {
