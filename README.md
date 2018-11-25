@@ -136,6 +136,7 @@ option | type | description | default
 `logLevel` | String | Tracing level. Choices are 'log', 'trace', 'debug', 'info', 'warn' and 'error' | info
 `path` | String | Path to be used as home path, instead of user´s default (.domapic folder will be created inside) | ~
 `saveConfig` | Boolean | Save current options for next execution (except `name` and `path`) | false
+`rejectUntrusted` | Boolean | Reject untrusted ssl certificates when using built-in client to make requests to another services | false
 
 Example of setting options from command line:
 ```shell
