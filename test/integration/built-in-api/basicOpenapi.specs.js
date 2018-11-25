@@ -18,6 +18,10 @@ test.describe('Open Api', function () {
       })
     })
 
+    test.it('should return the current requested url as server url', () => {
+      return test.expect(openapi.servers[0].url).to.equal(config.service.url() + '/api')
+    })
+
     test.it('should return info about the /about api', () => {
       return test.expect(openapi.paths).to.have.property('/about')
       // TODO, test the structure deeper

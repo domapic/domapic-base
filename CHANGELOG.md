@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0-beta.15] - 2018-11-25
 ### Changed
 - Use domain dependant absolute url in swagger interface.
+- Change openapi servers url property depending of request hostname and port.
 
 ## [1.0.0-beta.14] - 2018-11-09
 ### Changed
