@@ -19,7 +19,8 @@ test.describe('Base', () => {
     addAuthentication: test.sinon.stub().usingPromise().resolves()
   }
   const fooClient = {
-    fooClientMethod: 'fooCMethod'
+    init: test.sinon.stub().resolves(),
+    Connection: test.sinon.stub()
   }
   const coreStub = new mocks.core.Stub()
   const argumentsStub = new mocks.arguments.Stub()
@@ -114,7 +115,9 @@ test.describe('Base', () => {
     new Service()
       .then((result) => {
         test.expect(bases.Client).to.have.been.calledWith(coreStub)
-        test.expect(result.client).to.deep.equal(fooClient)
+        test.expect(result.client).to.deep.equal({
+          Connection: fooClient.Connection
+        })
         done()
       })
   })
