@@ -6,7 +6,11 @@ new domapic.Service({
   packagePath: path.resolve(__dirname, '..', '..'),
   type: 'module'
 }).then((service) => {
-  return service.server.start()
+  return service.server.addMiddleware((req, res, next) => {
+    next()
+  }).then(() => {
+    return service.server.start()
+  })
 }).catch(() => {
   process.exit(1)
 })
