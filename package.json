@@ -1,6 +1,6 @@
 {
   "name": "domapic-base",
-  "version": "1.0.0-beta.14",
+  "version": "1.0.0-beta.15",
   "description": "Base for Domapic Node.js packages",
   "main": "index.js",
   "keywords": [
@@ -39,7 +39,6 @@
     "fs-extra": "7.0.0",
     "hbs": "4.0.1",
     "helmet": "3.14.0",
-    "ip": "1.1.5",
     "ip-range-check": "0.0.2",
     "is-promise": "2.1.0",
     "jsonschema": "1.2.4",

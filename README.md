@@ -24,6 +24,7 @@ Base for Domapic Node.js packages.
 * [Adding API resources](#adding-api-resources)
 	* [Open API definitions](#open-api-definitions)
 	* [Operations](#operations)
+  * [Custom middlewares](#custom-middlewares)
 * [Client](#client)
 * [Traces](#traces)
 * [Errors](#errors)
@@ -135,6 +136,7 @@ option | type | description | default
 `logLevel` | String | Tracing level. Choices are 'log', 'trace', 'debug', 'info', 'warn' and 'error' | info
 `path` | String | Path to be used as home path, instead of user´s default (.domapic folder will be created inside) | ~
 `saveConfig` | Boolean | Save current options for next execution (except `name` and `path`) | false
+`rejectUntrusted` | Boolean | Reject untrusted ssl certificates when using built-in client to make requests to another services | false
 
 Example of setting options from command line:
 ```shell
@@ -220,6 +222,7 @@ The `service.server` object has methods:
 * `addOperations` - Add operations related to api paths. Read [Adding API resources](#adding-api-resources)).
 * `addAuthentication` - Add authentication implementations. Read [Authentication](#authentication).
 * `addAuthorization` - Add authorization roles. Read [Authentication](#authentication).
+* `addMiddleware` - Add custom middlewares to api. Read [Custom middlewares](#custom-middlewares).
 
 [back to top](#table-of-contents)
 
@@ -329,6 +332,20 @@ service.server.addOperations({
   }
 })
 ```
+
+### Custom middlewares
+
+`service.server.addMiddleware(expressMiddleware)`
+
+Custom express middlewares can be added. Will be added before all other internal middlewares, such as operation handlers.
+
+```js
+service.server.addMiddleware((req, res, next) => {
+  console.log('Executing middleware before operation')
+  next()
+})
+```
+
 
 [back to top](#table-of-contents)
 

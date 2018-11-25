@@ -10,6 +10,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.15] - 2018-11-25
+### Changed
+- Use domain dependant absolute url in swagger interface.
+- Change openapi servers url property depending of request hostname and port.
+
+### Added
+- Add content-security-policy headers to static resources.
+- Add referrer-policy and feature-policy headers.
+- Add addMiddleware method to server.
+- Add rejectUntrusted option.
+
+### Fixed
+- Fix error when setting config values as false.
+- Do not print service name in cli recommended commands when it is equal to package name.
+
 ## [1.0.0-beta.14] - 2018-11-09
 ### Changed
 - Define service type programatically using an option in the Service constructor

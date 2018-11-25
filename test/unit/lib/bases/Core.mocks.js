@@ -42,7 +42,8 @@ const Stub = function () {
         compiled: utils.templates.compiled
       },
       cli: {
-        usedCommand: test.sinon.stub().callsFake(utils.cli.usedCommand)
+        usedCommand: test.sinon.stub().callsFake(utils.cli.usedCommand),
+        usedCustomName: test.sinon.stub().callsFake(utils.cli.usedCustomName)
       },
       services: {
         serviceType: test.sinon.stub().callsFake(utils.services.servicetype)
@@ -82,6 +83,7 @@ const cliMethodsStub = function () {
     config: stubCore.config,
     tracer: stubCore.tracer,
     utils: stubCore.utils,
+    info: {},
     errors: stubCore.errors
   }
 }
