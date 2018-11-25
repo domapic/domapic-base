@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.15] - 2018-11-25
+### Changed
+- Use domain dependant absolute url in swagger interface.
+
 ## [1.0.0-beta.14] - 2018-11-09
 ### Changed
 - Define service type programatically using an option in the Service constructor
