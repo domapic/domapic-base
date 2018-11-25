@@ -69,10 +69,15 @@
 <script src="{{swaggerUiAssetPath}}/swagger-ui-bundle.js"> </script>
 <script src="{{swaggerUiAssetPath}}/swagger-ui-standalone-preset.js"> </script>
 <script>
+var openApiUrl = function () {
+  var location = window.location;
+  var port = window.location.port ? ':' + window.location.port : '';
+  return location.protocol + '//' + location.hostname + port + '{{apiDefinitionUrl}}'
+}
 window.onload = function() {
   function initSwaggerUi (url) {
     window.ui = SwaggerUIBundle({
-      url: '{{apiDefinitionUrl}}',
+      url: openApiUrl(),
       dom_id: '#swagger-ui',
       deepLinking: true,
       presets: [
