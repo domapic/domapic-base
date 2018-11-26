@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.16] - 2018-11-26
+### Fixed
+- Avoid sharing same responseCustomizator for all requests of same route.
+
 ## [1.0.0-beta.15] - 2018-11-25
 ### Changed
 - Use domain dependant absolute url in swagger interface.
