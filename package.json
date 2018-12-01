@@ -1,6 +1,6 @@
 {
   "name": "domapic-base",
-  "version": "1.0.0-beta.16",
+  "version": "1.0.0-beta.17",
   "description": "Base for Domapic Node.js packages",
   "main": "index.js",
   "keywords": [
@@ -10,7 +10,7 @@
     "api",
     "openapi",
     "openapi3",
-    "error-handling",
+    "error handling",
     "ssl",
     "server",
     "oauth",
@@ -20,9 +20,9 @@
     "client",
     "tracer",
     "cli",
-    "commandline-interface",
+    "commandline interface",
     "process manager",
-    "swagger-ui"
+    "swagger ui"
   ],
   "scripts": {
     "test": "narval",
