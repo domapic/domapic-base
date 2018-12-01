@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.17] - 2018-12-1
+### Fixed
+- Fix Client scopes problem. Concurrent requests of same method were sharing data.
+
 ## [1.0.0-beta.16] - 2018-11-26
 ### Fixed
 - Avoid sharing same responseCustomizator for all requests of same route.
