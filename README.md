@@ -4,9 +4,9 @@
 
 Base for Domapic Node.js packages.
 
-[![Build status][travisci-image]][travisci-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Quality Gate][quality-gate-image]][quality-gate-url] [![js-standard-style][standard-image]][standard-url]
+[![Build status][travisci-image]][travisci-url] <!-- [![Coverage Status][coveralls-image]][coveralls-url] [![Quality Gate][quality-gate-image]][quality-gate-url] --> [![js-standard-style][standard-image]][standard-url]
 
-[![NPM dependencies][npm-dependencies-image]][npm-dependencies-url] [![Last commit][last-commit-image]][last-commit-url] [![Last release][release-image]][release-url] 
+[![NPM dependencies][npm-dependencies-image]][npm-dependencies-url] [![Last commit][last-commit-image]][last-commit-url] <!-- [![Last release][release-image]][release-url] -->
 
 [![NPM downloads][npm-downloads-image]][npm-downloads-url] [![Website][website-image]][website-url] [![License][license-image]][license-url]
 
@@ -95,10 +95,10 @@ It provides:
 const path = require('path')
 const domapic = require('domapic-base')
 
-new domapic.Service({
+domapic.Service({
   packagePath: path.resolve(__dirname),
   type: 'module'
-}).then((service) => {
+}).then(service => {
   return service.server.start()
 })
 ```
@@ -150,11 +150,11 @@ Options defined from command line are available in the `config` object of the se
 `service.config.get([key])`
 
 ```js
-new domapic.Service({
+domapic.Service({
   packagePath: path.resolve(__dirname)
-}).then((service) => {
+}).then(service => {
   return service.config.get()
-}).then((configuration) => {
+}).then(configuration => {
   console.log(configuration)
 })
 ```
@@ -166,11 +166,11 @@ It is not recommended, but, it if has sense, `config` properties can be modified
 `service.config.set(key [, value])`
 
 ```js
-new domapic.Service({
+domapic.Service({
   packagePath: path.resolve(__dirname)
-}).then((service) => {
+}).then(service => {
   return service.config.set('fooKey', 'fooValue')
-    .then((value) => {
+    .then(value => {
       console.log(value)
       // fooValue
     })
@@ -185,7 +185,7 @@ You can add your own custom configuration options. They will be seteable from co
 
 ```js
 // Usage of customConfig parameter
-new domapic.Service({
+domapic.Service({
   packagePath: path.resolve(__dirname),
   customConfig: {
     fooOption: {
@@ -195,9 +195,9 @@ new domapic.Service({
       default: true
     }
   }
-}).then((service) => {
+}).then(service => {
   return service.config.get()
-}).then((configuration) => {
+}).then(configuration => {
   console.log(configuration)
 })
 ```
@@ -239,9 +239,9 @@ const domapic = require('domapic-base')
 
 const myOpenApi = require('./api/myOpenApi.json')
 
-new domapic.Service({
+domapic.Service({
   packagePath: path.resolve(__dirname)
-}).then((service) => {
+}).then(service => {
   return Promise.all([
     service.server.extendOpenApi(myOpenApi),
     service.server.addOperations({
@@ -356,9 +356,9 @@ service.server.addMiddleware((req, res, next) => {
 Make requests to other _Domapic_ services. Automatic authentication and error handling is provided.
 
 ```js
-new domapic.Service().then((service) => {
+domapic.Service().then(service => {
   const client = new service.client.Connection('http://localhost:3000')
-  return client.get('/about').then((response) => {
+  return client.get('/about').then(response => {
     console.log(response)
   })
 })
@@ -366,7 +366,7 @@ new domapic.Service().then((service) => {
 
 ```js
 // Client with two authentication methods example
-new domapic.Service().then((service) => {
+domapic.Service().then(service => {
   const client = new service.client.Connection('http://localhost:3000',{
     apiKey: 'thisIsaFooApiKey',
     jwt: {
@@ -374,7 +374,7 @@ new domapic.Service().then((service) => {
       password: 'fooPassword'
     }
   })
-  return client.get('/about').then((response) => {
+  return client.get('/about').then(response => {
     console.log(response)
   })
 })
@@ -397,7 +397,7 @@ Sorted tracer levels are: 'log', 'trace', 'debug', 'info', 'warn' and 'error'.
 Tracer usage:
 
 ```js
-new domapic.Service().then((service) => {
+domapic.Service().then(service => {
   return service.tracer.debug('testing').then(() => {
     return service.tracer.log('testing log')
   }).then(() => {
@@ -413,7 +413,7 @@ new domapic.Service().then((service) => {
 There is an extra method called `group`, that allows to invoque different levels of tracers at a time:
 
 ```js
-new domapic.Service().then((service) => {
+domapic.Service().then(service => {
   return service.tracer.group([
     {
       log: 'This is a log'
@@ -441,7 +441,7 @@ Custom errors usage:
 ```js
 const Promise = require('bluebird')
 
-new domapic.Service().then((service) => {
+domapic.Service().then(service => {
   return Promise.reject(new service.errors.BadData('Received bad data'))
     .catch(service.errors.BadData, () => {
       console.log('Bad data error caught')
@@ -471,10 +471,10 @@ console.log(service.errors.isControlled(error))
 	* `service.errors.FromCode(code, message [, stack] [, extraData])`
 	
 ```js
-return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
-  .catch(service.errors.Forbidden, (err) => {
+return Promise.reject(service.errors.FromCode(403, 'Custom message'))
+  .catch(service.errors.Forbidden, error => {
     console.log('Forbidden error caught')
-    console.log(err.message)
+    console.log(error.message)
     // Custom message
   })
 ```
@@ -483,7 +483,7 @@ return Promise.reject(new service.errors.FromCode(403, 'Custom message'))
 	* `service.errors.toHTML(error)`
 
 ```js
-const error = new service.errors.Forbidden()
+const error = service.errors.Forbidden()
 console.log( service.errors.toHTML(error).output.payload.statusCode )
 // 403
 ```
@@ -501,7 +501,7 @@ service.storage.set('fooProperty', {test: 'testing'})
   .then(() => {
     return service.storage.get('fooProperty')
   })
-  .then((data) => {
+  .then(data => {
     console.log(data)
     // {test: 'testing'}
     return service.storage.remove('fooProperty')
@@ -642,7 +642,7 @@ Implementation example:
 ```js
 service.server.addAuthentication({
   apiKey: {
-    verify: (apiKey) => {
+    verify: apiKey => {
       // Check if apiKey is allowed, and return correspondant user data, or reject.
       return getUserDataFromApiKey(apiKey)
     },
@@ -751,7 +751,7 @@ An operation `auth` method can be defined as a function, or as a string that def
 `service.server.addAuthorization(roleName, authHandler)`
 
 ```js
-service.server.addAuthorization('fooRoleName', (userData) => {
+service.server.addAuthorization('fooRoleName', userData => {
   if (roleIsAllowed(userData.role)) {
     return Promise.resolve()
     // Execute the operation handler
