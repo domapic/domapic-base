@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.18] - 2018-12-09
+### Added
+- Add `getPath` method to storage. Will return the storage folder.
+
 ## [1.0.0-beta.17] - 2018-12-1
 ### Fixed
 - Fix Client scopes problem. Concurrent requests of same method were sharing data.
