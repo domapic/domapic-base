@@ -19,7 +19,7 @@ test.describe('Bases -> Core -> Storage', () => {
     test.sinon.stub(paths, 'readJSON').usingPromise(Promise).resolves(mocks.storage.data)
     test.sinon.stub(paths, 'ensureJSON').usingPromise(Promise).resolves(mocks.storage.options.fileName)
     test.sinon.stub(paths, 'writeJSON').usingPromise(Promise).resolves(mocks.storage.options.fileName)
-    storage = new Storage(mocks.storage.options.fileName, paths, errors)
+    storage = new Storage(mocks.storage.options.fileName, paths, errors, 'storage/')
   })
 
   test.afterEach(() => {

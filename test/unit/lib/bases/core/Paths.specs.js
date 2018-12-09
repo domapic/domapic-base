@@ -268,4 +268,15 @@ test.describe('Bases -> Core -> Paths', () => {
         })
     })
   })
+
+  test.describe('resolve', () => {
+    test.it('should return absolute path under the domapic folder of provided path', () => {
+      let fooFolder = 'storage/'
+      let resolvedFile = path.resolve(mocks.arguments.options.path, '.domapic', mocks.arguments.options.name, fooFolder)
+      return paths.resolve(fooFolder)
+        .then(resolvedFolder => {
+          return test.expect(resolvedFolder).to.equal(resolvedFile)
+        })
+    })
+  })
 })

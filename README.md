@@ -510,13 +510,13 @@ service.storage.set('fooProperty', {test: 'testing'})
 
 Methods
 
-* `get` - Get data from file
+* `get` - Read data from storage file.
 	* `service.storage.get([key])`
 	* Arguments:
 		* key - Optional, key of the object to get. If no provided, entire data is returned.
 	* Returns: 
 		* A promise, resolved with the correspondant data.
-* `set` - Save data into the storage object.
+* `set` - Save data into the storage file.
 	* `service.storage.set([key,] value)`
 	* Arguments:
 		* key - Optional. Key of the object to set. If no provided, entire data is overwritten by the given value.
@@ -524,7 +524,10 @@ Methods
 * `remove` - Removes a property from the stored object.
 	* `service.storage.remove(key)`
 	* Arguments:
-		* key - Key of the object to remove.
+		* key - Key of the object to be removed.
+* `getPath` - Get storage folder.
+	* Returns: 
+		* A promise, resolved with the absolute path to the storage folder.
 
 [back to top](#table-of-contents)
 
