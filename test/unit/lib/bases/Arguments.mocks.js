@@ -19,7 +19,8 @@ const getResult = {
     authDisabled: ['127.0.0.1', '::1/128'],
     saveConfig: false,
     rejectUntrusted: false,
-    hostName: ''
+    hostName: '',
+    auth: true
   },
   defaultsToStore: {
     color: true,
@@ -27,7 +28,8 @@ const getResult = {
     port: 3000,
     authDisabled: ['127.0.0.1', '::1/128'],
     rejectUntrusted: false,
-    hostName: ''
+    hostName: '',
+    auth: true
   },
   explicit: {
     name: 'testing'

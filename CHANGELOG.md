@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.19] - 2019-01-05
+### Added
+- Add "auth" option, will allows to disable authentication for all api resources.
+
+### Changed
+- Execute always authorization handlers, even when authentication is disabled. In that way, an specific api resource could return forbidden for anonymous users, if needed.
+
 ## [1.0.0-beta.18] - 2018-12-09
 ### Added
 - Add `getPath` method to storage. Will return the storage folder.

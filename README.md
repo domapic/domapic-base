@@ -132,6 +132,7 @@ option | type | description | default
 `sslCert` | String | Path to an ssl certificate | -
 `sslKey` | String | Path to an ssl key | - 
 `authDisabled` | Array | Array of IPs or CIDR IP ranges with authentication disabled | ['127.0.0.1', '::1/128']
+`auth` | Boolean | If false, the authentication will be disabled for all api resources and IPs | true
 `color` | Boolean | Use ANSI colors in traces | true
 `logLevel` | String | Tracing level. Choices are 'log', 'trace', 'debug', 'info', 'warn' and 'error' | info
 `path` | String | Path to be used as home path, instead of user´s default (.domapic folder will be created inside) | ~
@@ -140,7 +141,7 @@ option | type | description | default
 
 Example of setting options from command line:
 ```shell
-node ./server.js --name=fooName --authDisabled=192.168.1.1 172.0.0.1 --logLevel=debug --color=false
+node ./server.js --name=fooName --authDisabled=192.168.1.1 172.0.0.1 --logLevel=debug --color=false --auth=true
 ```
 
 ### Get config
@@ -284,7 +285,7 @@ Each operation can have properties:
 		* params - Request parameters. `params.path` and `params.query`.
 		* body - Request body
 		* res - Allows to set custom headers and statusCode to response. Examples: `res.status(201)`, `res.header('location', '/api/books/new-book')`
-		* userData - If user is "loged", here will be received the userData returned by the correspondant authentication method `verify` handler.
+		* userData - If user is "logged in", The userData returned by the correspondant authentication method `verify` handler will be received in this property. When authentication is disabled because of `auth` or `authDisabled` options, this property will have the value `{user: 'anonymous'}`
 	* Returns:
 		* Can return a Promise. If rejected, the error will be mapped to a correspondant html error. If resolved, the resolved value will be returned as response body.
 		* If returns a value, the value will be returned as response body.
@@ -292,9 +293,9 @@ Each operation can have properties:
 * `parse` - Parse parameters from request.
 	* It must be an object, with first level keys as request object where the parameter will be found, and second level keys as parameter name to be parsed. The `parser` function will receive the original value of the parameter as argument, and should return the parsed value.
 	* Useful, for example, to convert numeric values from request params or query strings, that are received as strings, to real numbers.
-* `auth` - If authentication is enabled for the api resource, this method will be executed to check if the user has enough permissions. Can be a function, or a string that defines which authorization role function has to be executed. If this method is not defined, the api resource will be available for all authenticated users. Read [Authentication](#authentication) for further info.
+* `auth` - This method will be executed to check if the user has enough permissions to perform an operation. Can be a function, or a string that defines which authorization role function has to be executed. If this method is not defined, the api resource will be available for all users. Read [Authentication](#authentication) for further info. This method will be executed even when authentication is disabled because of `auth` or `authDisabled` options, in that case, the method will receive the value `{user: 'anonymous'}` as `userData` argument.
 	* Arguments:
-		* userData - The decoded data about the user that is making the request.
+		* userData - The decoded data about the user that is making the request. `{user: 'anonymous'}` when authentication is disabled.
 		* params - Request parameters. `params.path` and `params.query`.
 		* body - Request body
 	* Returns: 
