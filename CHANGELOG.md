@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [1.0.0-beta.19] - 2019-01-05
+### Added
+- Add "auth" option, which allows to disable authentication for all api resources and requests origins.
+- Added new custom security strategy called "disabled". When security is disabled, the "verify" method of this new strategy will be executed if it is defined, and returned data will be passed as "userData" to action handlers.
+
 ## [1.0.0-beta.18] - 2018-12-09
 ### Added
 - Add `getPath` method to storage. Will return the storage folder.
