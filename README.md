@@ -54,7 +54,7 @@ It provides:
 * __Server__ with an extensible API:
 	* Optional ssl protocol, just provide ssl certificate and key paths.
 	* OAUTH. Jwt and/or apiKey customizable authentication to api resources of choice.
-	* Authentication can be disabled in a range of IPs of choice.
+	* Authentication can be disabled in a range of IPs of choice, or completely.
 	* Customizable authorization level for each API resource.
 	* Add API resources using OpenApi 3.0 definitions.
 	* Http OPTIONS method created for each API resource, auto describing it.
@@ -132,7 +132,7 @@ option | type | description | default
 `sslCert` | String | Path to an ssl certificate | -
 `sslKey` | String | Path to an ssl key | - 
 `authDisabled` | Array | Array of IPs or CIDR IP ranges with authentication disabled | ['127.0.0.1', '::1/128']
-`auth` | Boolean | If false, the authentication will be disabled for all api resources and IPs | true
+`auth` | Boolean | If false, the authentication will be disabled for all api resources and origins | true
 `color` | Boolean | Use ANSI colors in traces | true
 `logLevel` | String | Tracing level. Choices are 'log', 'trace', 'debug', 'info', 'warn' and 'error' | info
 `path` | String | Path to be used as home path, instead of user´s default (.domapic folder will be created inside) | ~
@@ -285,7 +285,7 @@ Each operation can have properties:
 		* params - Request parameters. `params.path` and `params.query`.
 		* body - Request body
 		* res - Allows to set custom headers and statusCode to response. Examples: `res.status(201)`, `res.header('location', '/api/books/new-book')`
-		* userData - If user is "logged in", The userData returned by the correspondant authentication method `verify` handler will be received in this property. When authentication is disabled because of `auth` or `authDisabled` options, this property will have the value `{user: 'anonymous'}`
+		* userData - If user is "logged in", The userData returned by the correspondant authentication method `verify` handler will be received in this property.
 	* Returns:
 		* Can return a Promise. If rejected, the error will be mapped to a correspondant html error. If resolved, the resolved value will be returned as response body.
 		* If returns a value, the value will be returned as response body.
@@ -293,9 +293,9 @@ Each operation can have properties:
 * `parse` - Parse parameters from request.
 	* It must be an object, with first level keys as request object where the parameter will be found, and second level keys as parameter name to be parsed. The `parser` function will receive the original value of the parameter as argument, and should return the parsed value.
 	* Useful, for example, to convert numeric values from request params or query strings, that are received as strings, to real numbers.
-* `auth` - This method will be executed to check if the user has enough permissions to perform an operation. Can be a function, or a string that defines which authorization role function has to be executed. If this method is not defined, the api resource will be available for all users. Read [Authentication](#authentication) for further info. This method will be executed even when authentication is disabled because of `auth` or `authDisabled` options, in that case, the method will receive the value `{user: 'anonymous'}` as `userData` argument.
+* `auth` - This method will be executed to check if the user has enough permissions to perform an operation. Can be a function, or a string that defines which authorization role function has to be executed. If this method is not defined, the api resource will be available for all users. Read [Authentication](#authentication) for further info.
 	* Arguments:
-		* userData - The decoded data about the user that is making the request. `{user: 'anonymous'}` when authentication is disabled.
+		* userData - The decoded data about the user that is making the request.
 		* params - Request parameters. `params.path` and `params.query`.
 		* body - Request body
 	* Returns: 
@@ -600,7 +600,7 @@ To require an authentication method in your API operations, you must define the 
 }
 ```
 
-Use the server `addAuthentication` method to define your authentication implementations. The parameter must be an object containing keys `jwt` and/or `apiKey`, which will contain the specific configuration for each method:
+Use the server `addAuthentication` method to define your authentication implementations. The parameter must be an object containing keys `jwt`, `apiKey` and/or `disabled`, which will contain the specific configuration for each method:
 
 `service.server.addAuthentication(authConfigObject)`
 
@@ -738,6 +738,27 @@ service.server.addAuthentication({
         return removeRefreshToken(body.refreshToken)
       }
     }
+  }
+})
+```
+
+### Disabled
+
+When authentication is disabled for an specific origin because of the `authDisabled`, or `auth` options, the authorization handlers will not be executed. By default, an user with the format `{user: 'anonymous'}` will be passed to action handlers, but you can define your own "disabled" strategy, and return an user of your convenience to be passed.
+
+Properties:
+
+* `verify`- Function that should return the user to be passed to action handlers when authentication is disabled for an specific origin.
+
+Implementation example:
+
+```js
+service.server.addAuthentication({
+  disabled: {
+    verify: () => Promise.resolve({
+      name: 'your-auth-disabled-user',
+      role: 'your-anonymous-role'
+    })
   }
 })
 ```
