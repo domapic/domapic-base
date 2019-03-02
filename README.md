@@ -62,7 +62,8 @@ It provides:
 	* API operations as Promises.
 	* Automatic error handling mapped to HTTP errors.
 	* Openapi.json auto generated and served.
-	* _Swagger_ web interface.
+	* Built-in _Swagger_ web interface.
+  * Allows serving statics under paths of your choice.
 * __Client__ to other Domapic services:
 	* Automatic authentication if API resource requires it.
 	* Requests as Promises.
@@ -219,11 +220,13 @@ Default options values (or saved values if the `--saveConfig` option is used) ar
 The `service.server` object has methods:
 
 * `start` - Starts the server. Returns a promise, resolved when the server is running. Once the server is started, it is not possible to add more open api definitions, operations, or authentication implementations.
+* `init` - Only initialize the server, adding all internal middlewares and routers, and returns the server instance. This allows you to add more custom middlewares, sockets, etc. This method should be called just before calling to the "start" method.
 * `extendOpenApi` - Add open api definitions to the server. Read the [Adding API resources](#adding-api-resources) chapter for further info.
 * `addOperations` - Add operations related to api paths. Read [Adding API resources](#adding-api-resources)).
 * `addAuthentication` - Add authentication implementations. Read [Authentication](#authentication).
 * `addAuthorization` - Add authorization roles. Read [Authentication](#authentication).
 * `addMiddleware` - Add custom middlewares to api. Read [Custom middlewares](#custom-middlewares).
+* `addStatic` - Serve statics. First argument defines server path, second argument defines fileSystem path. `addStatic("/assets", path.resolve(__dirname, "assets"))`. Statics added with this method will be served using gzip compression.
 
 [back to top](#table-of-contents)
 
