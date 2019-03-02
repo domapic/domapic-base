@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add "init" method to Server.
 - Add "addStatic" method to Server.
 
+### Fixed
+- Add rejectUntrusted and auth configuration options to swagger
+
+### Changed
+- Reduce timeout in Client requests
+- Serve swagger under "/swagger" path, not "doc/api"
+
 ## [1.0.0-beta.19] - 2019-01-05
 ### Added
 - Add "auth" option, which allows to disable authentication for all api resources and requests origins.
