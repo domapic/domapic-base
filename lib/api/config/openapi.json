@@ -30,6 +30,14 @@
               "type": "string"
             }
           },
+          "auth": {
+            "description": "If false, the authentication will be disabled for all api resources and origins",
+            "type": "boolean"
+          },
+          "rejectUntrusted": {
+            "description": "Reject untrusted ssl certificates when using built-in client for making requests to another services",
+            "type": "boolean"
+          },
           "color": {
             "description": "Use colors in logs",
             "type": "boolean"
@@ -47,7 +55,7 @@
             "type": "string"
           }
         },
-        "required": ["logLevel", "port", "hostName", "authDisabled"],
+        "required": ["logLevel", "port", "hostName", "authDisabled", "auth", "rejectUntrusted"],
         "additionalProperties": false,
         "example": {
             "logLevel": "debug",
@@ -57,7 +65,9 @@
               "::1/128"
             ],
             "color": true,
-            "hostName": "0.0.0.0"
+            "hostName": "0.0.0.0",
+            "auth": true,
+            "rejectUntrusted": false
         }
       }
     }
