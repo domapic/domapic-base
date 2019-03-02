@@ -38,7 +38,7 @@
     "express": "4.16.4",
     "express-request-id": "1.4.1",
     "fs-extra": "7.0.0",
-    "hbs": "4.0.1",
+    "hbs": "^4.0.3",
     "helmet": "3.14.0",
     "ip-range-check": "0.0.2",
     "is-promise": "2.1.0",
